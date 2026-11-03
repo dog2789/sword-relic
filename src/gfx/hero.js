@@ -10,7 +10,7 @@ const EYES=[[5,9],[5,10],[9,9],[9,10]];
 const BODY=["","","","","","","","","","","","","",
 "...kttttttttk..","..kuuttttttuuk.","..kuuBByBBBuuk.","...kkttttttkk.."];
 const BODY_ATK=["","","","","","","","","","","","","",
-"...kttttttttk..","..kuutttttttuuuk","..kuuBByBBBk....","...kkttttttkk.."];
+"...kttttttttk..","..kuutttttttuuuk","..kuuBBByBBk....","...kkttttttkk.."];
 const LEGS={
  idle:["....kpkkkkpk...","....fff..fff..."],
  runA:["...kpk....kpk..","..fff......fff."],
@@ -66,16 +66,19 @@ export function heroPal(look,gear){
   t:T,B:hexMix(T,'#000000',0.65),p:P,f:F},GEAR[gear].pal);
 }
 export function paintRows(ctx,rows,pal,ox,oy){rows.forEach((r,y)=>{for(let i=0;i<r.length;i++){const c=pal[r[i]];if(c){ctx.fillStyle=c;ctx.fillRect(ox+i,oy+y,1,1)}}})}
+/* 원본 도트는 왼쪽을 보고 있어서 좌우를 뒤집어 그림 (게임 기준 오른쪽을 보는 모습)
+   공격 팔과 방패는 이미 최종 방향으로 그려둔 데이터라 뒤집지 않음 */
 export function drawHero(ctx,frame,look,gear,ox=0,oy=0){
  const F=HERO_FRAMES[frame],pal=heroPal(look,gear),st=HAIR_STYLES[look.style]||HAIR_STYLES[0],G=GEAR[gear],X=ox+OX,Y=oy-2+F.bob;
- if(st.back)paintRows(ctx,st.back,pal,X,Y);
- if(G.cape)paintRows(ctx,CAPE,pal,X,Y);
- paintRows(ctx,HEAD,pal,X,Y);
- EYES.forEach(([x,y])=>{ctx.fillStyle=pal.e;ctx.fillRect(X+x,Y+y,1,1)});
- paintRows(ctx,F.atk?BODY_ATK:BODY,pal,X,Y);
- paintRows(ctx,LEGS[F.legs],pal,X,oy-2+17);
- if(G.armor)paintRows(ctx,ARMOR,pal,X,Y);
- paintRows(ctx,st.front,pal,X,Y);
- if(G.helm)paintRows(ctx,G.helm,pal,X,Y);
+ const m={set fillStyle(v){ctx.fillStyle=v},fillRect(x,y,w,h){ctx.fillRect(2*ox+HERO_W-x-w,y,w,h)}};
+ if(st.back)paintRows(m,st.back,pal,X,Y);
+ if(G.cape)paintRows(m,CAPE,pal,X,Y);
+ paintRows(m,HEAD,pal,X,Y);
+ EYES.forEach(([x,y])=>{m.fillStyle=pal.e;m.fillRect(X+x,Y+y,1,1)});
+ if(F.atk)paintRows(ctx,BODY_ATK,pal,X,Y);else paintRows(m,BODY,pal,X,Y);
+ paintRows(m,LEGS[F.legs],pal,X,oy-2+17);
+ if(G.armor)paintRows(m,ARMOR,pal,X,Y);
+ paintRows(m,st.front,pal,X,Y);
+ if(G.helm)paintRows(m,G.helm,pal,X,Y);
  if(G.shield)paintRows(ctx,SHIELD,pal,X-1,Y+13);
 }
