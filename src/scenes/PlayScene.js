@@ -10,7 +10,7 @@ import {drawFar,drawMid,drawLevel,drawCaveFar,drawCaveMid,drawTreetopMid} from '
 import {STATE,saveGame} from '../state.js';
 import {calcZoom} from '../zoom.js';
 
-const KR='"IBM Plex Sans KR", system-ui, sans-serif';
+import {F9,F11} from '../fonts.js';
 const CLIMB_SPEED=70;
 /* 받침 있으면 '을', 없으면 '를' */
 const josa=(w,a,b)=>{const c=w.charCodeAt(w.length-1)-0xAC00;return w+(c>=0&&c<11172&&c%28?a:b)};
@@ -297,23 +297,23 @@ export class PlayScene extends Phaser.Scene{
   openMenu(){
     if(this.player.dead||this.leaving)return;
     this.physics.world.pause();this.anims.pauseAll();
-    const res=Math.max(1,Math.ceil(calcZoom())),fix=o=>o.setScrollFactor(0).setDepth(200);
+    const fix=o=>o.setScrollFactor(0).setDepth(200);
     const M=this.menu={sel:0,objs:[],rows:[]};
     const g=fix(this.add.graphics());M.objs.push(g);M.g=g;
-    const t=(x,y,s,o={})=>{const o2=fix(this.add.text(x,y,s,Object.assign({fontFamily:KR,fontSize:'9px',color:'#ece7f7'},o))).setResolution(res);M.objs.push(o2);return o2};
-    t(22,16,'장비',{fontSize:'10px',fontStyle:'600',color:'#ffe27a'});
-    t(298,17,'I  닫기',{fontSize:'8px',color:'#8f86ab'}).setOrigin(1,0);
+    const t=(x,y,s,o={})=>{const o2=fix(this.add.text(x,y,s,Object.assign({fontFamily:F9,fontSize:'10px',color:'#ece7f7'},o)));M.objs.push(o2);return o2};
+    t(22,15,'장비',{fontFamily:F11,fontSize:'12px',color:'#ffe27a'});
+    t(298,17,'I  닫기',{color:'#8f86ab'}).setOrigin(1,0);
     SLOTS.forEach((sl,i)=>{const y=34+i*19;
       const icon=fix(this.add.image(30,y+6,'icon_'+(this.equip[sl]||'traveler_sword')));M.objs.push(icon);
-      const lab=t(42,y+4,SLOT_NAMES[sl],{fontSize:'8px',color:'#8f86ab'});
-      const name=t(68,y+3,'',{fontSize:'9px',fontStyle:'600'});
-      const hit=fix(this.add.zone(22,y-2,140,19).setOrigin(0).setInteractive());M.objs.push(hit);
+      const lab=t(40,y+3,SLOT_NAMES[sl],{color:'#8f86ab'});
+      const name=t(67,y+3,'',{});
+      const hit=fix(this.add.zone(20,y-2,150,19).setOrigin(0).setInteractive());M.objs.push(hit);
       hit.on('pointerdown',()=>{M.sel=i;this.cycleEquip(sl,1)});
       M.rows.push({sl,icon,lab,name});
     });
-    M.stat=t(176,34,'',{fontSize:'9px',lineSpacing:3});
-    M.desc=t(22,114,'',{fontSize:'8px',color:'#cfc8e4',wordWrap:{width:276},lineSpacing:2});
-    M.help=t(22,142,'↑↓ 칸 선택   ←→ 장비 바꾸기   터치: 칸을 누르면 바뀜',{fontSize:'8px',color:'#6f6890'});
+    M.stat=t(179,34,'',{lineSpacing:3});
+    M.desc=t(22,112,'',{color:'#cfc8e4',wordWrap:{width:276},lineSpacing:2});
+    M.help=t(22,144,'↑↓ 칸 선택   ←→ 장비 바꾸기   터치: 칸을 누르면 바뀜',{color:'#6f6890'});
     this.refreshMenu();
   }
   menuOptions(sl){const own=STATE.bag.filter(id=>ITEMS[id]&&ITEMS[id].slot===sl);return sl==='weapon'?own:[null,...own]}
@@ -326,11 +326,11 @@ export class PlayScene extends Phaser.Scene{
     const M=this.menu;if(!M)return;const g=M.g;g.clear();
     g.fillStyle(0x05030b,0.72).fillRect(0,0,W,H);
     g.fillStyle(0x161028,1).fillRect(14,10,292,150);g.lineStyle(1,0xc9a24a,1).strokeRect(14.5,10.5,291,149);
-    g.fillStyle(0x221a3a,1).fillRect(168,30,130,78);
+    g.fillStyle(0x221a3a,1).fillRect(174,30,128,78);
     M.rows.forEach((r,i)=>{const it=ITEMS[this.equip[r.sl]],y=34+i*19,sel=i===M.sel,n=this.menuOptions(r.sl).length;
-      if(sel){g.fillStyle(0x2c2346,1).fillRect(20,y-2,144,19);g.lineStyle(1,0xffe27a,1).strokeRect(20.5,y-1.5,143,18)}
+      if(sel){g.fillStyle(0x2c2346,1).fillRect(20,y-2,150,19);g.lineStyle(1,0xffe27a,1).strokeRect(20.5,y-1.5,149,18)}
       r.icon.setTexture(it?'icon_'+this.equip[r.sl]:'icon_traveler_sword').setAlpha(it?1:0.15);
-      r.name.setText((it?it.name:'없음')+(n>1?'  ◀▶':'')).setColor(it?'#ece7f7':'#6f6890')});
+      r.name.setText((it?it.name:'없음')+(n>1?' ◀▶':'')).setColor(it?'#ece7f7':'#6f6890')});
     const b=this.bonus,s=this.stats;
     const lines=['공격  '+this.atkVal()+'   (장비 +'+b.atk+')','방어  '+b.def,'최대 HP  '+this.mhp()+'   (장비 +'+b.hp+')',''];
     for(const k in SETS){const S=SETS[k],n=setProgress(this.equip,k);lines.push(S.name+'  '+n+'/'+S.need+(n>=S.need?'  발동!':''))}
@@ -357,15 +357,15 @@ export class PlayScene extends Phaser.Scene{
     fix(this.add.bitmapText(26,y0+12,'pix','MP')).setTint(0x8ab0ff);
     this.hpTxt=fix(this.add.bitmapText(114,y0+4,'pix',''));
     this.mpTxt=fix(this.add.bitmapText(114,y0+12,'pix',''));
-    this.nameTxt=fix(this.add.text(164,y0+2,'',{fontFamily:KR,fontSize:'9px',fontStyle:'600',color:'#ece7f7'})).setResolution(res).setVisible(false);
-    this.hintTxt=fix(this.add.text(164,y0+6,'',{fontFamily:KR,fontSize:'8px',color:'#8f86ab'})).setResolution(res);
+    this.nameTxt=fix(this.add.text(164,y0+2,'',{fontFamily:F9,fontSize:'10px',color:'#ece7f7'})).setVisible(false);
+    this.hintTxt=fix(this.add.text(164,y0+5,'',{fontFamily:F9,fontSize:'10px',color:'#8f86ab'}));
     this.tHpTxt=fix(this.add.bitmapText(266,y0+14,'pix','')).setVisible(false);
     this.comboTxt=this.add.bitmapText(8,8,'dmg','').setScrollFactor(0).setDepth(110).setTint(0xffd34a).setLetterSpacing(-2).setVisible(false);
-    this.toastTxt=this.add.text(W/2,6,'',{fontFamily:KR,fontSize:'9px',fontStyle:'600',color:'#fff8e0',backgroundColor:'#1a1230dd',padding:{x:7,y:4},align:'center'})
-      .setOrigin(0.5,0).setScrollFactor(0).setDepth(130).setResolution(res).setVisible(false);
+    this.toastTxt=this.add.text(W/2,6,'',{fontFamily:F9,fontSize:'10px',color:'#fff8e0',backgroundColor:'#1a1230dd',padding:{x:7,y:4},align:'center'})
+      .setOrigin(0.5,0).setScrollFactor(0).setDepth(130).setVisible(false);
     this.mmGfx=this.add.graphics().setScrollFactor(0).setDepth(105);
   }
-  setTextRes(z){const r=Math.max(1,Math.ceil(z));[this.nameTxt,this.hintTxt,this.toastTxt].forEach(t=>t&&t.setResolution(r))}
+  setTextRes(){}
   toast(msg,ms=2400){
     const t=this.toastTxt;if(!t)return;this.tweens.killTweensOf(t);
     t.setText(msg).setVisible(true).setAlpha(0);

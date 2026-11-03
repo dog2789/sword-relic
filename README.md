@@ -68,6 +68,11 @@ src/
 `k` 외곽선, `h` 머리, `s` 피부, `t` 상의, `p` 하의, `f` 신발, `a` 갑옷 등.
 커스텀이나 장비가 바뀌면 같은 도트에 슬롯 색만 바꿔 다시 그려요.
 
+## 폰트
+
+게임 안 한글은 픽셀 폰트 **갈무리(Galmuri)** 를 씁니다 (SIL OFL 1.1, https://github.com/quiple/galmuri).
+Galmuri9 는 10px, Galmuri11 은 12px 크기에서 픽셀이 정확히 맞으니 글자 크기는 이 둘만 쓰세요 (`src/fonts.js`).
+
 ## 배포
 
 `main` 브랜치에 푸시하면 Vercel이 자동으로 빌드·배포해요.

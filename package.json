@@ -10,10 +10,11 @@
     "build:single": "node tools/build-single.mjs"
   },
   "dependencies": {
+    "galmuri": "^2.40.3",
     "phaser": "3.80.1"
   },
   "devDependencies": {
-    "vite": "^5.4.0",
-    "esbuild": "^0.21.5"
+    "esbuild": "^0.21.5",
+    "vite": "^5.4.0"
   }
 }

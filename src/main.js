@@ -7,6 +7,7 @@ import {PlayScene} from './scenes/PlayScene.js';
 import {TitleScene,paintHeroFrames} from './scenes/TitleScene.js';
 import {IntroScene} from './scenes/IntroScene.js';
 import {STATE,newGame} from './state.js';
+import {loadFonts} from './fonts.js';
 
 let game;
 function boot(){
@@ -14,7 +15,7 @@ function boot(){
     physics:{default:'arcade',arcade:{gravity:{y:GRAV},debug:false}},input:{activePointers:4},scene:[TitleScene,IntroScene,PlayScene]});
 }
 window.addEventListener('resize',()=>{if(!game)return;const z=calcZoom();game.scale.setZoom(z);const sc=game.scene.keys.play;if(sc&&sc.nameTxt&&sc.sys.isActive())sc.setTextRes(z)});
-(document.fonts?Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]):Promise.resolve()).then(boot);
+Promise.race([Promise.all([loadFonts(),document.fonts?document.fonts.ready:null]),new Promise(r=>setTimeout(r,4000))]).then(boot);
 
 document.getElementById('start').addEventListener('click',e=>{e.currentTarget.hidden=true;window.focus();});
 /* character maker */

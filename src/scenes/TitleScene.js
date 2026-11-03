@@ -8,7 +8,7 @@ import {drawFar,drawMid} from '../world/meadow.js';
 import {STATE,hasSave,loadGame,newGame} from '../state.js';
 import {calcZoom} from '../zoom.js';
 
-const KR='"IBM Plex Sans KR", system-ui, sans-serif';
+import {F9,F11} from '../fonts.js';
 
 export function paintHeroFrames(scene){
   for(const f in HERO_FRAMES){const t=scene.textures.get('hero_'+f),c=t.getContext();c.clearRect(0,0,HERO_W,HERO_H);drawHero(c,f,LOOK,STATE.equip);t.refresh()}
@@ -32,14 +32,13 @@ export class TitleScene extends Phaser.Scene{
     // 로고
     this.add.bitmapText(W/2+2,36,'dmg','SWORD RELIC').setOrigin(0.5).setScale(2).setTint(0x3a1a08).setLetterSpacing(-2);
     this.add.bitmapText(W/2,34,'dmg','SWORD RELIC').setOrigin(0.5).setScale(2).setTint(0xffd34a).setLetterSpacing(-2);
-    const res=Math.max(1,Math.ceil(calcZoom()));
-    this.add.text(W/2,58,'전설의 검을 찾아서',{fontFamily:KR,fontSize:'10px',fontStyle:'600',color:'#ffffff',stroke:'#2a3a6a',strokeThickness:3}).setOrigin(0.5).setResolution(res);
+    this.add.text(W/2,58,'전설의 검을 찾아서',{fontFamily:F11,fontSize:'12px',color:'#ffffff',stroke:'#2a3a6a',strokeThickness:3}).setOrigin(0.5);
     this.opts=hasSave()?['이어하기','새로 시작']:['새로 시작'];this.sel=0;
-    this.items=this.opts.map((o,i)=>{const t=this.add.text(W/2,84+i*15,o,{fontFamily:KR,fontSize:'10px',fontStyle:'600',color:'#ffffff',stroke:'#1a1230',strokeThickness:3})
-      .setOrigin(0.5).setResolution(res).setInteractive({useHandCursor:true});
+    this.items=this.opts.map((o,i)=>{const t=this.add.text(W/2,84+i*15,o,{fontFamily:F11,fontSize:'12px',color:'#ffffff',stroke:'#1a1230',strokeThickness:3})
+      .setOrigin(0.5).setInteractive({useHandCursor:true});
       t.on('pointerdown',()=>{this.sel=i;this.choose()});return t});
-    this.cursor=this.add.text(0,0,'▶',{fontFamily:KR,fontSize:'8px',color:'#ffe27a',stroke:'#1a1230',strokeThickness:2}).setOrigin(0.5).setResolution(res);
-    this.hint=this.add.text(W/2,H-12,'Z 또는 화면을 눌러 선택',{fontFamily:KR,fontSize:'8px',color:'#ffffff',stroke:'#1a1230',strokeThickness:2}).setOrigin(0.5).setResolution(res);
+    this.cursor=this.add.text(0,0,'▶',{fontFamily:F9,fontSize:'10px',color:'#ffe27a',stroke:'#1a1230',strokeThickness:2}).setOrigin(0.5);
+    this.hint=this.add.text(W/2,H-12,'Z 또는 화면을 눌러 선택',{fontFamily:F9,fontSize:'10px',color:'#ffffff',stroke:'#1a1230',strokeThickness:2}).setOrigin(0.5);
     this.tweens.add({targets:this.hint,alpha:0.3,duration:700,yoyo:true,repeat:-1});
     this.keys=this.input.keyboard.addKeys('UP,DOWN,W,S,Z,X,SPACE,ENTER');
     this.prevVP={};this.busy=false;

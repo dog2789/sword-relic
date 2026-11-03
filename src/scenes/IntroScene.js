@@ -5,7 +5,7 @@ import {LOOK,drawHero} from '../gfx/hero.js';
 import {STATE} from '../state.js';
 import {calcZoom} from '../zoom.js';
 
-const KR='"IBM Plex Sans KR", system-ui, sans-serif';
+import {F9,F11} from '../fonts.js';
 const PW=220,PH=100;
 
 const STORY=[
@@ -56,15 +56,14 @@ export class IntroScene extends Phaser.Scene{
   constructor(){super('intro')}
   create(){
     PANELS.forEach((fn,i)=>{const k='story'+i;if(this.textures.exists(k))this.textures.remove(k);const[c,x]=cv(PW,PH);fn(x);this.textures.addCanvas(k,c)});
-    const res=Math.max(1,Math.ceil(calcZoom()));
     this.cameras.main.setBackgroundColor('#0a0812');
     this.frame=this.add.graphics();
     this.frame.fillStyle(0xc9a24a,1).fillRect((W-PW)/2-3,9,PW+6,PH+6);this.frame.fillStyle(0x0a0812,1).fillRect((W-PW)/2-1,11,PW+2,PH+2);
     this.pic=this.add.image(W/2,12,'story0').setOrigin(0.5,0);
-    this.cap=this.add.text(W/2,124,'',{fontFamily:KR,fontSize:'9px',color:'#ece7f7',align:'center',lineSpacing:4}).setOrigin(0.5,0).setResolution(res);
-    this.next=this.add.text(W-14,H-10,'Z ▶',{fontFamily:KR,fontSize:'8px',color:'#ffe27a'}).setOrigin(1,1).setResolution(res).setVisible(false);
+    this.cap=this.add.text(W/2,122,'',{fontFamily:F11,fontSize:'12px',color:'#ece7f7',align:'center',lineSpacing:4}).setOrigin(0.5,0);
+    this.next=this.add.text(W-14,H-10,'Z ▶',{fontFamily:F9,fontSize:'10px',color:'#ffe27a'}).setOrigin(1,1).setVisible(false);
     this.tweens.add({targets:this.next,alpha:0.3,duration:500,yoyo:true,repeat:-1});
-    const skip=this.add.text(W-6,4,'건너뛰기 ▶▶',{fontFamily:KR,fontSize:'8px',color:'#8f86ab'}).setOrigin(1,0).setResolution(res).setInteractive({useHandCursor:true});
+    const skip=this.add.text(W-6,4,'건너뛰기 ▶▶',{fontFamily:F9,fontSize:'10px',color:'#8f86ab'}).setOrigin(1,0).setInteractive({useHandCursor:true});
     skip.on('pointerdown',()=>this.finish());
     this.input.on('pointerdown',(p,objs)=>{if(!objs.includes(skip))this.advance()});
     this.keys=this.input.keyboard.addKeys('Z,X,SPACE,ENTER,ESC');

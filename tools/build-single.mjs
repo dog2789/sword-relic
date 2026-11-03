@@ -16,7 +16,8 @@ const phaserGlobal = {
 const res = await build({
   entryPoints: ['src/main.js'],
   bundle: true, format: 'iife', minify: true, write: false,
-  outdir: 'out', plugins: [phaserGlobal], logLevel: 'warning'
+  outdir: 'out', plugins: [phaserGlobal], logLevel: 'warning',
+  loader: { '.woff2': 'dataurl' }
 });
 const js = res.outputFiles.find(f => f.path.endsWith('.js')).text;
 const css = res.outputFiles.find(f => f.path.endsWith('.css'))?.text || '';
