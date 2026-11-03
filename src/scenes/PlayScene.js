@@ -238,7 +238,7 @@ export class PlayScene extends Phaser.Scene{
   }
   openChest(){
     const c=this.chest;if(c.open)return;c.open=true;STATE.opened[c.def.id]=true;
-    c.spr.setTexture('chest1');this.goldEm.explode(24,c.x,c.y-10);this.cameras.main.shake(80,0.006);
+    c.spr.setTexture('chest1');this.goldEm.explode(24,c.x,c.y-10);this.shake(80,0.006);
     this.giveItem(c.def.item,c.x,c.y-10,false);
   }
   /* 아이템 획득: 가방에 넣고, 해당 칸이 비어 있으면 바로 장착 */
@@ -272,7 +272,7 @@ export class PlayScene extends Phaser.Scene{
   hitWalls(hb,tag){
     this.walls.forEach(w=>{if(w.hp<=0||w.lastHit===tag)return;
       if(Phaser.Geom.Intersects.RectangleToRectangle(hb,w.rect)){w.lastHit=tag;w.hp--;
-        this.rockEm.explode(6,w.rect.centerX,w.rect.centerY);this.cameras.main.shake(70,0.006);
+        this.rockEm.explode(6,w.rect.centerX,w.rect.centerY);this.shake(70,0.006);
         w.imgs.forEach(i=>{i.setTintFill(0xffffff);this.time.delayedCall(60,()=>i.active&&i.clearTint())});
         if(w.hp<=0){STATE.broken[w.def.id]=true;w.imgs.forEach(i=>{this.rockEm.explode(10,i.x,i.y);i.destroy()});w.zones.forEach(z=>z.destroy());
           this.toast('벽이 무너지고 길이 열렸다!',2400)}}});
@@ -612,10 +612,12 @@ export class PlayScene extends Phaser.Scene{
     this.combo++;this.comboT=1.5;
     if(this.combo>=2){this.comboTxt.setText(this.combo+' HIT').setVisible(true).setAlpha(1);this.tweens.add({targets:this.comboTxt,scale:{from:1.4,to:1},duration:120})}
     this.targetT=3.5;
-    this.cameras.main.shake(crit||heavy?110:50,crit||heavy?0.01:0.004);
+    this.shake(crit||heavy?110:50,crit||heavy?0.01:0.004);
     this.hitstop(crit||heavy?85:45);
     if(e.hp<=0)this.killEnemy(e);
   }
+  /* 화면 흔들림: 고해상도 카메라는 배율(S)만큼 세게 흔들려서 원래 세기로 나눠줌 */
+  shake(ms,i){this.cameras.main.shake(ms,i/RS.S)}
   hitstop(ms){if(this.frozen)return;this.frozen=true;this.physics.world.pause();this.time.delayedCall(ms,()=>{this.frozen=false;if(!this.menu)this.physics.world.resume()})}
   killEnemy(e){
     const k=e.king,d=e.def;
@@ -644,7 +646,7 @@ export class PlayScene extends Phaser.Scene{
       if(e.y>LH+40){e.destroy();return}
       if(e.mob){updateMob(this,e,dt,now);return}
       const onG=e.body.blocked.down||e.body.touching.down;
-      if(onG&&!e.wasOnG&&e.king&&e.lastVy>150){this.cameras.main.shake(100,0.008);this.dustEm.explode(8,e.x,e.body.bottom)}
+      if(onG&&!e.wasOnG&&e.king&&e.lastVy>150){this.shake(100,0.008);this.dustEm.explode(8,e.x,e.body.bottom)}
       e.wasOnG=onG;e.lastVy=e.body.velocity.y;
       if(e.stun>0){e.stun-=dt;return}
       if(onG){
@@ -668,7 +670,7 @@ export class PlayScene extends Phaser.Scene{
     if(this.climbing)this.stopClimb();
     p.setVelocity((Math.sign(p.x-fromX)||1)*150,kind==='spike'?-260:-170);
     this.atk.active=false;if(this.slash){this.slash.destroy();this.slash=null}
-    this.cameras.main.shake(120,0.01);p.setTintFill(0xff4a5a);this.time.delayedCall(90,()=>p.clearTint());
+    this.shake(120,0.01);p.setTintFill(0xff4a5a);this.time.delayedCall(90,()=>p.clearTint());
     if(s.hp<=0)this.die();
   }
   die(){

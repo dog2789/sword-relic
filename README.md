@@ -33,12 +33,13 @@ npm run build:single  # dist-single/index.html 한 파일짜리 빌드 (Phaser�
 
 ```
 src/
-  main.js              게임 시작, 화면 배율, 터치 버튼, 캐릭터 만들기 UI
+  main.js              게임 시작, 화면 배율, 터치 버튼
   config.js            화면 크기, 타일 크기, 이동/점프 수치
   zoom.js              화면 배율 계산
   style.css            페이지 스타일
   scenes/
     TitleScene.js      타이틀 화면 (새로 시작 / 이어하기)
+    CustomizeScene.js  캐릭터 만들기 (새로 시작할 때 인트로 전에 나옴)
     IntroScene.js      인트로 스토리 컷씬 4장
     PlayScene.js       게임 본체 (플레이어, 전투, 적 AI, 지형 기믹, 장비창, HUD, 미니맵)
     playUI.js          대화창·NPC, 워프, 전체 지도, 퀵슬롯
