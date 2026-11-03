@@ -6,7 +6,7 @@ import {cv,px} from '../gfx/pixel.js';
 import {LOOK,drawHero,HERO_W,HERO_H,HERO_FRAMES} from '../gfx/hero.js';
 import {drawFar,drawMid} from '../world/meadow.js';
 import {STATE,hasSave,loadGame,newGame} from '../state.js';
-import {calcZoom} from '../zoom.js';
+import {fitCameras} from '../zoom.js';
 
 import {F9,F11} from '../fonts.js';
 
@@ -42,6 +42,7 @@ export class TitleScene extends Phaser.Scene{
     this.tweens.add({targets:this.hint,alpha:0.3,duration:700,yoyo:true,repeat:-1});
     this.keys=this.input.keyboard.addKeys('UP,DOWN,W,S,Z,X,SPACE,ENTER');
     this.prevVP={};this.busy=false;
+    this.cameras.main.setOrigin(0,0);fitCameras(this);
     this.cameras.main.fadeIn(300,0,0,0);
   }
   choose(){
@@ -54,6 +55,7 @@ export class TitleScene extends Phaser.Scene{
     });
   }
   update(t,d){
+    fitCameras(this);
     const k=this.keys,JD=Phaser.Input.Keyboard.JustDown,v=VP,pv=this.prevVP;
     this.clouds.forEach((c,i)=>{c.x+=d/1000*(4+i*2);if(c.x>W+40)c.x=-40});
     if(JD(k.UP)||JD(k.W)||(v.up&&!pv.up))this.sel=(this.sel+this.opts.length-1)%this.opts.length;

@@ -3,7 +3,7 @@ import {W,H,VP} from '../config.js';
 import {rng,cv,px} from '../gfx/pixel.js';
 import {LOOK,drawHero} from '../gfx/hero.js';
 import {STATE} from '../state.js';
-import {calcZoom} from '../zoom.js';
+import {fitCameras} from '../zoom.js';
 
 import {F9,F11} from '../fonts.js';
 const PW=220,PH=100;
@@ -68,6 +68,7 @@ export class IntroScene extends Phaser.Scene{
     this.input.on('pointerdown',(p,objs)=>{if(!objs.includes(skip))this.advance()});
     this.keys=this.input.keyboard.addKeys('Z,X,SPACE,ENTER,ESC');
     this.idx=-1;this.prevVP={};this.done=false;
+    this.cameras.main.setOrigin(0,0);fitCameras(this);
     this.cameras.main.fadeIn(400,0,0,0);
     this.show(0);
   }
@@ -86,6 +87,7 @@ export class IntroScene extends Phaser.Scene{
     this.cameras.main.once('camerafadeoutcomplete',()=>this.scene.start('play',{room:'r1',entry:'start',tutorial:true}));
   }
   update(t,d){
+    fitCameras(this);
     const k=this.keys,JD=Phaser.Input.Keyboard.JustDown,v=VP,pv=this.prevVP;
     if(JD(k.Z)||JD(k.X)||JD(k.SPACE)||JD(k.ENTER)||(v.attack&&!pv.attack)||(v.jump&&!pv.jump))this.advance();
     if(JD(k.ESC))this.finish();

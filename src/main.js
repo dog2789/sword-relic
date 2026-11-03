@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import './style.css';
 import {W,H,GRAV,VP} from './config.js';
-import {calcZoom} from './zoom.js';
+import {calcScale,RS} from './zoom.js';
 import {HERO_W,HERO_H,HAIR_STYLES,LOOK_OPTS,LOOK,drawHero,saveLook} from './gfx/hero.js';
 import {PlayScene} from './scenes/PlayScene.js';
 import {TitleScene,paintHeroFrames} from './scenes/TitleScene.js';
@@ -11,10 +11,14 @@ import {loadFonts} from './fonts.js';
 
 let game;
 function boot(){
-  game=new Phaser.Game({type:Phaser.AUTO,parent:'game',width:W,height:H,zoom:calcZoom(),pixelArt:true,roundPixels:true,backgroundColor:'#0d0a1a',
+  const sc=calcScale();RS.S=sc.S;
+  game=new Phaser.Game({type:Phaser.AUTO,parent:'game',width:W*sc.S,height:H*sc.S,zoom:sc.css/sc.S,pixelArt:true,roundPixels:true,backgroundColor:'#0d0a1a',
     physics:{default:'arcade',arcade:{gravity:{y:GRAV},debug:false}},input:{activePointers:4},scene:[TitleScene,IntroScene,PlayScene]});
 }
-window.addEventListener('resize',()=>{if(!game)return;const z=calcZoom();game.scale.setZoom(z);const sc=game.scene.keys.play;if(sc&&sc.nameTxt&&sc.sys.isActive())sc.setTextRes(z)});
+/* 창 크기가 바뀌면 렌더 배율(S)과 표시 배율을 다시 계산 */
+let rzT=0;
+window.addEventListener('resize',()=>{if(!game)return;clearTimeout(rzT);rzT=setTimeout(()=>{
+  const sc=calcScale();if(sc.S!==RS.S){RS.S=sc.S;game.scale.resize(W*sc.S,H*sc.S)}game.scale.setZoom(sc.css/sc.S)},120)});
 Promise.race([Promise.all([loadFonts(),document.fonts?document.fonts.ready:null]),new Promise(r=>setTimeout(r,4000))]).then(boot);
 
 document.getElementById('start').addEventListener('click',e=>{e.currentTarget.hidden=true;window.focus();});

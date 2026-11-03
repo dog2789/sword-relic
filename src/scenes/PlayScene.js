@@ -8,7 +8,7 @@ import {ITEMS,SETS,SLOTS,SLOT_NAMES,equipBonus,setProgress,statLine} from '../da
 import {ROOMS,buildRoomMap,floorTopY,surfaceY} from '../world/rooms.js';
 import {drawFar,drawMid,drawLevel,drawCaveFar,drawCaveMid,drawTreetopMid} from '../world/meadow.js';
 import {STATE,saveGame} from '../state.js';
-import {calcZoom} from '../zoom.js';
+import {RS,fitCameras} from '../zoom.js';
 
 import {F9,F11} from '../fonts.js';
 import {isDown} from '../input.js';
@@ -78,11 +78,15 @@ export class PlayScene extends Phaser.Scene{
     if(climb){this.startClimb();this.autoUp=true}
 
     const cam=this.cameras.main;cam.setBounds(0,0,this.lw,LH+HUD);cam.startFollow(p,true,0.12,0.12);cam.setDeadzone(40,28);cam.roundPixels=true;
-    cam.fadeIn(220,0,0,0);
+    // HUD 전용 카메라: 화면 고정 요소(scrollFactor 0)는 여기서만 그림
+    this.uiCam=this.cameras.add(0,0,W*RS.S,H*RS.S).setOrigin(0,0);
+    fitCameras(this);
+    this.fadeCams(false,220);
     this.keys=this.input.keyboard.addKeys('LEFT,RIGHT,UP,DOWN,Z,X,C,SPACE,A,D,W,S,J,K,L,I,ESC,ENTER');
     this.buildHud();
     this.combo=0;this.comboT=0;this.targetT=0;this.hpGhost=this.stats.hp;this.tGhost=0;
     this.prev=this.heldNow();this.pend={};this.frozen=false;this.leaving=false;
+    this.routeCams();
     if(data.tutorial){this.toast('←→ 이동   X 점프   Z 공격   I 장비',4200)}
     else if(!data.quiet)this.toast(R.name,1800);
     if(window.onEquipChange)window.onEquipChange();
@@ -262,8 +266,7 @@ export class PlayScene extends Phaser.Scene{
   /* ----- 방 이동 ----- */
   goRoom(id,entry){
     if(this.leaving)return;this.leaving=true;STATE.visited[id]=true;
-    this.cameras.main.fadeOut(180,0,0,0);
-    this.cameras.main.once('camerafadeoutcomplete',()=>this.scene.restart({room:id,entry}));
+    this.fadeCams(true,180,()=>this.scene.restart({room:id,entry}));
   }
   checkExits(){
     const p=this.player,ex=this.R.exits;if(this.leaving||p.dead)return;
@@ -355,7 +358,7 @@ export class PlayScene extends Phaser.Scene{
 
   /* ----- HUD ----- */
   buildHud(){
-    const y0=H-HUD,fix=o=>o.setScrollFactor(0).setDepth(100),res=Math.max(1,Math.ceil(calcZoom()));
+    const y0=H-HUD,fix=o=>o.setScrollFactor(0).setDepth(100);
     this.hud=fix(this.add.graphics());
     fix(this.add.bitmapText(5,y0+3,'pix','LV')).setTint(0xe8c04a);
     this.lvTxt=fix(this.add.bitmapText(5,y0+8,'dmg','1')).setLetterSpacing(-2);
@@ -372,6 +375,13 @@ export class PlayScene extends Phaser.Scene{
     this.mmGfx=this.add.graphics().setScrollFactor(0).setDepth(105);
   }
   setTextRes(){}
+  /* 화면 고정 요소는 HUD 카메라에서만, 나머지는 월드 카메라에서만 그림 */
+  routeCams(){const m=this.cameras.main.id,u=this.uiCam.id;
+    this.children.list.forEach(o=>{const f=o.scrollFactorX===0?m:u;if(o.cameraFilter!==f)o.cameraFilter=f})}
+  fadeCams(out,ms,cb){
+    [this.cameras.main,this.uiCam].forEach(c=>out?c.fadeOut(ms,0,0,0):c.fadeIn(ms,0,0,0));
+    if(cb)this.cameras.main.once('camerafadeoutcomplete',cb);
+  }
   toast(msg,ms=2400){
     const t=this.toastTxt;if(!t)return;this.tweens.killTweensOf(t);
     t.setText(msg).setVisible(true).setAlpha(0);
@@ -443,6 +453,7 @@ export class PlayScene extends Phaser.Scene{
   }
 
   update(time,delta){
+    fitCameras(this);this.routeCams();
     const dt=Math.min(delta,50)/1000,inp=this.readInput();
     if(inp.press.menu)this.toggleMenu();
     if(this.menu){this.updateMenu();this.drawHud(0,time);return}
@@ -641,8 +652,7 @@ export class PlayScene extends Phaser.Scene{
     this.time.delayedCall(1700,()=>{
       s.hp=this.mhp();s.mp=s.maxMp;
       const room=STATE.save?STATE.save.room:'r1';
-      this.leaving=true;this.cameras.main.fadeOut(200,0,0,0);
-      this.cameras.main.once('camerafadeoutcomplete',()=>this.scene.restart({room,entry:STATE.save?'save':'start'}));
+      this.leaving=true;this.fadeCams(true,200,()=>this.scene.restart({room,entry:STATE.save?'save':'start'}));
     });
   }
   dropHeart(x,y){const h=this.hearts.create(x,y,'heart');h.setVelocity((Math.random()-.5)*60,-160).setBounce(0.3).setDepth(7);h.body.setSize(7,6);h.life=10}
