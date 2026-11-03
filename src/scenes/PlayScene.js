@@ -37,7 +37,7 @@ export class PlayScene extends Phaser.Scene{
     let sx,sy,climb=false;
     if(entry==='left'){sx=8;sy=floorTopY(this.map,0)-9}
     else if(entry==='right'){sx=this.lw-8;sy=floorTopY(this.map,this.cols-1)-9}
-    else if(entry==='top'&&ex.up){sx=ex.up.tx*T+8;sy=6}
+    else if(entry==='top'&&ex.up){sx=ex.up.tx*T+8;sy=8;climb=this.isClimb(sx,8)}
     else if(entry==='bottom'&&ex.down){sx=ex.down.tx*T+8;sy=LH-10;climb=true}
     else if(entry==='warp'&&R.warp){sx=R.warp.tx*T+8;sy=surfaceY(this.map,R.warp.tx)-9}
     else{const tx=(entry==='save'&&R.save)?R.save.tx:(R.start?R.start.tx:(R.save?R.save.tx:2));sx=tx*T+8;sy=surfaceY(this.map,tx)-9}
@@ -84,7 +84,8 @@ export class PlayScene extends Phaser.Scene{
     this.spawnObjects(entry);this.spawnExtras();
     (R.slimes||[]).forEach(s=>this.spawnEnemy({x:s.tx*T+8,y:s.ty*T}));
     (R.mobs||[]).forEach(d=>spawnMob(this,d));
-    if(climb){this.startClimb();this.autoUp=true}
+    // 위/아래 방에서 사다리를 타고 넘어오면 계속 매달린 채로 시작 (아래에서 올라오면 자동으로 조금 올라감)
+    if(climb){this.startClimb();this.autoUp=entry==='bottom'}
 
     const cam=this.cameras.main;cam.setBounds(0,0,this.lw,LH+HUD);cam.startFollow(p,true,0.12,0.12);cam.setDeadzone(40,28);cam.roundPixels=true;
     // HUD 전용 카메라: 화면 고정 요소(scrollFactor 0)는 여기서만 그림
@@ -295,7 +296,8 @@ export class PlayScene extends Phaser.Scene{
   mhp(){return this.stats.maxHp+this.bonus.hp}
   atkVal(){return this.stats.atk+this.bonus.atk}
   defVal(){return this.bonus.def}
-  maxAirJumps(){return (STATE.abilities.djump?1:0)+this.bonus.airJumps}
+  /* 점프는 최대 2단 (땅 점프 + 공중 1번) */
+  maxAirJumps(){return Math.min(1,(STATE.abilities.djump?1:0)+this.bonus.airJumps)}
   updateSword(){
     const p=this.player,a=this.atk,on=!p.dead&&p.hurtT<=0&&!this.climbing&&(a.active||this.castT>0);
     this.sword.setVisible(on);if(!on)return;
@@ -504,7 +506,9 @@ export class PlayScene extends Phaser.Scene{
     if(move)this.facing=move;
     p.anims.stop();p.setTexture(vy!==0&&Math.floor(now/140)%2?'hero_idle1':'hero_idle0');p.setFlipX(Math.floor(p.y/6)%2===0);
     if(press.jump){this.stopClimb();p.setVelocity(move*SPEED,-JUMP*0.75);p.setFlipX(this.facing<0);return}
-    const onLad=this.isClimb(p.x,p.y)||this.isClimb(p.x,b.bottom-1);
+    // 방 아래쪽 출구로 이어진 사다리는 화면 끝까지 매달린 채로 내려감
+    const dn=this.R.exits.down,toBelow=dn&&b.bottom>=LH-2&&Math.abs(p.x-(dn.tx*T+8))<8;
+    const onLad=this.isClimb(p.x,p.y)||this.isClimb(p.x,b.bottom-1)||toBelow;
     if(!onLad){this.stopClimb();if(vy<0){p.setVelocityY(-160);p.setVelocityX(0)}p.setFlipX(this.facing<0);return}
     if(held.down&&(b.blocked.down||b.touching.down)){this.stopClimb();p.setFlipX(this.facing<0)}
   }
@@ -529,7 +533,7 @@ export class PlayScene extends Phaser.Scene{
     if(held.down&&onG&&this.isClimb(p.x,b.bottom+3)&&!a.active){this.startClimb();p.y+=3;return}
     const move=(held.right?1:0)-(held.left?1:0);this.move=move;
     if(!a.active&&move)this.facing=move;
-    const slow=a.active?(onG?0.12:0.7):1,target=move*SPEED*slow,k=1-Math.pow(onG?0.62:0.8,dt*60);
+    const slow=a.active?(onG?0.12:0.7):1,target=move*SPEED*(1+this.bonus.speed/100)*slow,k=1-Math.pow(onG?0.62:0.8,dt*60);
     this.nudgeT=(this.nudgeT||0)-dt;
     if(this.nudgeT<=0||move)p.setVelocityX(b.velocity.x+(target-b.velocity.x)*k);
     const onOne=onG&&(['-','='].includes(this.tileAt(b.center.x,b.bottom+2))||this.platGroup.getChildren().some(s=>s.isFaller&&Math.abs(s.y-3-b.bottom)<3&&Math.abs(s.x-p.x)<s.width/2));
