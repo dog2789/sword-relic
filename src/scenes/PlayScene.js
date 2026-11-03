@@ -13,7 +13,7 @@ import {STATE,saveGame} from '../state.js';
 import {RS,fitCameras} from '../zoom.js';
 
 import {F9,F11} from '../fonts.js';
-import {isDown} from '../input.js';
+import {isDown,edges} from '../input.js';
 const CLIMB_SPEED=70;
 /* 받침 있으면 '을', 없으면 '를' */
 const josa=(w,a,b)=>{const c=w.charCodeAt(w.length-1)-0xAC00;return w+(c>=0&&c<11172&&c%28?a:b)};
@@ -91,7 +91,7 @@ export class PlayScene extends Phaser.Scene{
     this.uiCam=this.cameras.add(0,0,W*RS.S,H*RS.S).setOrigin(0,0);
     fitCameras(this);
     this.fadeCams(false,220);
-    this.keys=this.input.keyboard.addKeys('LEFT,RIGHT,UP,DOWN,Z,X,C,SPACE,A,D,W,S,J,K,L,I,M,ESC,ENTER');
+    this.ed=edges();
     this.buildHud();
     this.combo=0;this.comboT=0;this.targetT=0;this.hpGhost=this.stats.hp;this.tGhost=0;
     this.prev=this.heldNow();this.pend={};this.frozen=false;this.leaving=false;
@@ -108,10 +108,14 @@ export class PlayScene extends Phaser.Scene{
     if(!this.textures.exists('far_'+id))this.textures.addCanvas('far_'+id,far(this.lw));
     if(!this.textures.exists('mid_'+id))this.textures.addCanvas('mid_'+id,mid(this.lw));
     if(!this.textures.exists('lvl_'+id))this.textures.addCanvas('lvl_'+id,drawLevel(this.map,this.cols,R.seed,R.deco,th));
-    this.add.image(0,0,'far_'+id).setOrigin(0).setScrollFactor(0.1).setDepth(-10);
-    this.clouds=(th==='cave'||th==='castle')?[]:[0,1,2,0,1].map((k,i)=>this.add.image(i*90+Math.random()*60,12+Math.random()*50,'cloud'+k).setScrollFactor(0.15).setDepth(-9.5).setAlpha(0.95));
-    this.add.image(0,0,'mid_'+id).setOrigin(0).setScrollFactor(0.35).setDepth(-9);
+    /* 원경(패럴랙스): 고해상도 줌 카메라에서는 scrollFactor가 어긋나서, 화면 왼쪽 위 기준으로 직접 위치를 맞춤 */
+    const par=(o,sf)=>{o.sf=sf;o.bx=o.x;o.by=o.y;return o};
+    this.par=[par(this.add.image(0,0,'far_'+id).setOrigin(0).setDepth(-10),0.1)];
+    this.clouds=(th==='cave'||th==='castle')?[]:[0,1,2,0,1].map((k,i)=>par(this.add.image(i*90+Math.random()*60,12+Math.random()*50,'cloud'+k).setDepth(-9.5).setAlpha(0.95),0.15));
+    this.par.push(...this.clouds,par(this.add.image(0,0,'mid_'+id).setOrigin(0).setDepth(-9),0.35));
     this.add.image(0,0,'lvl_'+id).setOrigin(0).setDepth(0);
+    const cam=this.cameras.main,place=()=>{const v=cam.worldView;for(const o of this.par){o.x=o.bx+v.x*(1-o.sf);o.y=o.by+v.y*(1-o.sf)}};
+    cam.on('prerender',place);this.events.once('shutdown',()=>cam.off('prerender',place));
   }
   makeAnims(){
     const mk=(key,frames,rate)=>{if(!this.anims.exists(key))this.anims.create({key,frames:frames.map(f=>({key:f})),frameRate:rate,repeat:-1})};
@@ -361,9 +365,8 @@ export class PlayScene extends Phaser.Scene{
   }
   closeMenu(){const M=this.menu;if(!M)return;M.objs.forEach(o=>o.destroy());this.menu=null;this.physics.world.resume();this.anims.resumeAll()}
   updateMenu(){
-    const k=this.keys,JD=Phaser.Input.Keyboard.JustDown,M=this.menu,v=VP,pv=this.prevMenu||{};
-    const up=JD(k.UP)||JD(k.W)||(v.up&&!pv.up),dn=JD(k.DOWN)||JD(k.S)||(v.down&&!pv.down),lf=JD(k.LEFT)||JD(k.A)||(v.left&&!pv.left),rt=JD(k.RIGHT)||JD(k.D)||(v.right&&!pv.right);
-    this.prevMenu={...v};
+    const M=this.menu,v=VP,e=this.ed;
+    const up=e('mu',isDown('ArrowUp','KeyW')||v.up),dn=e('md',isDown('ArrowDown','KeyS')||v.down),lf=e('ml',isDown('ArrowLeft','KeyA')||v.left),rt=e('mr',isDown('ArrowRight','KeyD')||v.right);
     const NS=SLOTS.length;if(up){M.sel=(M.sel+NS-1)%NS;this.refreshMenu()}if(dn){M.sel=(M.sel+1)%NS;this.refreshMenu()}
     if(lf)this.cycleEquip(SLOTS[M.sel],-1);if(rt)this.cycleEquip(SLOTS[M.sel],1);
   }
@@ -458,9 +461,9 @@ export class PlayScene extends Phaser.Scene{
       q0:isDown('Digit1','Numpad1'),q1:isDown('Digit2','Numpad2'),q2:isDown('Digit3','Numpad3'),q3:isDown('Digit4','Numpad4')};
   }
   readInput(){
-    const k=this.keys,JD=Phaser.Input.Keyboard.JustDown,held=this.heldNow();
+    const held=this.heldNow(),esc=this.ed('esc',isDown('Escape'));
     const pr=this.prev,press={};['jump','atk','skill','menu','map','up','q0','q1','q2','q3'].forEach(k=>press[k]=held[k]&&!pr[k]);
-    if(JD(k.ESC)&&this.menu)press.menu=true;
+    if(esc&&this.menu)press.menu=true;
     this.prev=held;
     if(this.frozen){for(const kk in press)if(press[kk])this.pend[kk]=true}
     else{for(const kk in this.pend)press[kk]=press[kk]||this.pend[kk];this.pend={}}
@@ -477,7 +480,7 @@ export class PlayScene extends Phaser.Scene{
     if(this.menu){this.updateMenu();this.drawHud(0,time);return}
     if(inp.press.map){this.openMap();this.drawHud(0,time);return}
     for(let i=0;i<4;i++)if(inp.press['q'+i])this.useQuick(i);
-    this.clouds.forEach((c,i)=>{c.x+=dt*(3+i*1.5);if(c.x>W+(this.lw-W)*0.15+60)c.x=-60});
+    this.clouds.forEach((c,i)=>{c.bx+=dt*(3+i*1.5);if(c.bx>W+(this.lw-W)*0.15+60)c.bx=-60});
     if(!this.frozen){
       if(!this.player.dead)this.updatePlayer(dt,inp,time);
       this.updateAttack(dt);this.updateSword();this.updateWaves(dt);this.updateEnemies(dt,time);

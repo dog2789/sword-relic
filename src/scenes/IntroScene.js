@@ -4,6 +4,7 @@ import {rng,cv,px} from '../gfx/pixel.js';
 import {LOOK,drawHero} from '../gfx/hero.js';
 import {STATE} from '../state.js';
 import {fitCameras} from '../zoom.js';
+import {isDown,edges} from '../input.js';
 
 import {F9,F11} from '../fonts.js';
 const PW=220,PH=100;
@@ -66,7 +67,7 @@ export class IntroScene extends Phaser.Scene{
     const skip=this.add.text(W-6,4,'건너뛰기 ▶▶',{fontFamily:F9,fontSize:'10px',color:'#8f86ab'}).setOrigin(1,0).setInteractive({useHandCursor:true});
     skip.on('pointerdown',()=>this.finish());
     this.input.on('pointerdown',(p,objs)=>{if(!objs.includes(skip))this.advance()});
-    this.keys=this.input.keyboard.addKeys('Z,X,SPACE,ENTER,ESC');
+    this.ed=edges();
     this.idx=-1;this.prevVP={};this.done=false;
     this.cameras.main.setOrigin(0,0);fitCameras(this);
     this.cameras.main.fadeIn(400,0,0,0);
@@ -88,10 +89,10 @@ export class IntroScene extends Phaser.Scene{
   }
   update(t,d){
     fitCameras(this);
-    const k=this.keys,JD=Phaser.Input.Keyboard.JustDown,v=VP,pv=this.prevVP;
-    if(JD(k.Z)||JD(k.X)||JD(k.SPACE)||JD(k.ENTER)||(v.attack&&!pv.attack)||(v.jump&&!pv.jump))this.advance();
-    if(JD(k.ESC))this.finish();
-    this.prevVP={...v};
+    const v=VP,e=this.ed;
+    const ok=e('ok',isDown('KeyZ','KeyX','Space','Enter')||v.attack||v.jump),esc=e('esc',isDown('Escape'));
+    if(ok)this.advance();
+    if(esc)this.finish();
     if(this.typing){this.shown=Math.min(this.full.length,this.shown+d/1000*28);
       this.cap.setText(this.full.slice(0,Math.floor(this.shown)));
       if(this.shown>=this.full.length){this.typing=false;this.next.setVisible(true)}}

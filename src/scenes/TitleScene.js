@@ -7,6 +7,7 @@ import {LOOK,drawHero,HERO_W,HERO_H,HERO_FRAMES} from '../gfx/hero.js';
 import {drawFar,drawMid} from '../world/meadow.js';
 import {STATE,hasSave,loadGame,newGame} from '../state.js';
 import {fitCameras} from '../zoom.js';
+import {isDown,edges} from '../input.js';
 
 import {F9,F11} from '../fonts.js';
 
@@ -40,7 +41,7 @@ export class TitleScene extends Phaser.Scene{
     this.cursor=this.add.text(0,0,'▶',{fontFamily:F9,fontSize:'10px',color:'#ffe27a',stroke:'#1a1230',strokeThickness:2}).setOrigin(0.5);
     this.hint=this.add.text(W/2,H-12,'Z 또는 화면을 눌러 선택',{fontFamily:F9,fontSize:'10px',color:'#ffffff',stroke:'#1a1230',strokeThickness:2}).setOrigin(0.5);
     this.tweens.add({targets:this.hint,alpha:0.3,duration:700,yoyo:true,repeat:-1});
-    this.keys=this.input.keyboard.addKeys('UP,DOWN,W,S,Z,X,SPACE,ENTER');
+    this.ed=edges();
     this.prevVP={};this.busy=false;
     this.cameras.main.setOrigin(0,0);fitCameras(this);
     this.cameras.main.fadeIn(300,0,0,0);
@@ -56,12 +57,13 @@ export class TitleScene extends Phaser.Scene{
   }
   update(t,d){
     fitCameras(this);
-    const k=this.keys,JD=Phaser.Input.Keyboard.JustDown,v=VP,pv=this.prevVP;
+    const v=VP,e=this.ed;
     this.clouds.forEach((c,i)=>{c.x+=d/1000*(4+i*2);if(c.x>W+40)c.x=-40});
-    if(JD(k.UP)||JD(k.W)||(v.up&&!pv.up))this.sel=(this.sel+this.opts.length-1)%this.opts.length;
-    if(JD(k.DOWN)||JD(k.S)||(v.down&&!pv.down))this.sel=(this.sel+1)%this.opts.length;
-    if(JD(k.Z)||JD(k.X)||JD(k.SPACE)||JD(k.ENTER)||(v.attack&&!pv.attack)||(v.jump&&!pv.jump))this.choose();
-    this.prevVP={...v};
+    const up=e('up',isDown('ArrowUp','KeyW')||v.up),dn=e('dn',isDown('ArrowDown','KeyS')||v.down),
+      ok=e('ok',isDown('KeyZ','KeyX','Space','Enter')||v.attack||v.jump);
+    if(up)this.sel=(this.sel+this.opts.length-1)%this.opts.length;
+    if(dn)this.sel=(this.sel+1)%this.opts.length;
+    if(ok)this.choose();
     this.items.forEach((it,i)=>it.setColor(i===this.sel?'#ffe27a':'#ffffff'));
     const cur=this.items[this.sel];this.cursor.setPosition(cur.x-cur.width/2-10+Math.sin(t/150)*1.5,cur.y);
   }
