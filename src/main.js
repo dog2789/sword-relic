@@ -4,26 +4,27 @@ import {W,H,GRAV,VP} from './config.js';
 import {calcZoom} from './zoom.js';
 import {HERO_W,HERO_H,HAIR_STYLES,LOOK_OPTS,LOOK,drawHero,saveLook} from './gfx/hero.js';
 import {PlayScene} from './scenes/PlayScene.js';
-import {STATE,loadGame,newGame} from './state.js';
-
-loadGame();
+import {TitleScene,paintHeroFrames} from './scenes/TitleScene.js';
+import {IntroScene} from './scenes/IntroScene.js';
+import {STATE,newGame} from './state.js';
 
 let game;
 function boot(){
   game=new Phaser.Game({type:Phaser.AUTO,parent:'game',width:W,height:H,zoom:calcZoom(),pixelArt:true,roundPixels:true,backgroundColor:'#0d0a1a',
-    physics:{default:'arcade',arcade:{gravity:{y:GRAV},debug:false}},input:{activePointers:4},scene:[PlayScene]});
+    physics:{default:'arcade',arcade:{gravity:{y:GRAV},debug:false}},input:{activePointers:4},scene:[TitleScene,IntroScene,PlayScene]});
 }
-window.addEventListener('resize',()=>{if(!game)return;const z=calcZoom();game.scale.setZoom(z);const sc=game.scene.keys.play;if(sc&&sc.nameTxt)sc.setTextRes(z)});
+window.addEventListener('resize',()=>{if(!game)return;const z=calcZoom();game.scale.setZoom(z);const sc=game.scene.keys.play;if(sc&&sc.nameTxt&&sc.sys.isActive())sc.setTextRes(z)});
 (document.fonts?Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]):Promise.resolve()).then(boot);
 
 document.getElementById('start').addEventListener('click',e=>{e.currentTarget.hidden=true;window.focus();});
 /* character maker */
 const pv=document.getElementById('pv'),pvx=pv.getContext('2d');let pvFrame=0;
-function curGear(){const sc=game&&game.scene.keys.play;return sc&&sc.player?sc.gear:0}
-function drawPreview(){pvx.clearRect(0,0,HERO_W,HERO_H);drawHero(pvx,pvFrame?'idle1':'idle0',LOOK,curGear())}
+const activeScene=()=>game&&game.scene.getScenes(true)[0];
+const playScene=()=>{const sc=game&&game.scene.keys.play;return sc&&sc.sys.isActive()&&sc.player?sc:null};
+function drawPreview(){pvx.clearRect(0,0,HERO_W,HERO_H);drawHero(pvx,pvFrame?'idle1':'idle0',LOOK,STATE.equip)}
 setInterval(()=>{pvFrame^=1;drawPreview()},420);
 function applyLook(){saveLook();
-  drawPreview();const sc=game&&game.scene.keys.play;if(sc&&sc.player)sc.redrawHero();
+  drawPreview();const sc=playScene();if(sc)sc.redrawHero();else{const a=activeScene();if(a&&a.scene.key==='title')paintHeroFrames(a)}
   document.querySelectorAll('.maker [data-opt]').forEach(b=>b.classList.toggle('on',LOOK[b.dataset.opt]===+b.dataset.i))}
 function buildMaker(){
   const mk=(id,opt,items,isSw)=>{const box=document.getElementById(id);items.forEach((it,i)=>{const b=document.createElement('button');b.type='button';
@@ -35,8 +36,8 @@ function buildMaker(){
   applyLook();
 }
 buildMaker();
-window.onGearChange=n=>{document.querySelectorAll('.gbtn[data-g]').forEach(b=>b.classList.toggle('on',+b.dataset.g===n));drawPreview()};
-document.querySelectorAll('.gbtn[data-g]').forEach(b=>b.addEventListener('click',()=>{const sc=game&&game.scene.keys.play;if(sc&&sc.player)sc.setGear(+b.dataset.g);b.blur();window.focus()}));
+window.onEquipChange=()=>drawPreview();
+document.getElementById('testgear').addEventListener('click',e=>{const sc=playScene();if(sc)sc.giveAllForTest();e.currentTarget.blur();window.focus()});
 document.querySelectorAll('.pbtn').forEach(b=>{
   const k=b.dataset.k,on=v=>{VP[k]=v;b.classList.toggle('on',v)};
   b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){};on(true);const s=document.getElementById('start');if(!s.hidden)s.hidden=true});
@@ -49,7 +50,7 @@ const ng=document.getElementById('newgame');let ngArm=0;
 ng.addEventListener('click',()=>{
   if(!ngArm){ngArm=1;ng.textContent='한 번 더 누르면 초기화';setTimeout(()=>{ngArm=0;ng.textContent='처음부터'},2500);return}
   ngArm=0;ng.textContent='처음부터';newGame();
-  const sc=game&&game.scene.keys.play;if(sc)sc.scene.restart({room:'r1',entry:'start'});ng.blur();window.focus();
+  if(game){game.scene.getScenes(true).forEach(s=>game.scene.stop(s.scene.key));game.scene.start('title')}drawPreview();ng.blur();window.focus();
 });
 
 /* 디버그용: 브라우저 콘솔에서 SR.scene 으로 현재 장면 접근 */

@@ -1,4 +1,5 @@
-/* 초원 테마 그리기: 하늘/산(먼 배경), 언덕/숲(중간 배경), 흙·풀 타일과 장식(레벨) */
+/* 지역 테마 그리기: meadow(초원) / cave(동굴) / treetop(나무 위)
+   먼 배경(far), 중간 배경(mid), 레벨 타일과 장식(level) */
 import {W,H,T,HUD,ROWS,LH} from '../config.js';
 import {rng,cv,px} from '../gfx/pixel.js';
 import {floorTopY} from './rooms.js';
@@ -31,8 +32,33 @@ export function drawMid(lw){
   return c;
 }
 
+export function drawCaveFar(lw){
+  const FW=Math.ceil(W+(lw-W)*0.1)+4,FH=Math.ceil(H+(LH+HUD-H)*0.1)+4,r=rng(3);
+  const[c,x]=cv(FW,FH);
+  for(let y=0;y<FH;y+=6){const t=y/FH;px(x,`rgb(${18+t*10|0},${14+t*8|0},${32+t*14|0})`,0,y,FW,6)}
+  for(let X=0;X<FW;X+=10+(r()*16|0)){const h=10+(r()*30|0),w=6+(r()*8|0);for(let yy=0;yy<h;yy++){const hw=Math.max(0,Math.round(w*(1-yy/h)/2));px(x,'#0e0b18',X-hw,yy,hw*2+1,1)}}
+  for(let i=0;i<40;i++)px(x,r()<.5?'#3a6a8a':'#5a3a7a',r()*FW|0,30+r()*(FH-40)|0);
+  return c;
+}
+export function drawCaveMid(lw){
+  const MW=Math.ceil(W+(lw-W)*0.35)+4,MH=Math.ceil(H+(LH+HUD-H)*0.35)+4,r=rng(4);
+  const[c,x]=cv(MW,MH);
+  for(let X=10;X<MW;X+=60+(r()*40|0)){const w=16+(r()*14|0);px(x,'#231d33',X,0,w,MH);px(x,'#2c2540',X,0,3,MH);
+    for(let y=20;y<MH;y+=14+(r()*10|0))px(x,'#1b1628',X+3+(r()*(w-6)|0),y,3,2)}
+  for(let X=0;X<MW;X+=8+(r()*14|0)){const h=8+(r()*18|0);for(let yy=0;yy<h;yy++){const hw=Math.round(4*(yy/h));px(x,'#1f1a2e',X-hw,MH-h+yy,hw*2+1,1)}}
+  for(let i=0;i<14;i++){const gx=r()*MW|0,gy=MH-20-(r()*60|0),col=r()<.5?'#5fe0ff':'#c07aff';px(x,col,gx,gy,2,2);x.fillStyle='rgba(120,220,255,0.08)';x.fillRect(gx-3,gy-3,8,8)}
+  return c;
+}
+export function drawTreetopMid(lw){
+  const MW=Math.ceil(W+(lw-W)*0.35)+4,MH=Math.ceil(H+(LH+HUD-H)*0.35)+4,r=rng(6);
+  const[c,x]=cv(MW,MH);
+  for(let X=-10;X<MW+20;X+=18+(r()*16|0)){const cy=MH-30+(r()*20|0),rr=16+(r()*12|0);disc(x,'#4f9a3f',X,cy,rr);disc(x,'#6ab84e',X-4,cy-6,rr*0.5)}
+  for(let X=-10;X<MW+20;X+=14+(r()*12|0)){const cy=MH-8+(r()*10|0);disc(x,'#3a7a32',X,cy,14+(r()*8|0))}
+  return c;
+}
+
 /* 레벨 타일과 장식. deco = 방 데이터의 deco */
-export function drawLevel(m,cols,seed,deco={}){
+export function drawLevel(m,cols,seed,deco={},theme='meadow'){
   const lw=cols*T,r=rng(seed),[c,x]=cv(lw,LH);
   const at=(tx,ty)=>(ty<0||ty>=ROWS||tx<0||tx>=cols)?'#':m[ty][tx];
   const gy=tx=>floorTopY(m,tx);
@@ -48,6 +74,19 @@ export function drawLevel(m,cols,seed,deco={}){
     const ch=m[ty][tx],X=tx*T,Y=ty*T;
     if(ch==='#'){
       const e={t:at(tx,ty-1)!=='#',b:at(tx,ty+1)!=='#',l:at(tx-1,ty)!=='#',rt:at(tx+1,ty)!=='#'};
+      if(theme==='cave'){
+        const deep=!e.t&&!e.b&&!e.l&&!e.rt;
+        px(x,deep?'#332d42':'#4a4458',X,Y,16,16);
+        for(let k=0;k<6;k++)px(x,r()<.5?'#3a3448':'#5a5470',X+(r()*16|0),Y+(r()*16|0),r()<.3?2:1,1);
+        if(e.l)px(x,'#241e32',X,Y,1,16);if(e.rt)px(x,'#241e32',X+15,Y,1,16);
+        if(e.t){px(x,'#6a6488',X,Y,16,1);for(let k=0;k<16;k++){if(r()<.55)px(x,'#4f8a42',X+k,Y,1,1+(r()*2|0));if(r()<.12)px(x,'#7fc45a',X+k,Y-1)}}
+        if(e.b){px(x,'#241e32',X,Y+15,16,1);for(let k=0;k<16;k+=3+(r()*4|0)){const h=1+(r()*4|0);for(let d=0;d<h;d++)px(x,'#3a3448',X+k,Y+16+d,Math.max(1,2-(d>>1)),1)}}
+        if(e.t&&at(tx,ty-1)==='.'&&r()<.12){const fx=X+3+(r()*10|0),col=r()<.5?'#5fe0ff':'#c07aff';px(x,'#d8d0c0',fx,Y-3,1,3);px(x,col,fx-1,Y-4,3,1)}
+      }else if(theme==='treetop'){
+        px(x,'#7a5232',X,Y,16,16);px(x,'#9a6a42',X,Y,16,2);for(let k=0;k<4;k++)px(x,'#5a3a22',X+(r()*14|0),Y+3+(r()*11|0),3,1);
+        if(e.b)px(x,'#4a2e18',X,Y+15,16,1);if(e.l)px(x,'#4a2e18',X,Y,1,16);if(e.rt)px(x,'#4a2e18',X+15,Y,1,16);
+        for(let k=0;k<16;k++)if(r()<.3)px(x,'#5fa84a',X+k,Y-1);
+      }else{
       const deep=!e.t&&at(tx,ty-2)==='#';
       px(x,deep?'#875a32':'#9a6a3c',X,Y,16,16);
       for(let k=0;k<5;k++)px(x,r()<.5?'#7a4e2a':'#b07a48',X+(r()*16|0),Y+(r()*16|0));
@@ -64,11 +103,24 @@ export function drawLevel(m,cols,seed,deco={}){
           if(r()<.07&&tx>1&&tx<cols-2){const bx=X+8,by=Y-3;for(let yy=-5;yy<=2;yy++)for(let xx=-8;xx<=8;xx++){if((xx*xx)/64+(yy*yy)/25<=1)px(x,yy<-2?'#6fbf4a':'#4e9a36',bx+xx,by+yy)}}
         }
       }
+      }
     }else if(ch==='-'){
       px(x,'#d89a58',X,Y,16,1);px(x,'#9a6236',X,Y+1,16,3);px(x,'#6a3e22',X,Y+4,16,1);px(x,'#2a1a12',X,Y+5,16,1);
       px(x,'#6a3e22',X+8,Y+1,1,3);px(x,'#e8d0a0',X+2,Y+2);px(x,'#e8d0a0',X+13,Y+2);
       if(at(tx-1,ty)!=='-'){px(x,'#5a3a22',X+1,Y+6,2,5);px(x,'#5a3a22',X+3,Y+6,3,1)}
       if(at(tx+1,ty)!=='-'){px(x,'#5a3a22',X+13,Y+6,2,5);px(x,'#5a3a22',X+10,Y+6,3,1)}
+    }else if(ch==='='){
+      px(x,'#2f6a20',X,Y+5,16,1);px(x,'#4e9a36',X,Y+1,16,4);px(x,'#7fd04f',X,Y,16,1);
+      for(let k=0;k<16;k+=2){if(r()<.5)px(x,'#4e9a36',X+k,Y-1,2,1);if(r()<.4)px(x,'#2f6a20',X+k,Y+6,1,1+(r()*2|0));if(r()<.25)px(x,'#9fe06a',X+k,Y+2)}
+    }else if(ch==='H'){
+      px(x,'#4a2a14',X+2,Y,1,16);px(x,'#4a2a14',X+13,Y,1,16);px(x,'#8a5a32',X+3,Y,2,16);px(x,'#8a5a32',X+11,Y,2,16);
+      for(let k=1;k<16;k+=5){px(x,'#c08a50',X+5,Y+k,6,2);px(x,'#6a3e22',X+5,Y+k+2,6,1)}
+    }else if(ch==='V'){
+      for(let k=0;k<16;k++){const yy=Y+k;px(x,'#2f6a20',X+6+Math.round(Math.sin(yy/3)*1.5),yy);px(x,'#3f8a2a',X+9+Math.round(Math.cos(yy/3)*1.5),yy)}
+      for(let k=1;k<16;k+=5){px(x,'#6fbf4a',X+3,Y+k,3,2);px(x,'#6fbf4a',X+11,Y+k+2,3,2)}
+    }else if(ch==='^'){
+      px(x,'#4a4a56',X,Y+14,16,2);
+      for(let i=0;i<4;i++){const cx=X+i*4;for(let h=0;h<6;h++){const hw=Math.floor(h/2);px(x,'#d8dce8',cx+2-hw,Y+8+h,hw+1,1);px(x,'#8a8e9a',cx+2,Y+8+h,hw,1)}}
     }
   }
   (deco.fence||[]).forEach(([a,b])=>{const G=gy(a);for(let X=a*T;X<=(b+1)*T;X+=8){px(x,'#5a3a20',X,G-11,3,11);px(x,'#c08a50',X,G-11,2,10)}

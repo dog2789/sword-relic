@@ -11,9 +11,9 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="eyebrow">PROTOTYPE · STAGE 2 · 초원</div>
+    <div class="eyebrow">PROTOTYPE · STAGE 3</div>
     <h1>SWORD RELIC</h1>
-    <p class="sub">첫 여행이 시작되는 초원. 방 다섯 개를 지나 슬라임 둥지의 킹슬라임을 쓰러뜨리면 2단 점프를 얻어요. 숲길 어딘가에 상자가, 바람 언덕 높은 곳에는 숨은 보상이 있어요.</p>
+    <p class="sub">고향을 떠나 전설의 검을 찾아 나서는 모험. 타이틀과 인트로, 위아래로 이어진 초원·동굴·나무 위 지역, 투구·갑옷·신발·무기 4칸 장비와 세트 효과까지 들어갔어요.</p>
   </header>
 
   <div id="stage">
@@ -22,12 +22,8 @@
   </div>
 
   <div class="gear" role="group" aria-label="장비 미리보기">
-    <span class="gear-label">장비 테스트</span>
-    <button class="gbtn on" data-g="0" type="button"><b>0</b>모험가<i>ATK +0</i></button>
-    <button class="gbtn" data-g="1" type="button"><b>1</b>견습 기사<i>ATK +3</i></button>
-    <button class="gbtn" data-g="2" type="button"><b>2</b>철 갑옷·투구<i>ATK +5</i></button>
-    <button class="gbtn" data-g="3" type="button"><b>3</b>왕국 기사<i>ATK +8</i></button>
-    <button class="gbtn" data-g="4" type="button"><b>4</b>성기사<i>ATK +15</i></button>
+    <span class="gear-label">테스트</span>
+    <button id="testgear" class="gbtn" type="button">장비 모두 받기</button>
     <button id="newgame" class="gbtn danger" type="button">처음부터</button>
   </div>
 
@@ -47,12 +43,14 @@
   </section>
 
   <div class="pad" aria-label="터치 조작">
-    <div class="cluster">
+    <div class="cluster dpad">
       <button class="pbtn" data-k="left" aria-label="왼쪽">◀</button>
+      <button class="pbtn" data-k="up" aria-label="위">▲</button>
       <button class="pbtn" data-k="down" aria-label="아래">▼</button>
       <button class="pbtn" data-k="right" aria-label="오른쪽">▶</button>
     </div>
-    <div class="cluster">
+    <div class="cluster act">
+      <button class="pbtn" data-k="menu" aria-label="장비창">I</button>
       <button class="pbtn s" data-k="skill" aria-label="검기">C</button>
       <button class="pbtn a" data-k="attack" aria-label="공격">Z</button>
       <button class="pbtn j" data-k="jump" aria-label="점프">X</button>
@@ -64,30 +62,34 @@
       <h2>조작</h2>
       <dl class="keys">
         <dt><kbd>←</kbd><kbd>→</kbd></dt><dd>이동 (화면 끝으로 가면 다음 방)</dd>
+        <dt><kbd>↑</kbd><kbd>↓</kbd></dt><dd>사다리·덩굴 타기</dd>
         <dt><kbd>X</kbd><kbd>SPACE</kbd></dt><dd>점프, 공중에서 한 번 더 누르면 2단 점프</dd>
-        <dt><kbd>↓</kbd>+<kbd>X</kbd></dt><dd>나무 발판 아래로 내려가기</dd>
-        <dt><kbd>Z</kbd></dt><dd>공격, 상자 열기</dd>
+        <dt><kbd>↓</kbd>+<kbd>X</kbd></dt><dd>발판 아래로 내려가기</dd>
+        <dt><kbd>Z</kbd></dt><dd>공격, 상자 열기, 금 간 벽 부수기</dd>
         <dt><kbd>C</kbd></dt><dd>검기 발사 (MP 10)</dd>
-        <dt><kbd>0</kbd>~<kbd>4</kbd></dt><dd>장비 테스트</dd>
+        <dt><kbd>I</kbd></dt><dd>장비창 (↑↓ 칸 선택, ←→ 바꾸기)</dd>
       </dl>
     </div>
     <div class="card">
-      <h2>초원 지역</h2>
+      <h2>지역</h2>
       <ul>
         <li>시작의 들판 <span>· 세이브 석상</span></li>
-        <li>바람 언덕 <span>· 높은 곳에 생명의 결정</span></li>
-        <li>작은 숲길 <span>· 보물상자 (철 갑옷·투구)</span></li>
-        <li>고목 쉼터 <span>· 세이브 석상</span></li>
-        <li>슬라임 둥지 <span>· 보스 킹슬라임, 처치 시 2단 점프</span></li>
+        <li>바람 언덕 <span>· 구멍 아래 이끼 동굴, 높은 곳에 생명의 결정</span></li>
+        <li>이끼 동굴 <span>· 가시, 떨어지는 발판, 점프 버섯, 금 간 벽, 상자</span></li>
+        <li>땅속 개울 <span>· 움직이는 발판, 사다리로 숲길에 올라감</span></li>
+        <li>작은 숲길 <span>· 상자</span></li>
+        <li>고목 쉼터 <span>· 세이브 석상, 덩굴 타고 고목 꼭대기로</span></li>
+        <li>고목 꼭대기 <span>· 잎 발판, 상자</span></li>
+        <li>슬라임 둥지 <span>· 킹슬라임 (무기 + 2단 점프)</span></li>
       </ul>
     </div>
     <div class="card">
-      <h2>규칙</h2>
+      <h2>장비</h2>
       <ul>
-        <li>석상에 닿으면 저장되고 HP·MP가 회복돼요</li>
-        <li>쓰러지면 마지막으로 저장한 석상에서 다시 시작해요</li>
-        <li>새로고침해도 마지막 저장 지점부터 이어져요</li>
-        <li>오른쪽 위 미니맵: 노란색이 현재 방, 빨간 점이 보스</li>
+        <li>무기 · 투구 · 갑옷 · 신발 4칸 <span>· 상자와 보스에서만 획득</span></li>
+        <li>철 기사 세트 <span>· 투구+갑옷+장화 3개 모으면 공격 +3, 방어 +2, HP +20</span></li>
+        <li>슬라임 블레이드 <span>· 킹슬라임 드롭, 공격 +6</span></li>
+        <li>특수 능력 슬롯 준비됨 <span>· 3단 점프, 빙판 미끄럼 방지, 벽 붙기 등</span></li>
       </ul>
     </div>
   </section>
