@@ -11,6 +11,7 @@ import {STATE,saveGame} from '../state.js';
 import {calcZoom} from '../zoom.js';
 
 import {F9,F11} from '../fonts.js';
+import {isDown} from '../input.js';
 const CLIMB_SPEED=70;
 /* 받침 있으면 '을', 없으면 '를' */
 const josa=(w,a,b)=>{const c=w.charCodeAt(w.length-1)-0xAC00;return w+(c>=0&&c<11172&&c%28?a:b)};
@@ -81,7 +82,7 @@ export class PlayScene extends Phaser.Scene{
     this.keys=this.input.keyboard.addKeys('LEFT,RIGHT,UP,DOWN,Z,X,C,SPACE,A,D,W,S,J,K,L,I,ESC,ENTER');
     this.buildHud();
     this.combo=0;this.comboT=0;this.targetT=0;this.hpGhost=this.stats.hp;this.tGhost=0;
-    this.prev={};this.pend={};this.frozen=false;this.leaving=false;
+    this.prev=this.heldNow();this.pend={};this.frozen=false;this.leaving=false;
     if(data.tutorial){this.toast('←→ 이동   X 점프   Z 공격   I 장비',4200)}
     else if(!data.quiet)this.toast(R.name,1800);
     if(window.onEquipChange)window.onEquipChange();
@@ -113,6 +114,11 @@ export class PlayScene extends Phaser.Scene{
     for(let y=0;y<ROWS;y++){let x=0;while(x<C){if(ow(m[y][x])){const s=x;while(x<C&&ow(m[y][x]))x++;
       const z=this.add.zone((s+x)*T/2,y*T+3,(x-s)*T,6);this.physics.add.existing(z,true);
       z.body.checkCollision.down=false;z.body.checkCollision.left=false;z.body.checkCollision.right=false;this.oneways.push(z)}else x++}}
+    // 사다리·덩굴 꼭대기: 위에 서 있을 수 있는 발판 (↓ 누르면 타고 내려감)
+    const cl=c=>c==='H'||c==='V';
+    for(let x=0;x<C;x++)for(let y=1;y<ROWS;y++)if(cl(m[y][x])&&!cl(m[y-1][x])&&m[y-1][x]!=='#'){
+      const z=this.add.zone(x*T+8,y*T+3,T,6);this.physics.add.existing(z,true);
+      z.body.checkCollision.down=false;z.body.checkCollision.left=false;z.body.checkCollision.right=false;this.oneways.push(z)}
   }
   tileAt(X,Y){const tx=Math.floor(X/T),ty=Math.floor(Y/T);if(tx<0||tx>=this.cols)return'.';if(ty<0)return this.map[0][tx]==='#'?'#':this.map[0][tx];if(ty>=ROWS)return'.';return this.map[ty][tx]}
   isClimb(X,Y){const c=this.tileAt(X,Y);return c==='H'||c==='V'}
@@ -421,10 +427,13 @@ export class PlayScene extends Phaser.Scene{
   }
 
   /* ----- input ----- */
+  heldNow(){
+    const v=VP;
+    return{left:isDown('ArrowLeft','KeyA')||v.left,right:isDown('ArrowRight','KeyD')||v.right,up:isDown('ArrowUp','KeyW')||v.up,down:isDown('ArrowDown','KeyS')||v.down,
+      jump:isDown('KeyX','Space','KeyK')||v.jump,atk:isDown('KeyZ','KeyJ')||v.attack,skill:isDown('KeyC','KeyL')||v.skill,menu:isDown('KeyI')||v.menu};
+  }
   readInput(){
-    const k=this.keys,v=VP,JD=Phaser.Input.Keyboard.JustDown;
-    const held={left:k.LEFT.isDown||k.A.isDown||v.left,right:k.RIGHT.isDown||k.D.isDown||v.right,up:k.UP.isDown||k.W.isDown||v.up,down:k.DOWN.isDown||k.S.isDown||v.down,
-      jump:k.X.isDown||k.SPACE.isDown||k.K.isDown||v.jump,atk:k.Z.isDown||k.J.isDown||v.attack,skill:k.C.isDown||k.L.isDown||v.skill,menu:k.I.isDown||v.menu};
+    const k=this.keys,JD=Phaser.Input.Keyboard.JustDown,held=this.heldNow();
     const pr=this.prev,press={jump:held.jump&&!pr.jump,atk:held.atk&&!pr.atk,skill:held.skill&&!pr.skill,menu:held.menu&&!pr.menu};
     if(JD(k.ESC)&&this.menu)press.menu=true;
     this.prev=held;
@@ -462,10 +471,7 @@ export class PlayScene extends Phaser.Scene{
     p.anims.stop();p.setTexture(vy!==0&&Math.floor(now/140)%2?'hero_idle1':'hero_idle0');p.setFlipX(Math.floor(p.y/6)%2===0);
     if(press.jump){this.stopClimb();p.setVelocity(move*SPEED,-JUMP*0.75);p.setFlipX(this.facing<0);return}
     const onLad=this.isClimb(p.x,p.y)||this.isClimb(p.x,b.bottom-1);
-    if(!onLad){this.stopClimb();if(vy<0){p.setVelocityY(-170);
-      const g=dx=>{const c=this.tileAt(p.x+dx,b.bottom+4);return c==='#'||c==='-'||c==='='};
-      const dir=g(this.facing*16)?this.facing:g(-this.facing*16)?-this.facing:this.facing;this.facing=dir;p.setVelocityX(dir*110);this.nudgeT=0.2}
-      p.setFlipX(this.facing<0);return}
+    if(!onLad){this.stopClimb();if(vy<0){p.setVelocityY(-160);p.setVelocityX(0)}p.setFlipX(this.facing<0);return}
     if(held.down&&(b.blocked.down||b.touching.down)){this.stopClimb();p.setFlipX(this.facing<0)}
   }
 
