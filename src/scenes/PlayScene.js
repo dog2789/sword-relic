@@ -16,7 +16,7 @@ export class PlayScene extends Phaser.Scene{
     this.stats={lv:1,hp:60,maxHp:60,mp:30,maxMp:30,exp:0,next:20,atk:8};
     this.gear=0;this.redrawHero();
     const p=this.player=this.physics.add.sprite(3*T,10*T,'hero_idle0');
-    p.body.setSize(8,18).setOffset(9,6);
+    p.body.setSize(9,14).setOffset(4,3);
     this.sword=this.add.image(0,0,'sword0').setDepth(11).setVisible(false);p.setDepth(10).setCollideWorldBounds(true);
     Object.assign(p,{inv:0,hurtT:0,dropT:0,dead:false});
     this.facing=1;this.coyote=0;this.jumpBuf=0;this.wasOnG=false;this.prevVy=0;this.skillCd=0;this.castT=0;
@@ -133,7 +133,7 @@ export class PlayScene extends Phaser.Scene{
     const p=this.player,a=this.atk,on=!p.dead&&p.hurtT<=0&&(a.active||this.castT>0);
     this.sword.setVisible(on);if(!on)return;
     const f=a.active?a.f:this.facing;
-    this.sword.setPosition(p.x+f*7,p.y+3).setFlipX(f<0).setOrigin(f>0?0.07:0.93,0.5);
+    this.sword.setPosition(p.x+f*7,p.y+4).setFlipX(f<0).setOrigin(f>0?0.09:0.91,0.5);
   }
   redrawHero(){
     for(const f in HERO_FRAMES){const t=this.textures.get('hero_'+f),c=t.getContext();c.clearRect(0,0,HERO_W,HERO_H);drawHero(c,f,LOOK,this.gear);t.refresh()}
@@ -251,7 +251,7 @@ export class PlayScene extends Phaser.Scene{
     if(this.move)this.facing=this.move;
     Object.assign(a,{active:true,step,t:0,queued:false,hit:new Set(),f:this.facing,dur:step===3?0.34:0.24,on:step===3?[0.05,0.2]:[0.03,0.14]});
     if(this.slash)this.slash.destroy();
-    const f=a.f,s=this.add.image(p.x+f*4,p.y+1,(step===3?'slashC':'slashA')+this.gear).setOrigin(f>0?0:1,0.5).setFlipX(f<0).setFlipY(step===2).setDepth(12).setAlpha(0);
+    const f=a.f,s=this.add.image(p.x+f*4,p.y+3,(step===3?'slashC':'slashA')+this.gear).setOrigin(f>0?0:1,0.5).setFlipX(f<0).setFlipY(step===2).setDepth(12).setAlpha(0);
     this.slash=s;
     this.tweens.add({targets:s,alpha:{from:1,to:0},delay:a.on[0]*1000,duration:(a.dur-a.on[0])*1000,ease:'Quad.easeIn'});
     if(p.body.blocked.down)p.setVelocityX(f*(step===3?130:60));
@@ -259,9 +259,9 @@ export class PlayScene extends Phaser.Scene{
   updateAttack(dt){
     const a=this.atk,p=this.player;if(!a.active)return;
     a.t+=dt;
-    if(this.slash){this.slash.x=p.x+a.f*4;this.slash.y=p.y+1}
+    if(this.slash){this.slash.x=p.x+a.f*4;this.slash.y=p.y+3}
     if(a.t>=a.on[0]&&a.t<=a.on[1]){
-      const reach=(a.step===3?26:20)+(this.gear===3?4:0),hb=new Phaser.Geom.Rectangle(a.f>0?p.x:p.x-reach,p.y-14,reach,26);
+      const reach=(a.step===3?26:20)+(this.gear===3?4:0),hb=new Phaser.Geom.Rectangle(a.f>0?p.x:p.x-reach,p.y-10,reach,22);
       this.enemies.getChildren().slice().forEach(e=>{
         if(!e.active||a.hit.has(e))return;const eb=e.body;
         if(Phaser.Geom.Intersects.RectangleToRectangle(hb,new Phaser.Geom.Rectangle(eb.x,eb.y,eb.width,eb.height))){
@@ -272,9 +272,9 @@ export class PlayScene extends Phaser.Scene{
   }
   castSkill(){
     const s=this.stats,p=this.player;if(this.skillCd>0||p.hurtT>0)return;
-    if(s.mp<10){this.popText(p.x,p.y-14,'NO MP',0x8ab0ff);this.skillCd=0.4;return}
+    if(s.mp<10){this.popText(p.x,p.y-12,'NO MP',0x8ab0ff);this.skillCd=0.4;return}
     s.mp-=10;this.skillCd=0.5;this.castT=0.18;const f=this.facing;
-    const w=this.add.image(p.x+f*8,p.y,'wave').setFlipX(f<0).setDepth(12);
+    const w=this.add.image(p.x+f*8,p.y+3,'wave').setFlipX(f<0).setDepth(12);
     this.waves.push({s:w,vx:f*230,life:0.55,hit:new Set(),f});
     this.goldEm.explode(4,p.x+f*8,p.y);
   }
@@ -344,7 +344,7 @@ export class PlayScene extends Phaser.Scene{
   hurtPlayer(e){
     const p=this.player,s=this.stats;if(p.inv>0||p.dead||e.stun>0.15)return;
     const d=e.dmg+Math.floor(Math.random()*3);s.hp=Math.max(0,s.hp-d);
-    this.popNum(p.x,p.y-14,d,0xff5a5a,false);p.inv=1.1;p.hurtT=0.28;
+    this.popNum(p.x,p.y-12,d,0xff5a5a,false);p.inv=1.1;p.hurtT=0.28;
     p.setVelocity((Math.sign(p.x-e.x)||1)*150,-170);
     this.atk.active=false;if(this.slash){this.slash.destroy();this.slash=null}
     this.cameras.main.shake(120,0.01);p.setTintFill(0xff4a5a);this.time.delayedCall(90,()=>p.clearTint());

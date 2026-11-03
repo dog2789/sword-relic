@@ -11,7 +11,7 @@ export function buildTextures(sc){
   for(let t=0;t<GEAR.length;t++){
     const G=GEAR[t];
     add('sword'+t,fromRows(SWORD,{k:'#1a1222',...G.sword}));
-    add('slashA'+t,arcTex(16,6,-80,80,G.slashA));
+    add('slashA'+t,arcTex(14,5,-80,80,G.slashA));
     add('slashC'+t,arcTex(G.big,G.big>22?10:8,-90,90,G.slashC));
   }
   for(const f in HERO_FRAMES)if(!sc.textures.exists('hero_'+f))sc.textures.createCanvas('hero_'+f,HERO_W,HERO_H);

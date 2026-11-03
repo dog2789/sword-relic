@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import './style.css';
 import {W,H,GRAV,VP} from './config.js';
 import {calcZoom} from './zoom.js';
-import {HERO_W,HERO_H,HAIR_STYLES,LOOK_OPTS,LOOK,drawHero} from './gfx/hero.js';
+import {HERO_W,HERO_H,HAIR_STYLES,LOOK_OPTS,LOOK,drawHero,saveLook} from './gfx/hero.js';
 import {PlayScene} from './scenes/PlayScene.js';
 
 let game;
@@ -19,7 +19,7 @@ const pv=document.getElementById('pv'),pvx=pv.getContext('2d');let pvFrame=0;
 function curGear(){const sc=game&&game.scene.keys.play;return sc&&sc.player?sc.gear:0}
 function drawPreview(){pvx.clearRect(0,0,HERO_W,HERO_H);drawHero(pvx,pvFrame?'idle1':'idle0',LOOK,curGear())}
 setInterval(()=>{pvFrame^=1;drawPreview()},420);
-function applyLook(){try{localStorage.setItem('sr_look2',JSON.stringify(LOOK))}catch(_){}
+function applyLook(){saveLook();
   drawPreview();const sc=game&&game.scene.keys.play;if(sc&&sc.player)sc.redrawHero();
   document.querySelectorAll('.maker [data-opt]').forEach(b=>b.classList.toggle('on',LOOK[b.dataset.opt]===+b.dataset.i))}
 function buildMaker(){
