@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>소드 레릭</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Sans+KR:wght@400;600&display=swap">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">PROTOTYPE · STAGE 1</div>
+    <h1>SWORD RELIC</h1>
+    <p class="sub">1단계 프로토타입입니다. 방 하나에서 이동, 점프, 3단 콤보, 데미지 숫자, 슬라임 전투까지 확인할 수 있어요. 오른쪽 끝에 킹슬라임이 있어요.</p>
+  </header>
+
+  <div id="stage">
+    <div id="game"></div>
+    <button id="start" type="button"><span>▶ 클릭해서 시작<br>Z 공격 · X 점프</span></button>
+  </div>
+
+  <div class="gear" role="group" aria-label="장비 미리보기">
+    <span class="gear-label">장비 미리보기</span>
+    <button class="gbtn on" data-g="0" type="button"><b>0</b>모험가<i>ATK +0</i></button>
+    <button class="gbtn" data-g="1" type="button"><b>1</b>견습 기사<i>ATK +3</i></button>
+    <button class="gbtn" data-g="2" type="button"><b>2</b>왕국 기사<i>ATK +8</i></button>
+    <button class="gbtn" data-g="3" type="button"><b>3</b>성기사<i>ATK +15</i></button>
+  </div>
+
+  <section class="maker" aria-label="캐릭터 만들기">
+    <div class="pv">
+      <canvas id="pv" width="26" height="24" aria-label="캐릭터 미리보기"></canvas>
+      <button id="rand" class="gbtn" type="button">랜덤</button>
+    </div>
+    <div class="opts">
+      <div class="opt"><span>머리 스타일</span><div class="row" id="o-style"></div></div>
+      <div class="opt"><span>머리색</span><div class="row" id="o-hair"></div></div>
+      <div class="opt"><span>피부톤</span><div class="row" id="o-skin"></div></div>
+      <div class="opt"><span>상의</span><div class="row" id="o-top"></div></div>
+      <div class="opt"><span>하의</span><div class="row" id="o-bottom"></div></div>
+      <div class="opt"><span>신발</span><div class="row" id="o-shoes"></div></div>
+    </div>
+  </section>
+
+  <div class="pad" aria-label="터치 조작">
+    <div class="cluster">
+      <button class="pbtn" data-k="left" aria-label="왼쪽">◀</button>
+      <button class="pbtn" data-k="down" aria-label="아래">▼</button>
+      <button class="pbtn" data-k="right" aria-label="오른쪽">▶</button>
+    </div>
+    <div class="cluster">
+      <button class="pbtn s" data-k="skill" aria-label="검기">C</button>
+      <button class="pbtn a" data-k="attack" aria-label="공격">Z</button>
+      <button class="pbtn j" data-k="jump" aria-label="점프">X</button>
+    </div>
+  </div>
+
+  <section class="cards">
+    <div class="card">
+      <h2>조작</h2>
+      <dl class="keys">
+        <dt><kbd>←</kbd><kbd>→</kbd></dt><dd>이동</dd>
+        <dt><kbd>X</kbd><kbd>SPACE</kbd></dt><dd>점프 (길게 누르면 더 높이)</dd>
+        <dt><kbd>↓</kbd>+<kbd>X</kbd></dt><dd>나무 발판 아래로 내려가기</dd>
+        <dt><kbd>Z</kbd></dt><dd>공격 (연타하면 3단 콤보)</dd>
+        <dt><kbd>C</kbd></dt><dd>검기 발사 (MP 10)</dd>
+        <dt><kbd>0</kbd><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd></dt><dd>장비 단계 바꿔보기</dd>
+      </dl>
+    </div>
+    <div class="card">
+      <h2>이번에 들어간 것</h2>
+      <ul>
+        <li>3단 콤보 <span>· 3타는 금색 대형 베기</span></li>
+        <li>히트스톱과 화면 흔들림 <span>· 타격감</span></li>
+        <li>데미지 숫자, 크리티컬, HIT 카운터</li>
+        <li>슬라임 AI <span>· 가까우면 점프 추격</span></li>
+        <li>캐릭터 커스텀 <span>· 머리, 피부, 옷 색 조합</span></li>
+        <li>장비 레이어 <span>· 모험가 옷 위에 갑옷, 투구, 방패, 망토가 덧입혀짐</span></li>
+        <li>레벨업, EXP, 하트 드롭, 리스폰</li>
+        <li>하단 HUD <span>· 원작처럼 적 이름과 HP 표시</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>같이 정할 것</h2>
+      <ul>
+        <li>화면 비율 <span>· 지금은 가로 320×180, 원작은 세로</span></li>
+        <li>점프 높이와 이동 속도 느낌</li>
+        <li>콤보 템포 <span>· 빠르게 vs 묵직하게</span></li>
+        <li>타격감 강도 <span>· 히트스톱, 흔들림</span></li>
+        <li>주인공 디자인 방향</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
