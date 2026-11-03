@@ -9,6 +9,7 @@ npm install
 npm run dev       # 개발 서버 (저장하면 자동 새로고침)
 npm run build     # dist/ 에 배포용 빌드
 npm run preview   # 빌드 결과 로컬 확인
+npm run build:single  # dist-single/index.html 한 파일짜리 빌드 (Phaser는 CDN)
 ```
 
 ## 조작
