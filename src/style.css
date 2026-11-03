@@ -70,4 +70,4 @@ kbd{font-family:var(--pix);font-size:8px;padding:5px 6px 4px;background:#0e0b18;
 .pbtn{width:50px;height:50px}
 .cluster.dpad{display:grid;grid-template-columns:repeat(3,50px);grid-template-rows:repeat(2,50px);gap:6px}
 .dpad [data-k=up]{grid-column:2;grid-row:1}.dpad [data-k=left]{grid-column:1;grid-row:2}.dpad [data-k=down]{grid-column:2;grid-row:2}.dpad [data-k=right]{grid-column:3;grid-row:2}
-.cluster.act{display:grid;grid-template-columns:repeat(2,50px);grid-template-rows:repeat(2,50px);gap:6px}
+.cluster.act{display:grid;grid-template-columns:repeat(3,50px);grid-template-rows:repeat(2,50px);gap:6px}

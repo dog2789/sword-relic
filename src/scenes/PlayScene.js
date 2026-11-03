@@ -6,7 +6,9 @@ import {cv,px} from '../gfx/pixel.js';
 import {HERO_W,HERO_H,HERO_FRAMES,LOOK,drawHero} from '../gfx/hero.js';
 import {ITEMS,SETS,SLOTS,SLOT_NAMES,equipBonus,setProgress,statLine} from '../data/items.js';
 import {ROOMS,buildRoomMap,floorTopY,surfaceY} from '../world/rooms.js';
-import {drawFar,drawMid,drawLevel,drawCaveFar,drawCaveMid,drawTreetopMid} from '../world/meadow.js';
+import {drawFar,drawMid,drawLevel,drawCaveFar,drawCaveMid,drawTreetopMid,drawCastleFar,drawCastleMid} from '../world/meadow.js';
+import {spawnMob,updateMob,makeMobAnims} from './monsters.js';
+import {PlayUI} from './playUI.js';
 import {STATE,saveGame} from '../state.js';
 import {RS,fitCameras} from '../zoom.js';
 
@@ -22,11 +24,11 @@ export class PlayScene extends Phaser.Scene{
   create(data={}){
     buildTextures(this);buildFonts(this);
     // 이전 방의 참조 정리
-    Object.assign(this,{slash:null,sword:null,chest:null,chestHint:null,statue:null,crystal:null,tInfo:null,menu:null,pickups:[],walls:[],fallers:[],mushrooms:[],climbing:false,bounceT:0,safe:null,autoUp:false});
+    Object.assign(this,{slash:null,sword:null,chest:null,chestHint:null,statue:null,crystal:null,tInfo:null,menu:null,pickups:[],walls:[],fallers:[],mushrooms:[],climbing:false,bounceT:0,safe:null,autoUp:false,warpObj:null,npcObj:null,dlg:null,mapv:null,warpm:null,quickUI:[]});
     const id=data.room&&ROOMS[data.room]?data.room:(ROOMS[STATE.room]?STATE.room:'r1');
     STATE.room=id;STATE.visited[id]=true;
     this.roomId=id;this.R=ROOMS[id];this.map=buildRoomMap(id);this.cols=this.R.cols;this.lw=this.cols*T;
-    this.drawWorld();this.makeAnims();
+    this.drawWorld();this.makeAnims();makeMobAnims(this);
     this.solids=[];this.oneways=[];this.buildCollision();
     this.stats=STATE.stats;this.equip=STATE.equip;this.bonus=equipBonus(this.equip);this.redrawHero();
 
@@ -37,6 +39,7 @@ export class PlayScene extends Phaser.Scene{
     else if(entry==='right'){sx=this.lw-8;sy=floorTopY(this.map,this.cols-1)-9}
     else if(entry==='top'&&ex.up){sx=ex.up.tx*T+8;sy=6}
     else if(entry==='bottom'&&ex.down){sx=ex.down.tx*T+8;sy=LH-10;climb=true}
+    else if(entry==='warp'&&R.warp){sx=R.warp.tx*T+8;sy=surfaceY(this.map,R.warp.tx)-9}
     else{const tx=(entry==='save'&&R.save)?R.save.tx:(R.start?R.start.tx:(R.save?R.save.tx:2));sx=tx*T+8;sy=surfaceY(this.map,tx)-9}
     const p=this.player=this.physics.add.sprite(sx,sy,'hero_idle0');
     p.body.setSize(9,14).setOffset(4,3);
@@ -61,7 +64,10 @@ export class PlayScene extends Phaser.Scene{
     this.physics.add.collider(this.enemies,this.platGroup);
     this.hearts=this.physics.add.group();
     this.physics.add.collider(this.hearts,this.solids);this.physics.add.collider(this.hearts,this.oneways);
-    this.physics.add.overlap(p,this.hearts,(pl,h)=>{const s=this.stats;s.hp=Math.min(this.mhp(),s.hp+20);this.popText(h.x,h.y-6,'+20',0x7cff8a);this.goldEm.explode(6,h.x,h.y);h.destroy()});
+    this.physics.add.overlap(p,this.hearts,(pl,h)=>{const s=this.stats;
+      if(h.kind){STATE.items[h.kind]=(STATE.items[h.kind]||0)+1;this.popText(h.x,h.y-6,(h.kind==='potion'?'POTION':'ETHER')+' +1',h.kind==='potion'?0xff8a95:0x8ab0ff)}
+      else{s.hp=Math.min(this.mhp(),s.hp+20);this.popText(h.x,h.y-6,'+20',0x7cff8a)}
+      this.goldEm.explode(6,h.x,h.y);h.destroy()});
 
     const mk=(tint,extra={})=>this.add.particles(0,0,'px',Object.assign({lifespan:{min:250,max:600},speed:{min:40,max:140},angle:{min:0,max:360},gravityY:380,scale:{start:1,end:0},tint,emitting:false},extra)).setDepth(40);
     this.sparkEm=mk([0xffffff,0x9fe8ff,0xffe27a],{speed:{min:60,max:160},lifespan:{min:120,max:300}});
@@ -70,11 +76,14 @@ export class PlayScene extends Phaser.Scene{
     this.goldEm=mk([0xffd34a,0xfff2a0,0xe8742a],{gravityY:-60,speed:{min:20,max:90}});
     this.dustEm=mk(R.theme==='cave'?[0x8a849e,0x6a6480]:[0xd8c8a0,0xb8a478],{speed:{min:10,max:45},angle:{min:190,max:350},gravityY:-30,lifespan:{min:200,max:380}});
     this.rockEm=mk([0x5a5470,0x7a7494,0x3a3448],{speed:{min:40,max:150},gravityY:500,lifespan:{min:400,max:800},scale:{start:1.5,end:0.5}});
+    this.batEm=mk([0x5a3a7a,0x8a6aaa,0xffe27a]);
+    this.snailEm=mk([0xc86a3a,0x8a3a1a,0xd8c08a,0xf0e8d8]);
     this.auraEm=mk([0x9ff0ff,0xffd34a,0xffffff],{speed:{min:4,max:18},gravityY:-50,lifespan:{min:300,max:600}});
     this.waves=[];
 
-    this.spawnObjects(entry);
+    this.spawnObjects(entry);this.spawnExtras();
     (R.slimes||[]).forEach(s=>this.spawnEnemy({x:s.tx*T+8,y:s.ty*T}));
+    (R.mobs||[]).forEach(d=>spawnMob(this,d));
     if(climb){this.startClimb();this.autoUp=true}
 
     const cam=this.cameras.main;cam.setBounds(0,0,this.lw,LH+HUD);cam.startFollow(p,true,0.12,0.12);cam.setDeadzone(40,28);cam.roundPixels=true;
@@ -82,12 +91,12 @@ export class PlayScene extends Phaser.Scene{
     this.uiCam=this.cameras.add(0,0,W*RS.S,H*RS.S).setOrigin(0,0);
     fitCameras(this);
     this.fadeCams(false,220);
-    this.keys=this.input.keyboard.addKeys('LEFT,RIGHT,UP,DOWN,Z,X,C,SPACE,A,D,W,S,J,K,L,I,ESC,ENTER');
+    this.keys=this.input.keyboard.addKeys('LEFT,RIGHT,UP,DOWN,Z,X,C,SPACE,A,D,W,S,J,K,L,I,M,ESC,ENTER');
     this.buildHud();
     this.combo=0;this.comboT=0;this.targetT=0;this.hpGhost=this.stats.hp;this.tGhost=0;
     this.prev=this.heldNow();this.pend={};this.frozen=false;this.leaving=false;
     this.routeCams();
-    if(data.tutorial){this.toast('←→ 이동   X 점프   Z 공격   I 장비',4200)}
+    if(data.tutorial){this.toast('←→ 이동   X 점프   Z 공격   ↑ 대화   I 장비   M 지도',4600)}
     else if(!data.quiet)this.toast(R.name,1800);
     if(window.onEquipChange)window.onEquipChange();
   }
@@ -95,11 +104,12 @@ export class PlayScene extends Phaser.Scene{
   /* ----- world ----- */
   drawWorld(){
     const id=this.roomId,R=this.R,th=R.theme;
-    if(!this.textures.exists('far_'+id))this.textures.addCanvas('far_'+id,th==='cave'?drawCaveFar(this.lw):drawFar(this.lw));
-    if(!this.textures.exists('mid_'+id))this.textures.addCanvas('mid_'+id,th==='cave'?drawCaveMid(this.lw):th==='treetop'?drawTreetopMid(this.lw):drawMid(this.lw));
+    const far={cave:drawCaveFar,castle:drawCastleFar}[th]||drawFar,mid={cave:drawCaveMid,treetop:drawTreetopMid,castle:drawCastleMid}[th]||drawMid;
+    if(!this.textures.exists('far_'+id))this.textures.addCanvas('far_'+id,far(this.lw));
+    if(!this.textures.exists('mid_'+id))this.textures.addCanvas('mid_'+id,mid(this.lw));
     if(!this.textures.exists('lvl_'+id))this.textures.addCanvas('lvl_'+id,drawLevel(this.map,this.cols,R.seed,R.deco,th));
     this.add.image(0,0,'far_'+id).setOrigin(0).setScrollFactor(0.1).setDepth(-10);
-    this.clouds=th==='cave'?[]:[0,1,2,0,1].map((k,i)=>this.add.image(i*90+Math.random()*60,12+Math.random()*50,'cloud'+k).setScrollFactor(0.15).setDepth(-9.5).setAlpha(0.95));
+    this.clouds=(th==='cave'||th==='castle')?[]:[0,1,2,0,1].map((k,i)=>this.add.image(i*90+Math.random()*60,12+Math.random()*50,'cloud'+k).setScrollFactor(0.15).setDepth(-9.5).setAlpha(0.95));
     this.add.image(0,0,'mid_'+id).setOrigin(0).setScrollFactor(0.35).setDepth(-9);
     this.add.image(0,0,'lvl_'+id).setOrigin(0).setDepth(0);
   }
@@ -185,8 +195,9 @@ export class PlayScene extends Phaser.Scene{
     this.tweens.add({targets:[spr,glow],y:'-=3',duration:600,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});
     this.pickups.push({itemId,key,x,y,spr,glow});
   }
-  updateObjects(dt,held){
+  updateObjects(dt,held,press={}){
     const p=this.player,b=p.body;
+    this.updateExtras(dt,held,press);
     if(this.statue){const near=Math.abs(p.x-this.statue.x)<14&&Math.abs(p.y-this.statue.y)<22;
       if(near&&!this.atStatue&&!p.dead)this.doSave();
       if(!near&&Math.abs(p.x-this.statue.x)>26)this.atStatue=false;}
@@ -297,8 +308,9 @@ export class PlayScene extends Phaser.Scene{
     if(fx){const p=this.player;p.setTintFill(0xffffff);this.time.delayedCall(90,()=>{if(!p.dead)p.clearTint()});this.goldEm.explode(16,p.x,p.y)}
     if(window.onEquipChange)window.onEquipChange();
   }
-  giveAllForTest(){Object.keys(ITEMS).forEach(id=>{if(!STATE.bag.includes(id))STATE.bag.push(id)});
-    ['helm','armor','boots'].forEach(s=>{const id=Object.keys(ITEMS).find(k=>ITEMS[k].slot===s);if(id)this.setEquip(s,id)});
+  giveAllForTest(){Object.keys(ITEMS).forEach(id=>{if(!ITEMS[id].hidden&&!STATE.bag.includes(id))STATE.bag.push(id)});
+    ['helm','armor','boots','acc'].forEach(s=>{const id=Object.keys(ITEMS).find(k=>ITEMS[k].slot===s&&!ITEMS[k].hidden);if(id)this.setEquip(s,id)});
+    STATE.items.potion=(STATE.items.potion||0)+5;STATE.items.ether=(STATE.items.ether||0)+5;
     this.setEquip('weapon','slime_blade',true);this.banner('TEST GEAR',0x9ff0ff)}
 
   /* ----- 장비창 ----- */
@@ -312,16 +324,16 @@ export class PlayScene extends Phaser.Scene{
     const t=(x,y,s,o={})=>{const o2=fix(this.add.text(x,y,s,Object.assign({fontFamily:F9,fontSize:'10px',color:'#ece7f7'},o)));M.objs.push(o2);return o2};
     t(22,15,'장비',{fontFamily:F11,fontSize:'12px',color:'#ffe27a'});
     t(298,17,'I  닫기',{color:'#8f86ab'}).setOrigin(1,0);
-    SLOTS.forEach((sl,i)=>{const y=34+i*19;
-      const icon=fix(this.add.image(30,y+6,'icon_'+(this.equip[sl]||'traveler_sword')));M.objs.push(icon);
-      const lab=t(40,y+3,SLOT_NAMES[sl],{color:'#8f86ab'});
-      const name=t(67,y+3,'',{});
-      const hit=fix(this.add.zone(20,y-2,150,19).setOrigin(0).setInteractive());M.objs.push(hit);
+    SLOTS.forEach((sl,i)=>{const y=32+i*16;
+      const icon=fix(this.add.image(30,y+5,'icon_'+(this.equip[sl]||'traveler_sword')));M.objs.push(icon);
+      const lab=t(40,y+1,SLOT_NAMES[sl],{color:'#8f86ab'});
+      const name=t(78,y+1,'',{});
+      const hit=fix(this.add.zone(20,y-2,150,16).setOrigin(0).setInteractive());M.objs.push(hit);
       hit.on('pointerdown',()=>{M.sel=i;this.cycleEquip(sl,1)});
       M.rows.push({sl,icon,lab,name});
     });
     M.stat=t(179,34,'',{lineSpacing:3});
-    M.desc=t(22,112,'',{color:'#cfc8e4',wordWrap:{width:276},lineSpacing:2});
+    M.desc=t(22,116,'',{color:'#cfc8e4',wordWrap:{width:276},lineSpacing:2});
     M.help=t(22,144,'↑↓ 칸 선택   ←→ 장비 바꾸기   터치: 칸을 누르면 바뀜',{color:'#6f6890'});
     this.refreshMenu();
   }
@@ -336,8 +348,8 @@ export class PlayScene extends Phaser.Scene{
     g.fillStyle(0x05030b,0.72).fillRect(0,0,W,H);
     g.fillStyle(0x161028,1).fillRect(14,10,292,150);g.lineStyle(1,0xc9a24a,1).strokeRect(14.5,10.5,291,149);
     g.fillStyle(0x221a3a,1).fillRect(174,30,128,78);
-    M.rows.forEach((r,i)=>{const it=ITEMS[this.equip[r.sl]],y=34+i*19,sel=i===M.sel,n=this.menuOptions(r.sl).length;
-      if(sel){g.fillStyle(0x2c2346,1).fillRect(20,y-2,150,19);g.lineStyle(1,0xffe27a,1).strokeRect(20.5,y-1.5,149,18)}
+    M.rows.forEach((r,i)=>{const it=ITEMS[this.equip[r.sl]],y=32+i*16,sel=i===M.sel,n=this.menuOptions(r.sl).length;
+      if(sel){g.fillStyle(0x2c2346,1).fillRect(20,y-2,150,16);g.lineStyle(1,0xffe27a,1).strokeRect(20.5,y-1.5,149,15)}
       r.icon.setTexture(it?'icon_'+this.equip[r.sl]:'icon_traveler_sword').setAlpha(it?1:0.15);
       r.name.setText((it?it.name:'없음')+(n>1?' ◀▶':'')).setColor(it?'#ece7f7':'#6f6890')});
     const b=this.bonus,s=this.stats;
@@ -352,7 +364,7 @@ export class PlayScene extends Phaser.Scene{
     const k=this.keys,JD=Phaser.Input.Keyboard.JustDown,M=this.menu,v=VP,pv=this.prevMenu||{};
     const up=JD(k.UP)||JD(k.W)||(v.up&&!pv.up),dn=JD(k.DOWN)||JD(k.S)||(v.down&&!pv.down),lf=JD(k.LEFT)||JD(k.A)||(v.left&&!pv.left),rt=JD(k.RIGHT)||JD(k.D)||(v.right&&!pv.right);
     this.prevMenu={...v};
-    if(up){M.sel=(M.sel+3)%4;this.refreshMenu()}if(dn){M.sel=(M.sel+1)%4;this.refreshMenu()}
+    const NS=SLOTS.length;if(up){M.sel=(M.sel+NS-1)%NS;this.refreshMenu()}if(dn){M.sel=(M.sel+1)%NS;this.refreshMenu()}
     if(lf)this.cycleEquip(SLOTS[M.sel],-1);if(rt)this.cycleEquip(SLOTS[M.sel],1);
   }
 
@@ -364,11 +376,12 @@ export class PlayScene extends Phaser.Scene{
     this.lvTxt=fix(this.add.bitmapText(5,y0+8,'dmg','1')).setLetterSpacing(-2);
     fix(this.add.bitmapText(26,y0+4,'pix','HP')).setTint(0xff8a95);
     fix(this.add.bitmapText(26,y0+12,'pix','MP')).setTint(0x8ab0ff);
-    this.hpTxt=fix(this.add.bitmapText(114,y0+4,'pix',''));
-    this.mpTxt=fix(this.add.bitmapText(114,y0+12,'pix',''));
-    this.nameTxt=fix(this.add.text(164,y0+2,'',{fontFamily:F9,fontSize:'10px',color:'#ece7f7'})).setVisible(false);
-    this.hintTxt=fix(this.add.text(164,y0+5,'',{fontFamily:F9,fontSize:'10px',color:'#8f86ab'}));
-    this.tHpTxt=fix(this.add.bitmapText(266,y0+14,'pix','')).setVisible(false);
+    this.hpTxt=fix(this.add.bitmapText(98,y0+4,'pix',''));
+    this.mpTxt=fix(this.add.bitmapText(98,y0+12,'pix',''));
+    this.buildQuick();
+    this.nameTxt=fix(this.add.text(196,y0+2,'',{fontFamily:F9,fontSize:'10px',color:'#ece7f7'})).setVisible(false);
+    this.hintTxt=fix(this.add.text(196,y0+5,'',{fontFamily:F9,fontSize:'10px',color:'#8f86ab'}));
+    this.tHpTxt=fix(this.add.bitmapText(288,y0+14,'pix','')).setVisible(false);
     this.comboTxt=this.add.bitmapText(8,8,'dmg','').setScrollFactor(0).setDepth(110).setTint(0xffd34a).setLetterSpacing(-2).setVisible(false);
     this.toastTxt=this.add.text(W/2,6,'',{fontFamily:F9,fontSize:'10px',color:'#fff8e0',backgroundColor:'#1a1230dd',padding:{x:7,y:4},align:'center'})
       .setOrigin(0.5,0).setScrollFactor(0).setDepth(130).setVisible(false);
@@ -409,7 +422,7 @@ export class PlayScene extends Phaser.Scene{
       if(e.up&&known(e.up.to)){const[ux]=pos(e.up.to);g.fillStyle(0x7a6a9a,1).fillRect(Math.round((x+ux)/2)+cw/2,y-gap,1,gap)}});
     ids.forEach(i=>{if(!known(i))return;const[x,y]=pos(i),R=ROOMS[i];
       if(!STATE.visited[i]){g.lineStyle(1,0x5a4f7a,1).strokeRect(x+0.5,y+0.5,cw-1,ch-1);return}
-      const cur=i===this.roomId,blink=Math.floor(time/350)%2,base=R.theme==='cave'?0x4a4468:R.theme==='treetop'?0x5a7a32:0x3f7a3a;
+      const cur=i===this.roomId,blink=Math.floor(time/350)%2,base={cave:0x4a4468,treetop:0x5a7a32,castle:0x3a5aa0}[R.theme]||0x3f7a3a;
       g.fillStyle(cur?(blink?0xffe27a:0xc9a24a):base,1).fillRect(x,y,cw,ch);
       g.fillStyle(cur?0xfff3b0:0xffffff,cur?1:0.18).fillRect(x,y,cw,1);
       if(R.save)g.fillStyle(0x8fe3ff,1).fillRect(x+2,y+3,2,2);
@@ -420,19 +433,20 @@ export class PlayScene extends Phaser.Scene{
   drawHud(dt,time){
     const g=this.hud,s=this.stats,y0=H-HUD,mh=this.mhp();g.clear();
     g.fillStyle(0x0f0b1e,1).fillRect(0,y0,W,HUD);g.fillStyle(0xc9a24a,1).fillRect(0,y0,W,1);g.fillStyle(0x3a2a5a,1).fillRect(0,y0+1,W,1);
-    g.fillStyle(0x2a2046,1).fillRect(156,y0+4,1,15);
+    g.fillStyle(0x2a2046,1).fillRect(191,y0+4,1,15);
     this.hpGhost=this.hpGhost>s.hp?Math.max(s.hp,this.hpGhost-mh*dt*0.6):s.hp;
-    this.bar(g,38,y0+4,72,5,s.hp/mh,this.hpGhost/mh,0xe0404f,0xff8a95);
-    this.bar(g,38,y0+12,72,5,s.mp/s.maxMp,0,0x3a6ae0,0x8ab0ff);
+    this.bar(g,38,y0+4,56,5,s.hp/mh,this.hpGhost/mh,0xe0404f,0xff8a95);
+    this.bar(g,38,y0+12,56,5,s.mp/s.maxMp,0,0x3a6ae0,0x8ab0ff);
+    this.drawQuick(g);
     g.fillStyle(0x241a3a,1).fillRect(4,y0+21,W-8,2);g.fillStyle(0xe8c04a,1).fillRect(4,y0+21,Math.round((W-8)*s.exp/s.next),2);
     this.lvTxt.setText(String(s.lv));this.hpTxt.setText(Math.ceil(s.hp)+'/'+mh);this.mpTxt.setText(Math.floor(s.mp)+'/'+s.maxMp);
     if(this.tInfo&&this.targetT>0){const e=this.tInfo.e,hp=Math.max(0,e.hp);
       this.tGhost=this.tGhost>hp?Math.max(hp,this.tGhost-e.maxHp*dt*0.8):hp;
       this.nameTxt.setText(e.nm).setVisible(true);this.hintTxt.setVisible(false);
-      this.bar(g,164,y0+15,96,4,hp/e.maxHp,this.tGhost/e.maxHp,0xe0404f,0xff8a95);
+      this.bar(g,196,y0+15,88,4,hp/e.maxHp,this.tGhost/e.maxHp,0xe0404f,0xff8a95);
       this.tHpTxt.setText(Math.ceil(hp)+'/'+e.maxHp).setVisible(true);
     }else{this.nameTxt.setVisible(false);this.tHpTxt.setVisible(false);
-      this.hintTxt.setText(this.R.name+(STATE.abilities.djump?'  ·  2단 점프':'')).setVisible(true)}
+      this.hintTxt.setText(this.R.name).setVisible(true)}
     this.drawMinimap(time);
   }
 
@@ -440,11 +454,12 @@ export class PlayScene extends Phaser.Scene{
   heldNow(){
     const v=VP;
     return{left:isDown('ArrowLeft','KeyA')||v.left,right:isDown('ArrowRight','KeyD')||v.right,up:isDown('ArrowUp','KeyW')||v.up,down:isDown('ArrowDown','KeyS')||v.down,
-      jump:isDown('KeyX','Space','KeyK')||v.jump,atk:isDown('KeyZ','KeyJ')||v.attack,skill:isDown('KeyC','KeyL')||v.skill,menu:isDown('KeyI')||v.menu};
+      jump:isDown('KeyX','Space','KeyK')||v.jump,atk:isDown('KeyZ','KeyJ')||v.attack,skill:isDown('KeyC','KeyL')||v.skill,menu:isDown('KeyI')||v.menu,map:isDown('KeyM')||v.map,
+      q0:isDown('Digit1','Numpad1'),q1:isDown('Digit2','Numpad2'),q2:isDown('Digit3','Numpad3'),q3:isDown('Digit4','Numpad4')};
   }
   readInput(){
     const k=this.keys,JD=Phaser.Input.Keyboard.JustDown,held=this.heldNow();
-    const pr=this.prev,press={jump:held.jump&&!pr.jump,atk:held.atk&&!pr.atk,skill:held.skill&&!pr.skill,menu:held.menu&&!pr.menu};
+    const pr=this.prev,press={};['jump','atk','skill','menu','map','up','q0','q1','q2','q3'].forEach(k=>press[k]=held[k]&&!pr[k]);
     if(JD(k.ESC)&&this.menu)press.menu=true;
     this.prev=held;
     if(this.frozen){for(const kk in press)if(press[kk])this.pend[kk]=true}
@@ -455,8 +470,13 @@ export class PlayScene extends Phaser.Scene{
   update(time,delta){
     fitCameras(this);this.routeCams();
     const dt=Math.min(delta,50)/1000,inp=this.readInput();
+    if(this.dlg){this.updateDialog(dt);this.drawHud(0,time);return}
+    if(this.warpm){this.updateWarp();this.drawHud(0,time);return}
+    if(this.mapv){this.updateMap(time);this.drawHud(0,time);return}
     if(inp.press.menu)this.toggleMenu();
     if(this.menu){this.updateMenu();this.drawHud(0,time);return}
+    if(inp.press.map){this.openMap();this.drawHud(0,time);return}
+    for(let i=0;i<4;i++)if(inp.press['q'+i])this.useQuick(i);
     this.clouds.forEach((c,i)=>{c.x+=dt*(3+i*1.5);if(c.x>W+(this.lw-W)*0.15+60)c.x=-60});
     if(!this.frozen){
       if(!this.player.dead)this.updatePlayer(dt,inp,time);
@@ -466,7 +486,7 @@ export class PlayScene extends Phaser.Scene{
       const s=this.stats;s.mp=Math.min(s.maxMp,s.mp+3*dt);
       if(this.comboT>0){this.comboT-=dt;if(this.comboT<=0){this.combo=0;this.comboTxt.setVisible(false)}}
       if(this.targetT>0)this.targetT-=dt;
-      this.updateObjects(dt,inp.held);this.checkExits();
+      this.updateObjects(dt,inp.held,inp.press);this.checkExits();
     }
     this.drawHud(dt,time);
   }
@@ -580,7 +600,7 @@ export class PlayScene extends Phaser.Scene{
   hitEnemy(e,d,crit,dir,heavy){
     if(!this.tInfo||this.tInfo.e!==e){this.tInfo={e};this.tGhost=e.hp}
     e.hp-=d;e.stun=e.king?0.12:0.3;
-    e.setVelocity(dir*(heavy?1.6:1)*(e.king?40:110),e.king?-40:(heavy?-170:-110));
+    const kb=e.kb==null?1:e.kb;e.setVelocity(dir*(heavy?1.6:1)*(e.king?40:110)*kb,e.king?-40:(heavy?-170:-110)*kb);
     e.setTintFill(0xffffff);this.time.delayedCall(70,()=>{if(e.active){e.clearTint();if(e.baseTint)e.setTint(e.baseTint)}});
     this.popNum(e.x+(Math.random()*8-4),e.body.y-2,d,crit?0xffd34a:0xffffff,crit);
     this.sparkEm.explode(crit?10:6,e.x-dir*4,e.body.center.y);
@@ -596,14 +616,15 @@ export class PlayScene extends Phaser.Scene{
   hitstop(ms){if(this.frozen)return;this.frozen=true;this.physics.world.pause();this.time.delayedCall(ms,()=>{this.frozen=false;if(!this.menu)this.physics.world.resume()})}
   killEnemy(e){
     const k=e.king,d=e.def;
-    (k?this.kingEm:this.slimeEm).explode(k?34:14,e.x,e.y);
+    (k?this.kingEm:e.mob==='bat'?this.batEm:e.mob==='snail'?this.snailEm:this.slimeEm).explode(k?34:14,e.x,e.y);
     this.popText(e.x,e.y-16,'EXP+'+e.exp,0x9fe8ff);
-    if(Math.random()<(k?1:0.3))this.dropHeart(e.x,e.y-4);
+    if(Math.random()<(k?1:0.25))this.dropHeart(e.x,e.y-4);
+    else if(!k){const r=Math.random();if(r<0.1)this.dropThing('potion',e.x,e.y-4);else if(r<0.16)this.dropThing('ether',e.x,e.y-4)}
     const ex=e.x,ey=e.y;e.destroy();this.gainExp(e.exp);
     if(k){STATE.bossDown=true;this.banner('KING SLIME DOWN!',0xffd34a);
       const drop=this.R.boss&&this.R.boss.drop;if(drop)this.time.delayedCall(600,()=>this.spawnPickup(drop,ex,Math.min(ey,floorTopY(this.map,Math.floor(ex/T))-14),'drop_'+this.roomId));
       this.time.delayedCall(1500,()=>this.grantDoubleJump())}
-    else this.time.delayedCall(6000,()=>{if(!this.leaving)this.spawnEnemy(d)});
+    else this.time.delayedCall(6000,()=>{if(!this.leaving){if(d.t)spawnMob(this,d);else this.spawnEnemy(d)}});
   }
   spawnEnemy(d){
     const k=!!d.king,e=this.enemies.create(d.x,d.y,k?'kslime0':'slime0');
@@ -618,6 +639,7 @@ export class PlayScene extends Phaser.Scene{
     const p=this.player;
     this.enemies.getChildren().slice().forEach(e=>{
       if(e.y>LH+40){e.destroy();return}
+      if(e.mob){updateMob(this,e,dt,now);return}
       const onG=e.body.blocked.down||e.body.touching.down;
       if(onG&&!e.wasOnG&&e.king&&e.lastVy>150){this.cameras.main.shake(100,0.008);this.dustEm.explode(8,e.x,e.body.bottom)}
       e.wasOnG=onG;e.lastVy=e.body.velocity.y;
@@ -655,6 +677,7 @@ export class PlayScene extends Phaser.Scene{
       this.leaving=true;this.fadeCams(true,200,()=>this.scene.restart({room,entry:STATE.save?'save':'start'}));
     });
   }
+  dropThing(kind,x,y){const h=this.hearts.create(x,y,'icon_'+kind);h.kind=kind;h.setVelocity((Math.random()-.5)*60,-160).setBounce(0.3).setDepth(7);h.body.setSize(8,8);h.life=12}
   dropHeart(x,y){const h=this.hearts.create(x,y,'heart');h.setVelocity((Math.random()-.5)*60,-160).setBounce(0.3).setDepth(7);h.body.setSize(7,6);h.life=10}
   gainExp(n){
     const s=this.stats,p=this.player;s.exp+=n;
@@ -679,3 +702,5 @@ export class PlayScene extends Phaser.Scene{
     this.tweens.add({targets:t,alpha:0,y:56,delay:1300,duration:350,onComplete:()=>t.destroy()});
   }
 }
+
+Object.assign(PlayScene.prototype,PlayUI);

@@ -57,6 +57,25 @@ export function drawTreetopMid(lw){
   return c;
 }
 
+export function drawCastleFar(lw){
+  const FW=Math.ceil(W+(lw-W)*0.1)+4,FH=Math.ceil(H+(LH+HUD-H)*0.1)+4,r=rng(8);
+  const[c,x]=cv(FW,FH);
+  for(let y=0;y<FH;y+=4){const t=y/FH;px(x,`rgb(${42-t*12|0},${92-t*30|0},${200-t*50|0})`,0,y,FW,4)}
+  for(let i=0;i<70;i++){const X=r()*FW|0,Y=r()*FH|0;px(x,'#4a7ae0',X,Y,4+(r()*8|0),1)}
+  return c;
+}
+export function drawCastleMid(lw){
+  const MW=Math.ceil(W+(lw-W)*0.35)+4,MH=Math.ceil(H+(LH+HUD-H)*0.35)+4,r=rng(12);
+  const[c,x]=cv(MW,MH);
+  for(let X=14;X<MW;X+=64+(r()*20|0)){const w=18;
+    px(x,'#3a70c8',X-1,0,w+2,MH);px(x,'#4f8fe8',X,0,w,MH);
+    for(let k=0;k<7;k++){const sx=X+1+(r()*(w-2)|0);for(let y=(r()*8|0);y<MH;y+=6+(r()*6|0))px(x,r()<.5?'#9fd0ff':'#cfe8ff',sx,y,1,3+(r()*3|0))}
+    px(x,'#5e6272',X-4,0,w+8,8);px(x,'#9a9fae',X-4,0,w+8,6);px(x,'#c4c8d2',X-4,0,w+8,1);
+    for(let k=0;k<6;k++){const fx=X-3+(r()*(w+6)|0),fy=MH-4-(r()*6|0);px(x,'#e8f4ff',fx,fy,3,2)}
+  }
+  return c;
+}
+
 /* 레벨 타일과 장식. deco = 방 데이터의 deco */
 export function drawLevel(m,cols,seed,deco={},theme='meadow'){
   const lw=cols*T,r=rng(seed),[c,x]=cv(lw,LH);
@@ -74,7 +93,16 @@ export function drawLevel(m,cols,seed,deco={},theme='meadow'){
     const ch=m[ty][tx],X=tx*T,Y=ty*T;
     if(ch==='#'){
       const e={t:at(tx,ty-1)!=='#',b:at(tx,ty+1)!=='#',l:at(tx-1,ty)!=='#',rt:at(tx+1,ty)!=='#'};
-      if(theme==='cave'){
+      if(theme==='castle'){
+        const deep=!e.t&&!e.b&&!e.l&&!e.rt;
+        px(x,deep?'#7a7f8e':'#9a9fae',X,Y,16,16);
+        px(x,deep?'#8a8f9e':'#c4c8d2',X,Y,16,1);px(x,deep?'#8a8f9e':'#b4b8c4',X,Y+8,16,1);
+        px(x,'#5e6272',X,Y+7,16,1);px(x,'#5e6272',X,Y+15,16,1);
+        px(x,'#5e6272',X+7,Y,1,7);px(x,'#5e6272',X+15,Y,1,7);px(x,'#5e6272',X+3,Y+8,1,7);px(x,'#5e6272',X+11,Y+8,1,7);
+        for(let k=0;k<3;k++)px(x,'#868a98',X+(r()*16|0),Y+(r()*16|0));
+        if(e.t)px(x,'#e0e4ec',X,Y,16,1);
+        if(e.l)px(x,'#4a4e5a',X,Y,1,16);if(e.rt)px(x,'#4a4e5a',X+15,Y,1,16);if(e.b)px(x,'#4a4e5a',X,Y+15,16,1);
+      }else if(theme==='cave'){
         const deep=!e.t&&!e.b&&!e.l&&!e.rt;
         px(x,deep?'#332d42':'#4a4458',X,Y,16,16);
         for(let k=0;k<6;k++)px(x,r()<.5?'#3a3448':'#5a5470',X+(r()*16|0),Y+(r()*16|0),r()<.3?2:1,1);

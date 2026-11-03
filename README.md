@@ -18,12 +18,16 @@ npm run build:single  # dist-single/index.html 한 파일짜리 빌드 (Phaser�
 |---|---|
 | ← → | 이동 |
 | ↑ ↓ | 사다리·덩굴 타기 |
+| ↑ (NPC 앞) | 대화 (↑ 또는 Z로 넘기기) |
+| ↑ (워프 받침대 위) | 워프 메뉴 (등록한 곳이 2개 이상일 때) |
 | X / Space | 점프 (길게 누르면 더 높이) |
 | ↓ + X | 나무 발판 아래로 내려가기 |
 | Z | 공격 (연타 시 3단 콤보), 상자 열기, 금 간 벽 부수기 |
 | C | 검기 (MP 10) |
 | X (공중에서) | 2단 점프 (킹슬라임 처치 후) |
-| I | 장비창 |
+| I | 장비창 (무기, 투구, 갑옷, 신발, 장신구) |
+| M | 전체 지도 + 탐험률 |
+| 1 ~ 4 | 퀵슬롯 (회복 물약, 마나 물약) |
 
 ## 폴더 구조
 
@@ -37,8 +41,10 @@ src/
     TitleScene.js      타이틀 화면 (새로 시작 / 이어하기)
     IntroScene.js      인트로 스토리 컷씬 4장
     PlayScene.js       게임 본체 (플레이어, 전투, 적 AI, 지형 기믹, 장비창, HUD, 미니맵)
+    playUI.js          대화창·NPC, 워프, 전체 지도, 퀵슬롯
+    monsters.js        슬라임 외 몬스터 (박쥐, 가시 달팽이) 스탯과 AI
   data/
-    items.js           장비 아이템, 세트 효과, 능력치 계산
+    items.js           장비 아이템, 소모품, 세트 효과, 능력치 계산
   gfx/
     pixel.js           도트 그리기 헬퍼
     hero.js            주인공 레이어 도트, 커스텀 색, 장비 데이터
@@ -47,7 +53,7 @@ src/
   state.js             진행 상황(스탯, 장비, 능력, 방문 기록)과 저장/불러오기
   world/
     rooms.js           방 데이터: 지형, 출구, 적, 석상, 상자, 결정, 보스
-    meadow.js          지역 테마 그리기 (초원, 동굴, 나무 위) + 타일(사다리, 덩굴, 가시, 잎 발판)
+    meadow.js          지역 테마 그리기 (초원, 동굴, 나무 위, 고성) + 타일(사다리, 덩굴, 가시, 잎 발판)
 ```
 
 ### 자주 고칠 곳
@@ -57,7 +63,10 @@ src/
 - **세트 효과**: `src/data/items.js`의 `SETS`
 - **장비 획득 위치**: `src/world/rooms.js`의 chest.item, boss.drop
 - **커스텀 색상 목록**: `src/gfx/hero.js`의 `LOOK_OPTS`
-- **방 모양, 적·상자·석상 위치**: `src/world/rooms.js`
+- **방 모양, 적·상자·석상·워프·NPC 위치**: `src/world/rooms.js` (mobs: `{t:'bat'|'snail',tx,ty}`, warp, npc)
+- **NPC 대사**: `src/scenes/playUI.js`의 `NPC_TALK`
+- **몬스터 수치**: `src/scenes/monsters.js`의 `MOBS`
+- **소모품**: `src/data/items.js`의 `CONSUMABLES`
 - **방 추가**: `ROOMS`에 항목을 추가하고 이웃 방의 `exits`에 연결 (미니맵은 `grid` 좌표로 자동 표시)
   - 위아래 연결: `exits.up/down = {to, tx}` 출구가 있는 열에 사다리(H)나 덩굴(V)을 둠
   - 지형 기믹: movers(움직이는 발판), fallers(떨어지는 발판), mushrooms(점프 버섯), breaks(부서지는 벽), 맵 글자 '^'(가시)

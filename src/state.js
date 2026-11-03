@@ -13,6 +13,10 @@ function fresh(){
     opened:{},      // 연 상자
     collected:{},   // 주운 결정·아이템
     broken:{},      // 부순 벽
+    warps:{},       // 등록한 워프 {워프id: 방id}
+    items:{potion:2,ether:1},   // 소모품 개수
+    quick:['potion','ether',null,null], // 퀵슬롯 1~4
+    flags:{},       // 대화 등 이벤트 기록
     bossDown:false,
     visited:{r1:true},
     save:null       // {room}

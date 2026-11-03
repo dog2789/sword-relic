@@ -1,6 +1,6 @@
 import {cv,px,fromRows,arcTex} from './pixel.js';
-import {SWORD,HERO_FRAMES,HERO_W,HERO_H,hexMix} from './hero.js';
-import {ITEMS} from '../data/items.js';
+import {SWORD,HERO_FRAMES,HERO_W,HERO_H,hexMix,drawHero} from './hero.js';
+import {ITEMS,CONSUMABLES} from '../data/items.js';
 export const SL0=["....kkkkkk....","..kkggggggkk..",".kgwwgggggggk.",".kgwggggggggk.","kgggggkggkgggk","kgggggkggkgggk","kggggggggggggk","kGggggggggggGk",".kGGGGGGGGGGk.","..kkkkkkkkkk.."];
 export const SL1=["..............","...kkkkkkkk...",".kkggggggggkk.","kgwwgggggggggk","kggggkggkggggk","kggggkggkggggk","kggggggggggggk","kGggggggggggGk","kGGGGGGGGGGGGk",".kkkkkkkkkkkk."];
 export const CROWN=[".....y.y.y....",".....yyyyy....",".....yyryy...."];
@@ -11,17 +11,21 @@ const ICONS={
   weapon:["..........kk",".........kLk","........kLlk",".......kLlk.","......kLlk..",".....kLlk...","..k.kLlk....","..kmkLk.....","...kmk......","..kjkmk.....",".kjk.kk.....","kkk........."],
   helm:["............","...kkkkkk...","..kaiiaaak..",".kaiaaaaaak.",".kaaaaaaaak.",".kaaaaaaaak.",".kmmmmmmmmk.",".kk......kk.","............"],
   armor:["............",".kkk....kkk.","kMMMkkkkMMMk","kMMaaaaaaMMk",".kkaagaaakk.","..kaaaaaak..","..kaaaaaak..","..kAaaaaAk..","...kAAAAk...","....kkkk...."],
-  boots:["............","..kkk...kkk.","..kfk...kfk.","..kfk...kfk.","..kffk..kffk",".kfffk.kfffk",".kkkkk.kkkkk"]
+  boots:["............","..kkk...kkk.","..kfk...kfk.","..kfk...kfk.","..kffk..kffk",".kfffk.kfffk",".kkkkk.kkkkk"],
+  acc:["....kkkk....","...kgwGGk...","...kGGGGk...","....kkkk....","...kyyyyk...","..kyk..kyk..","..kyk..kyk..","..kYk..kYk..","...kYYYYk...","....kkkk...."]
 };
+const POTION=["..kkk...","..kck...",".kwwwk..","krrrrrk.","krwrrrk.","krrrrRk.",".kRRRk..","..kkk..."];
 function iconPal(it){
   const p=Object.assign({k:'#141020'},it.sword||{},(it.look&&it.look.pal)||{});
   if(p.a&&!p.A)p.A=hexMix(p.a,'#000000',0.35);if(p.a&&!p.i)p.i='#ffffff';if(p.a&&!p.m)p.m=hexMix(p.a,'#ffffff',0.3);if(p.a&&!p.M)p.M=hexMix(p.a,'#000000',0.2);
+  if(it.gem){p.g=it.gem[0];p.G=it.gem[1];p.y='#ffd34a';p.Y='#c08a1c';p.w='#ffffff'}
   if(!p.g)p.g='#d23a4a';if(!p.f)p.f='#8a96b0';return p;
 }
 export function buildTextures(sc){
   const add=(k,c)=>{if(!sc.textures.exists(k))sc.textures.addCanvas(k,c)};
+  for(const id in CONSUMABLES){const c=CONSUMABLES[id];add('icon_'+id,fromRows(POTION,{k:'#1a1020',c:'#c8a070',w:'#ffffff',r:c.col[0],R:c.col[1]}))}
   for(const id in ITEMS){
-    const it=ITEMS[id];
+    const it=ITEMS[id];if(it.hidden)continue;
     if(it.slot==='weapon'){
       add('sword_'+id,fromRows(SWORD,{k:'#1a1222',...it.sword}));
       add('slashA_'+id,arcTex(14,5,-80,80,it.slashA));
@@ -60,6 +64,23 @@ export function buildTextures(sc){
     px(x,'#7a7494',2,3,2,1);px(x,'#7a7494',10,2,2,1);add('crackrock',c)}
   {const[c,x]=cv(16,6);px(x,'#2a1a12',0,0,16,6);px(x,'#c08a50',1,0,14,1);px(x,'#9a6236',1,1,14,3);px(x,'#6a3e22',1,4,14,1);
     px(x,'#e8d0a0',3,2);px(x,'#e8d0a0',12,2);px(x,'#6a3e22',8,1,1,3);add('fallblock',c)}
+  // 워프 받침대
+  add('warp',fromRows(["...kkkkkkkkkk...","..kccccccccccK..",".kcCCCCCCCCCCcK.","kmmmmmmmmmmmmmmk","kMMMMMMMMMMMMMMk",".kkkkkkkkkkkkkk."],{k:'#1a1a2a',K:'#1a1a2a',c:'#8fe3ff',C:'#3a8ad8',m:'#a8aebb',M:'#6a6e7a'}));
+  add('warp_off',fromRows(["...kkkkkkkkkk...","..kccccccccccK..",".kcCCCCCCCCCCcK.","kmmmmmmmmmmmmmmk","kMMMMMMMMMMMMMMk",".kkkkkkkkkkkkkk."],{k:'#1a1a2a',K:'#1a1a2a',c:'#6a6e7a',C:'#4a4e5a',m:'#a8aebb',M:'#6a6e7a'}));
+  // 박쥐
+  const BP={k:'#1a0a20',p:'#5a3a7a',w:'#ffe27a'};
+  add('bat0',fromRows(["k............k","kk..........kk","kpk.k....k.kpk","kppkpkkkkpkppk",".kppppppppppk.","..kppwppwppk..","...kppppppk...","....kk..kk...."],BP));
+  add('bat1',fromRows(["..............","....k....k....","...kpkkkkpk...","..kppppppppk..",".kpppwppwpppk.","kpkppppppppkpk","kk.kppppppk.kk","k...kk..kk...k"],BP));
+  // 가시 달팽이 (오른쪽을 봄)
+  const SN={k:'#2a1208',s:'#c86a3a',S:'#8a3a1a',x:'#f0e8d8',b:'#d8c08a',B:'#a88a5a',e:'#1a1010'};
+  const snail=last=>[".....k.k.k......","....kxkxkxk.....","...kssssssk..k..","..ksSSSSSssk.kek","..ksSsssSssk.kbk","..ksSsSSsssk.kbk","..ksSssssSskkbbk","..kssSSSSsskbbbk",last,"kkkkkkkkkkkkkkk."];
+  add('snail0',fromRows(snail(".kbbbbbbbbbbbbBk"),SN));add('snail1',fromRows(snail("kbbbbbbbbbbbbbBk"),SN));
+  // NPC (주인공과 같은 방식으로 그림)
+  const npc=(key,look,equip)=>{if(sc.textures.exists(key))return;const[c,x]=cv(HERO_W,HERO_H);drawHero(x,'idle0',look,equip);sc.textures.addCanvas(key,c);
+    const[c2,x2]=cv(HERO_W,HERO_H);drawHero(x2,'idle1',look,equip);sc.textures.addCanvas(key+'_1',c2)};
+  npc('npc_elder',{style:2,hair:3,skin:1,top:4,bottom:3,shoes:1},{});
+  npc('npc_merchant',{style:1,hair:1,skin:2,top:3,bottom:1,shoes:1},{armor:null});
+  npc('npc_knight',{style:0,hair:3,skin:0,top:5,bottom:3,shoes:3},{helm:'ghost_helm',armor:'ghost_armor'});
   // 구름 (흘러가는 장식)
   for(let i=0;i<3;i++){const w=[44,30,58][i],h=[14,10,16][i];const[c,x]=cv(w,h);
     const blobs=[[w*0.25,h*0.62,h*0.38],[w*0.5,h*0.45,h*0.5],[w*0.75,h*0.6,h*0.36],[w*0.4,h*0.7,h*0.3],[w*0.62,h*0.72,h*0.3]];

@@ -1,12 +1,12 @@
 /* 장비 아이템 데이터
-   slot: weapon | helm | armor | boots
+   slot: weapon | helm | armor | boots | acc(장신구)
    능력치: atk, def, hp
    effects: 특수 능력 (지금 동작: airJumps / 예약: noSlip(빙판 안 미끄러짐), wallCling(벽 붙기))
    look: 캐릭터에 덧입혀지는 모양 (helm: 'cap'|'full', armor: true, cape, shield, 색 슬롯 pal)
    set: 세트 이름 (SETS 참고) */
 
-export const SLOTS=['weapon','helm','armor','boots'];
-export const SLOT_NAMES={weapon:'무기',helm:'투구',armor:'갑옷',boots:'신발'};
+export const SLOTS=['weapon','helm','armor','boots','acc'];
+export const SLOT_NAMES={weapon:'무기',helm:'투구',armor:'갑옷',boots:'신발',acc:'장신구'};
 
 export const ITEMS={
   traveler_sword:{slot:'weapon',name:'여행자의 검',desc:'고향에서 들고 나온 낡은 검',atk:0,
@@ -18,14 +18,25 @@ export const ITEMS={
   iron_armor:{slot:'armor',name:'철 갑옷',desc:'기사단 견습생의 철 갑옷',def:3,hp:10,set:'iron',
     look:{armor:true,pal:{a:'#b8c4dc',M:'#8a96b0',g:'#d23a4a'}}},
   iron_boots:{slot:'boots',name:'철 장화',desc:'무겁지만 든든한 장화',def:1,set:'iron',
-    look:{pal:{f:'#8a96b0'}}}
+    look:{pal:{f:'#8a96b0'}}},
+  red_ring:{slot:'acc',name:'레드 링',desc:'붉은 보석이 박힌 반지. 몸에 힘이 솟는다',atk:3,hp:10,gem:['#ff4a5a','#a01a2a']},
+  wind_ring:{slot:'acc',name:'바람의 반지',desc:'하늘을 한 번 더 딛게 해주는 반지 (3단 점프)',effects:{airJumps:1},gem:['#9ff0ff','#3a9ad8']},
+  // NPC 전용 (획득 불가)
+  ghost_helm:{slot:'helm',hidden:true,name:'',desc:'',look:{helm:'full',pal:{a:'#d8e4f0',A:'#8a9ab8',i:'#ffffff',m:'#ffd34a'}}},
+  ghost_armor:{slot:'armor',hidden:true,name:'',desc:'',look:{armor:true,cape:true,pal:{a:'#d8e4f0',M:'#8a9ab8',g:'#6ff0ff',c:'#3a4a8a',C:'#22305a'}}}
+};
+
+/* 소모품 (퀵슬롯 1~4) */
+export const CONSUMABLES={
+  potion:{name:'회복 물약',desc:'HP 40 회복',hp:40,col:['#ff5a6a','#a02a3a']},
+  ether:{name:'마나 물약',desc:'MP 20 회복',mp:20,col:['#5a9aff','#2a4aa0']}
 };
 
 export const SETS={
   iron:{name:'철 기사 세트',need:3,bonus:{atk:3,def:2,hp:20},desc:'공격 +3, 방어 +2, 최대 HP +20'}
 };
 
-export const START_EQUIP={weapon:'traveler_sword',helm:null,armor:null,boots:null};
+export const START_EQUIP={weapon:'traveler_sword',helm:null,armor:null,boots:null,acc:null};
 export const START_BAG=['traveler_sword'];
 
 /* 장착 장비의 능력치 합계 + 세트 효과 */
@@ -42,5 +53,6 @@ export function setProgress(equip,setId){return SLOTS.filter(s=>ITEMS[equip[s]]&
 export function statLine(it){
   const p=[];if(it.atk)p.push('공격 +'+it.atk);if(it.def)p.push('방어 +'+it.def);if(it.hp)p.push('HP +'+it.hp);
   if(it.effects&&it.effects.airJumps)p.push('공중 점프 +'+it.effects.airJumps);
+  if(it.effects&&it.effects.noSlip)p.push('빙판 미끄럼 방지');if(it.effects&&it.effects.wallCling)p.push('벽 붙기');
   return p.join('  ')||'능력치 없음';
 }
