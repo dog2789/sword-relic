@@ -4,6 +4,9 @@ import {W,H,GRAV,VP} from './config.js';
 import {calcZoom} from './zoom.js';
 import {HERO_W,HERO_H,HAIR_STYLES,LOOK_OPTS,LOOK,drawHero,saveLook} from './gfx/hero.js';
 import {PlayScene} from './scenes/PlayScene.js';
+import {STATE,loadGame,newGame} from './state.js';
+
+loadGame();
 
 let game;
 function boot(){
@@ -40,3 +43,14 @@ document.querySelectorAll('.pbtn').forEach(b=>{
   ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,()=>on(false)));
   b.addEventListener('contextmenu',e=>e.preventDefault());
 });
+
+/* 처음부터: 두 번 눌러야 실행 (실수 방지) */
+const ng=document.getElementById('newgame');let ngArm=0;
+ng.addEventListener('click',()=>{
+  if(!ngArm){ngArm=1;ng.textContent='한 번 더 누르면 초기화';setTimeout(()=>{ngArm=0;ng.textContent='처음부터'},2500);return}
+  ngArm=0;ng.textContent='처음부터';newGame();
+  const sc=game&&game.scene.keys.play;if(sc)sc.scene.restart({room:'r1',entry:'start'});ng.blur();window.focus();
+});
+
+/* 디버그용: 브라우저 콘솔에서 SR.scene 으로 현재 장면 접근 */
+window.SR={get game(){return game},get scene(){return game&&game.scene.keys.play},get state(){return STATE}};

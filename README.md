@@ -21,7 +21,8 @@ npm run build:single  # dist-single/index.html 한 파일짜리 빌드 (Phaser�
 | ↓ + X | 나무 발판 아래로 내려가기 |
 | Z | 공격 (연타 시 3단 콤보) |
 | C | 검기 (MP 10) |
-| 0 ~ 3 | 장비 단계 미리보기 |
+| X (공중에서) | 2단 점프 (킹슬라임 처치 후) |
+| 0 ~ 4 | 장비 테스트 |
 
 ## 폴더 구조
 
@@ -38,8 +39,10 @@ src/
     hero.js            주인공 레이어 도트, 커스텀 색, 장비 데이터
     sprites.js         슬라임, 이펙트, 검 텍스처 생성
     fonts.js           픽셀 숫자/영문 폰트
+  state.js             진행 상황(스탯, 장비, 능력, 방문 기록)과 저장/불러오기
   world/
-    map.js             맵 배치, 적 스폰 위치, 횃불 위치
+    rooms.js           방 데이터: 지형, 출구, 적, 석상, 상자, 결정, 보스
+    meadow.js          초원 테마 그리기 (하늘, 언덕, 풀 타일, 나무·꽃·울타리)
 ```
 
 ### 자주 고칠 곳
@@ -47,7 +50,8 @@ src/
 - **이동 속도, 점프 높이**: `src/config.js`의 `SPEED`, `JUMP`, `GRAV`
 - **장비 이름, 공격력, 색상**: `src/gfx/hero.js`의 `GEAR`
 - **커스텀 색상 목록**: `src/gfx/hero.js`의 `LOOK_OPTS`
-- **맵 모양, 적 위치**: `src/world/map.js`
+- **방 모양, 적·상자·석상 위치**: `src/world/rooms.js`
+- **방 추가**: `ROOMS`에 항목을 추가하고 이웃 방의 `exits`에 연결 (미니맵은 `grid` 좌표로 자동 표시)
 
 ### 도트 데이터 읽는 법
 

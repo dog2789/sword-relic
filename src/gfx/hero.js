@@ -50,6 +50,7 @@ export const LOOK_DEFAULT={style:0,hair:0,skin:0,top:0,bottom:0,shoes:0};
 export const GEAR=[
  {name:'모험가',atk:0,pal:{},sword:{l:'#c0c6d0',L:'#ffffff',m:'#6a4a32',j:'#4a3020'},slashA:['#ffffff','#e0e4ec','#9aa2b2'],slashC:['#ffffff','#e8e4d8','#a8a090'],big:18},
  {name:'견습 기사',atk:3,armor:true,pal:{a:'#9a6a42',M:'#6a4428',g:'#d8b060',u:'#6a4428'},sword:{l:'#c8ccd6',L:'#ffffff',m:'#8a8e9a',j:'#5a3a26'},slashA:['#ffffff','#c8d0e0','#7a86a0'],slashC:['#ffffff','#d8dee8','#8a93a8'],big:19},
+ {name:'철 갑옷·투구',atk:5,armor:true,helm:HELM_CAP,pal:{a:'#b8c4dc',A:'#76829e',M:'#8a96b0',g:'#d23a4a',i:'#eef2fa',m:'#d8dfee'},sword:{l:'#d8dee8',L:'#ffffff',m:'#8a8e9a',j:'#4a3020'},slashA:['#ffffff','#d0dcf0','#7a8cb0'],slashC:['#ffffff','#e0e8f8','#8a9ac0'],big:19},
  {name:'왕국 기사',atk:8,armor:true,helm:HELM_CAP,shield:true,pal:{a:'#b8c4dc',A:'#76829e',M:'#8a96b0',g:'#d23a4a',u:'#9aa6c0',i:'#eef2fa',m:'#d8dfee',f:'#6a7490',q:'#2f55c8',x:'#ffffff'},sword:{l:'#e0e8f5',L:'#ffffff',m:'#f0c040',j:'#3a2a5a'},slashA:['#ffffff','#9fe8ff','#3a8fd8'],slashC:['#fffbe0','#ffd34a','#e0782a'],big:19},
  {name:'성기사',atk:15,armor:true,helm:HELM_FULL,shield:true,cape:true,pal:{a:'#e8ecf6',A:'#9aa4c4',M:'#ffd34a',g:'#6ff0ff',u:'#d8deec',i:'#ffffff',m:'#ffd34a',f:'#a8b0c8',q:'#e8ecf6',x:'#ffd34a',c:'#3048b8',C:'#1c2c78'},sword:{l:'#9ff0ff',L:'#ffffff',m:'#ffd34a',j:'#ffd34a'},slashA:['#ffffff','#9ff0ff','#ffd34a'],slashC:['#ffffff','#ffd34a','#5a6ae0'],big:22}];
 
