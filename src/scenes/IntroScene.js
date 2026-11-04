@@ -85,7 +85,7 @@ export class IntroScene extends Phaser.Scene{
   finish(){
     if(this.done)return;this.done=true;
     this.cameras.main.fadeOut(500,0,0,0);
-    this.cameras.main.once('camerafadeoutcomplete',()=>this.scene.start('play',{room:'r1',entry:'start',tutorial:true}));
+    this.cameras.main.once('camerafadeoutcomplete',()=>this.scene.start('play',{room:'v1',entry:'start',tutorial:true}));
   }
   update(t,d){
     fitCameras(this);

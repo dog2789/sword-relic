@@ -1,6 +1,6 @@
 import {cv,px,fromRows,arcTex} from './pixel.js';
 import {SWORD,HERO_FRAMES,HERO_W,HERO_H,hexMix,drawHero} from './hero.js';
-import {ITEMS,CONSUMABLES} from '../data/items.js';
+import {ITEMS,CONSUMABLES,KEYS} from '../data/items.js';
 export const SL0=["....kkkkkk....","..kkggggggkk..",".kgwwgggggggk.",".kgwggggggggk.","kgggggkggkgggk","kgggggkggkgggk","kggggggggggggk","kGggggggggggGk",".kGGGGGGGGGGk.","..kkkkkkkkkk.."];
 export const SL1=["..............","...kkkkkkkk...",".kkggggggggkk.","kgwwgggggggggk","kggggkggkggggk","kggggkggkggggk","kggggggggggggk","kGggggggggggGk","kGGGGGGGGGGGGk",".kkkkkkkkkkkk."];
 export const CROWN=[".....y.y.y....",".....yyyyy....",".....yyryy...."];
@@ -83,6 +83,10 @@ export function buildTextures(sc){
     const[c2,x2]=cv(HERO_W,HERO_H);drawHero(x2,'idle1',look,equip);sc.textures.addCanvas(key+'_1',c2)};
   npc('npc_elder',{style:2,hair:3,skin:1,top:4,bottom:3,shoes:1},{});
   npc('npc_merchant',{style:1,hair:1,skin:2,top:3,bottom:1,shoes:1},{armor:null});
+  npc('npc_mother',{style:3,hair:0,skin:0,top:2,bottom:4,shoes:1},{});
+  npc('npc_smith',{style:1,hair:1,skin:2,top:6,bottom:1,shoes:0},{});
+  npc('npc_shop',{style:4,hair:2,skin:0,top:5,bottom:2,shoes:1},{});
+  npc('npc_kid',{style:1,hair:4,skin:1,top:1,bottom:1,shoes:2},{});
   npc('npc_knight',{style:0,hair:3,skin:0,top:5,bottom:3,shoes:3},{helm:'ghost_helm',armor:'ghost_armor'});
   // 갑옷 몬스터 (망령 갑옷, 녹슨 수문장): 주인공과 같은 그림 + 검. 34x20, 오른쪽을 봄
   const SW_UP=SWORD[0].split('').map((_,c)=>SWORD.map(r=>r[r.length-1-c]).join('')); // 날이 위로 선 검 (5x11)
@@ -103,6 +107,41 @@ export function buildTextures(sc){
   add('batlord1',fromRows(["",...crown.slice(1),"....k....k....","...kpkkkkpk...","..kppppppppk..",".kpppwppwpppk.","kpkppppppppkpk","kk.kppppppk.kk","k...kk..kk...k"],BLP));
   // 충격파 (녹슨 수문장 내려찍기)
   add('quake',fromRows(["....kk....","...krrk...","..krRRrk..",".krRyyRrk.","krRyyyyRrk","kkkkkkkkkk"],{k:'#3a1408',r:'#ff7a2a',R:'#ffb04a',y:'#fff0a0'}));
+  // 골드 동전
+  add('coin',fromRows([".kkkk.","kyyYYk","kyWyYk","kyyyYk","kYYYYk",".kkkk."],{k:'#5a3a08',y:'#ffd34a',Y:'#d89a1a',W:'#fff8c0'}));
+  add('coinbig',fromRows(["..kkkk..",".kyyyYk.","kyWyyyYk","kyWyyyYk","kyyyyyYk","kYyyyYYk",".kYYYYk.","..kkkk.."],{k:'#5a3a08',y:'#ffd34a',Y:'#d89a1a',W:'#fff8c0'}));
+  // 대화 말풍선 (…)
+  add('bubble',fromRows(["..kkkkkkkk..",".kwwwwwwwwk.","kwwwwwwwwwwk","kwkwwkwwkwwk","kwwwwwwwwwwk",".kwwwwwwwwk.","..kkkwkkkk..","....kk......"],{k:'#1a1230',w:'#ffffff'}));
+  // 열쇠 아이콘, 색깔 문
+  for(const c in KEYS){const[a1,a2]=KEYS[c].col;
+    add('icon_key_'+c,fromRows(["....kkkk....","...kaaaak...","...kak.kak..","...kaaaak...","....kakk....","....kak.....","....kaaak...","....kak.....","....kaak....","....kkkk...."],{k:'#1a1020',a:a1}));
+    add('door_'+c,fromRows(["kkkkkkkkkkkkkkkk","kAaaaaaaaaaaaaAk","kAkkkkAkkAkkkkAk","kAkddkAkkAkddkAk","kAkddkAkkAkddkAk","kAkddkAkkAkddkAk","kAkddkAkkAkddkAk","kAkkkkAyyAkkkkAk","kAaaaaAyYAaaaaAk","kAkkkkAkkAkkkkAk","kAkddkAkkAkddkAk","kAkddkAkkAkddkAk","kAkddkAkkAkddkAk","kAkkkkAkkAkkkkAk","kAaaaaaaaaaaaaAk","kkkkkkkkkkkkkkkk"],{k:'#14101c',a:a1,A:a2,d:'#2a2236',y:'#ffd34a',Y:'#b08a1a'}))}
+  // 포탑(불덩이 발사대)과 불덩이
+  add('turret',fromRows(["..kkkkkkkkkk..",".kMMMMMMMMMMk.","kMmmmmmmmmmmMk","kMmkkkkkkkkmMk","kMmkrrRRrrkmMk","kMmkrRyyRrkmMk","kMmkrRyyRrkmMk","kMmkrrRRrrkmMk","kMmkkkkkkkkmMk","kMmmmmmmmmmmMk",".kMMMMMMMMMMk.","..kkkkkkkkkk.."],{k:'#14101c',M:'#5a5468',m:'#8a8498',r:'#a01a1a',R:'#ff4a2a',y:'#ffd060'}));
+  add('fireball',fromRows(["..kkk..",".kRyRk.","kRyWyRk","kyWWWyk","kRyWyRk",".kRyRk.","..kkk.."],{k:'#6a1a08',R:'#ff6a2a',y:'#ffd060',W:'#ffffff'}));
+  add('iceshard',fromRows(["...k...","..kWk..",".kWbBk.","kWbbbBk",".kbbBk.","..kBk..","...k..."],{k:'#1a3a6a',W:'#ffffff',b:'#9ff0ff',B:'#4aa8f0'}));
+  // 스위치와 색깔 블록 (스위치를 치면 실선 ↔ 점선이 바뀜)
+  add('switch0',fromRows(["....kkkk....","...kRRRRk...","...kRrrRk...","....kRRk....",".....kk.....","....kmmk....","..kkmmmmkk..",".kMMMMMMMMk.","kkkkkkkkkkkk"],{k:'#14101c',R:'#ff5a5a',r:'#ffb0b0',m:'#8a8498',M:'#5a5468'}));
+  add('switch1',fromRows(["............","............","....kkkk....","...kBBBBk...","...kBbbBk...","....kmmk....","..kkmmmmkk..",".kMMMMMMMMk.","kkkkkkkkkkkk"],{k:'#14101c',B:'#5a9aff',b:'#b0d0ff',m:'#8a8498',M:'#5a5468'}));
+  const blk=(a1,a2,on)=>{const[c,x]=cv(16,16);if(on){px(x,'#14101c',0,0,16,16);px(x,a1,1,1,14,14);px(x,a2,1,12,14,3);px(x,'#ffffff',2,2,12,1);px(x,'#14101c',5,5,6,6);px(x,a2,6,6,4,4)}
+    else for(let i=0;i<16;i+=2){px(x,a1,i,0,1,1);px(x,a1,i,15,1,1);px(x,a1,0,i,1,1);px(x,a1,15,i,1,1)}return c};
+  add('blkA1',blk('#ff5a5a','#a01a2a',true));add('blkA0',blk('#ff5a5a','#a01a2a',false));
+  add('blkB1',blk('#5a9aff','#2a4aa0',true));add('blkB0',blk('#5a9aff','#2a4aa0',false));
+  // 물고기 (물속 몬스터, 오른쪽을 봄)
+  const FP={k:'#1a1a3a',b:'#ff8a5a',B:'#c04a2a',w:'#ffffff',f:'#ffc04a'};
+  add('fish0',fromRows(["....kkkk......","..kkbbbbkk..kk",".kbbwkbbbBk.kfk","kbbbkkbbbbBkffk","kbbbbbbbbbBkfk.",".kBbbbbbBBk.kk.","..kkBBBBkk.....","....kkkk......"].map(r=>r.slice(0,15)),FP));
+  add('fish1',fromRows(["....kkkk......","..kkbbbbkk....",".kbbwkbbbBkkk.","kbbbkkbbbbBkfk","kbbbbbbbbbBkfk",".kBbbbbbBBkkk.","..kkBBBBkk....","....kkkk......"],FP));
+  // 서리 거북 (보스): 등껍질 + 머리. 오른쪽을 봄
+  const TP={k:'#10203a',s:'#9fd8ff',S:'#5aa0e0',i:'#ffffff',g:'#7fc8a0',G:'#3a8a6a',e:'#ff4a5a',c:'#3a6aa0'};
+  const shell=[".....kkkkkkkkk.......",
+   "...kksSisSisSskk.....","..ksSiSScSSiSSSsk....",".ksSSccSSScSScSSSk...",".ksScSSiSSSSiSSScSk..","kssSSSSccSSSSSSSSSk..","kccccccccccccccccck..",
+   ".kgGgkgGgk.kgGgkgGk.."];
+  const head=["","","","","...............kkkk.","..............kgggGk",".............kgegggk",".............kgggGGk","..............kkkk.."];
+  const turtle=fr=>{const[c,x]=cv(22,10);paintPix(x,shell.slice(0,7),TP,0,0);paintPix(x,head,TP,0,-1);paintPix(x,[fr?".kGgk..kGgk..kGgk....":"..kGgk..kGgk..kGgk..."],TP,0,8);px(x,'#10203a',0,9,0,0);return c};
+  add('turtle0',turtle(0));add('turtle1',turtle(1));
+  const[sc0,sx0]=cv(18,10);paintPix(sx0,shell.slice(0,7).map(r=>r.slice(0,19)),TP,0,2);add('turtle_spin',sc0);
+  // 고드름 (천장에서 떨어짐)
+  add('icicle',fromRows(["kkkkkkk","kWbbbBk",".kbbBk.",".kWbBk.","..kbk..","..kbk..","...k..."],{k:'#1a3a6a',W:'#ffffff',b:'#bfeeff',B:'#6fc8ff'}));
   // 구름 (흘러가는 장식)
   for(let i=0;i<3;i++){const w=[44,30,58][i],h=[14,10,16][i];const[c,x]=cv(w,h);
     const blobs=[[w*0.25,h*0.62,h*0.38],[w*0.5,h*0.45,h*0.5],[w*0.75,h*0.6,h*0.36],[w*0.4,h*0.7,h*0.3],[w*0.62,h*0.72,h*0.3]];

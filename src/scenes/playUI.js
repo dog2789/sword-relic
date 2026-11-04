@@ -2,7 +2,7 @@
    Object.assign(PlayScene.prototype, PlayUI) 로 붙여서 씀 */
 import Phaser from 'phaser';
 import {W,H,T,HUD,VP} from '../config.js';
-import {ROOMS,surfaceY} from '../world/rooms.js';
+import {ROOMS,surfaceY,roomChests} from '../world/rooms.js';
 import {STATE,bossDone} from '../state.js';
 import {CONSUMABLES} from '../data/items.js';
 import {F9,F11} from '../fonts.js';
@@ -31,6 +31,20 @@ const NPC_TALK={
       '물약은 아껴 쓰게. 몬스터가 가끔 떨어뜨리기도 하지.',
       '워프 받침대는 한 번 밟아두면 그 위에서 ↑ 키로 오갈 수 있다네.']};
   },
+  mother(){
+    return{lines:STATE.abilities.djump?['돌아왔구나! 얼굴 보니 다행이다.','무리하지 말고, 힘들면 언제든 집에 들르렴.']:
+      ['정말 떠나는 거구나... 할아버지가 쓰시던 그 검, 잘 챙겼지?','전설의 검은 동쪽 고성 어딘가에 잠들어 있다고들 하더라.','몸조심하렴. 대장간 아저씨한테 검도 손봐 달라고 하고.']};
+  },
+  smith(){
+    return{lines:['어서 오게! 골드만 있으면 자네 검을 더 단단하게 두드려 주지.'],end:s=>s.openSmith()};
+  },
+  shop(){
+    return{lines:['어서 오세요~ 먼 길 떠나려면 물약은 넉넉히 챙겨야죠.'],end:s=>s.openShop()};
+  },
+  kid(){
+    return{lines:STATE.bosses&&STATE.bosses.rust?['형! 고성의 녹슨 수문장을 쓰러뜨렸다며? 진짜 멋있다!']:
+      ['형, 몬스터를 쓰러뜨리면 반짝이는 골드가 나온대!','골드를 모으면 대장간에서 검을 강화할 수 있어. 나도 크면 기사가 될 거야!']};
+  },
   knight(){
     return{lines:[
       '...여기까지 왔는가, 젊은 검사여.',
@@ -55,14 +69,14 @@ export const PlayUI={
       this.tweens.add({targets:[lab],y:'-=2',duration:700,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});
       this.warpObj={def:w,x,y:g,on,glow,base,lab};
     }
-    if(R.npc){
-      const n=R.npc,x=n.tx*T+8,g=surfaceY(m,n.tx);
-      const spr=this.add.sprite(x,g,n.tex).setOrigin(0.5,1).setDepth(6);
+    // NPC: 한 방에 여러 명 (npcs 배열, 예전 npc 하나도 지원)
+    this.npcObjs=[...(R.npcs||[]),...(R.npc?[R.npc]:[])].filter(n=>!n.flag||STATE.flags[n.flag]).map(n=>{
+      const x=n.tx*T+8,g=surfaceY(m,n.tx),spr=this.add.sprite(x,g,n.tex).setOrigin(0.5,1).setDepth(6);
       if(n.ghost){spr.setAlpha(0.7).setTint(0xcfe8ff);this.tweens.add({targets:spr,y:g-3,duration:1100,yoyo:true,repeat:-1,ease:'Sine.easeInOut'})}
-      const hint=this.add.bitmapText(x,g-20,'dmg','!').setOrigin(0.5,1).setDepth(45).setTint(0xffe27a).setVisible(false);
-      this.tweens.add({targets:hint,y:'-=3',duration:350,yoyo:true,repeat:-1});
-      this.npcObj={def:n,x,y:g,spr,hint,t:0};
-    }
+      if(n.face)spr.setFlipX(n.face<0);
+      return{def:n,x,y:g,spr,t:Math.random()}});
+    // 대화할 수 있을 때 주인공 머리 위에 뜨는 말풍선
+    this.bubble=this.add.image(0,0,'bubble').setOrigin(0.5,1).setDepth(45).setVisible(false);
   },
   updateExtras(dt,held,press){
     const p=this.player;
@@ -70,16 +84,18 @@ export const PlayUI={
       if(near&&!w.on){w.on=true;STATE.warps[w.def.id]=this.roomId;w.base.setTexture('warp');w.lab.setTint(0x8fe3ff);w.glow.setAlpha(0.9);
         this.auraEm.explode(18,w.x,w.y-8);this.toast('워프 포인트 등록! 받침대 위에서 ↑ 키를 누르면 이동할 수 있어요',3400)}
       if(near&&w.on&&press.up&&!this.climbing)this.openWarp();}
-    if(this.npcObj){const n=this.npcObj,near=Math.abs(p.x-n.x)<20&&Math.abs(p.y-(n.y-9))<16&&!p.dead;
-      n.hint.setVisible(near);n.spr.setFlipX(p.x<n.x);
-      n.t+=dt;n.spr.setTexture(n.def.tex+(Math.floor(n.t/0.45)%2?'_1':''));
-      if(near&&press.up&&!this.climbing){const talk=NPC_TALK[n.def.id]();this.openDialog(n.def.name,talk.lines,talk.end)}}
+    let talk=null;
+    (this.npcObjs||[]).forEach(n=>{const near=Math.abs(p.x-n.x)<20&&Math.abs(p.y-(n.y-9))<16&&!p.dead;
+      if(near&&!talk)talk=n;if(Math.abs(p.x-n.x)<48&&!n.def.still)n.spr.setFlipX(p.x<n.x);
+      n.t+=dt;if(this.textures.exists(n.def.tex+'_1'))n.spr.setTexture(n.def.tex+(Math.floor(n.t/0.45)%2?'_1':''))});
+    if(this.bubble){this.bubble.setVisible(!!talk&&!this.climbing).setPosition(p.x+this.facing*6,p.y-10+Math.sin(this.time.now/180)*1.5)}
+    if(talk&&press.up&&!this.climbing){const t=NPC_TALK[talk.def.id](this);this.openDialog(talk.def.name,t.lines,t.end)}
   },
 
   /* ---------- 공용: 오버레이 열고 닫기 ---------- */
   pauseWorld(){this.physics.world.pause();this.anims.pauseAll()},
   resumeWorld(){this.physics.world.resume();this.anims.resumeAll()},
-  overlayOpen(){return !!(this.menu||this.dlg||this.mapv||this.warpm)},
+  overlayOpen(){return !!(this.menu||this.dlg||this.mapv||this.warpm||this.listm)},
   /* 오버레이 조작: 열린 순간 이미 눌려 있던 키는 무시하고, 새로 누른 키만 반응 */
   navHeld(){const v=VP;return{up:isDown('ArrowUp','KeyW')||v.up,down:isDown('ArrowDown','KeyS')||v.down,left:isDown('ArrowLeft','KeyA')||v.left,right:isDown('ArrowRight','KeyD')||v.right,
     ok:isDown('KeyZ','KeyX','Enter','Space','KeyJ','KeyK')||v.attack||v.jump,back:isDown('Escape','KeyM','KeyI')||v.menu||v.map}},
@@ -88,27 +104,34 @@ export const PlayUI={
   /* ---------- 대화 ---------- */
   openDialog(name,lines,onEnd){
     if(this.overlayOpen())return;this.pauseWorld();
-    const D=this.dlg={lines,i:0,shown:0,onEnd,objs:[]};
-    const g=fix(this.add.graphics());D.objs.push(g);
-    g.fillStyle(0x0f0b1e,0.94).fillRect(8,100,304,52);g.lineStyle(1,0xc9a24a,1).strokeRect(8.5,100.5,303,51);
-    g.fillStyle(0x2c2346,1).fillRect(14,94,Math.max(48,name.length*10+12),14);g.lineStyle(1,0xc9a24a,1).strokeRect(14.5,94.5,Math.max(48,name.length*10+12)-1,13);
-    D.objs.push(fix(this.add.text(20,96,name,{fontFamily:F9,fontSize:'10px',color:'#ffe27a'})));
+    // lines: 문자열이면 name이 말하고, {n:'이름',t:'대사'} 면 줄마다 말하는 사람이 바뀜 (컷신)
+    const D=this.dlg={lines,i:0,shown:0,onEnd,objs:[],def:name,cut:lines.some(l=>typeof l!=='string')};
+    const g=fix(this.add.graphics());D.objs.push(g);D.g=g;
+    D.name=fix(this.add.text(20,96,'',{fontFamily:F9,fontSize:'10px',color:'#ffe27a'}));D.objs.push(D.name);
+    if(D.cut)D.objs.push(fix(this.add.text(306,85,'ESC 건너뛰기',{fontFamily:F9,fontSize:'10px',color:'#ffffff',stroke:'#0f0b1e',strokeThickness:3}).setOrigin(1,0)));
+    this.dlgFrame();
     D.body=fix(this.add.text(18,112,'',{fontFamily:F9,fontSize:'10px',color:'#ece7f7',wordWrap:{width:286},lineSpacing:3}));D.objs.push(D.body);
     D.arrow=fix(this.add.text(302,140,'▼',{fontFamily:F9,fontSize:'10px',color:'#ffe27a'}).setOrigin(1,0));D.objs.push(D.arrow);
     this.tweens.add({targets:D.arrow,alpha:0.2,duration:400,yoyo:true,repeat:-1});
     const zone=fix(this.add.zone(0,0,W,H).setOrigin(0).setInteractive());zone.on('pointerdown',()=>this.advanceDialog());D.objs.push(zone);
     this.navReset();
   },
+  dlgLine(D){const L=D.lines[D.i];return typeof L==='string'?{n:D.def,t:L}:{n:L.n||D.def,t:L.t}},
+  dlgFrame(){const D=this.dlg,g=D.g,nm=this.dlgLine(D).n,w=Math.max(48,nm.length*10+12);g.clear();
+    g.fillStyle(0x0f0b1e,0.94).fillRect(8,100,304,52);g.lineStyle(1,0xc9a24a,1).strokeRect(8.5,100.5,303,51);
+    g.fillStyle(0x2c2346,1).fillRect(14,94,w,14);g.lineStyle(1,0xc9a24a,1).strokeRect(14.5,94.5,w-1,13);D.name.setText(nm)},
+  closeDialog(){const D=this.dlg;D.objs.forEach(o=>o.destroy());this.dlg=null;this.resumeWorld();this.prev=this.heldNow();if(D.onEnd)D.onEnd(this)},
   advanceDialog(){
-    const D=this.dlg;if(!D)return;const full=D.lines[D.i];
+    const D=this.dlg;if(!D)return;const full=this.dlgLine(D).t;
     if(D.shown<full.length){D.shown=full.length;return}
     D.i++;D.shown=0;
-    if(D.i>=D.lines.length){D.objs.forEach(o=>o.destroy());this.dlg=null;this.resumeWorld();this.prev=this.heldNow();if(D.onEnd)D.onEnd(this)}
+    if(D.i>=D.lines.length)this.closeDialog();else this.dlgFrame();
   },
   updateDialog(dt){
     const D=this.dlg,n=this.navPress();
+    if(D.cut&&isDown('Escape')){this.closeDialog();return}
     if(n.ok||n.up)this.advanceDialog();if(!this.dlg)return;
-    const full=D.lines[D.i];D.shown=Math.min(full.length,D.shown+dt*38);
+    const full=this.dlgLine(D).t;D.shown=Math.min(full.length,D.shown+dt*38);
     D.body.setText(full.slice(0,Math.floor(D.shown)));D.arrow.setVisible(D.shown>=full.length);
   },
 
@@ -140,7 +163,7 @@ export const PlayUI={
 
   /* ---------- 전체 지도 ---------- */
   treasures(){const t=[];for(const id in ROOMS){const R=ROOMS[id];
-      if(R.chest)t.push(!!STATE.opened[R.chest.id]);if(R.crystal)t.push(!!STATE.collected[R.crystal.id]);if(R.boss&&R.boss.drop)t.push(!!STATE.collected['drop_'+id])}
+      roomChests(R).forEach(c=>t.push(!!STATE.opened[c.id]));if(R.crystal)t.push(!!STATE.collected[R.crystal.id]);if(R.boss&&R.boss.drop)t.push(!!STATE.collected['drop_'+id])}
     return{got:t.filter(Boolean).length,all:t.length}},
   explorePct(){const ids=Object.keys(ROOMS),v=ids.filter(i=>STATE.visited[i]).length,t=this.treasures();
     return Math.round((v+t.got)/(ids.length+t.all)*100)},
@@ -178,11 +201,11 @@ export const PlayUI={
     ids.forEach(i=>{if(!known(i))return;const[x,y]=pos(i),R=ROOMS[i];
       if(!STATE.visited[i]){g.lineStyle(1,0x5a4f7a,1).strokeRect(x+0.5,y+0.5,cw-1,ch-1);return}
       const cur=i===this.roomId,blink=Math.floor(time/350)%2;
-      const base={cave:0x4a4468,treetop:0x5a7a32,castle:0x3a5aa0}[R.theme]||0x3f7a3a;
+      const base={cave:0x4a4468,treetop:0x5a7a32,castle:0x3a5aa0,ice:0x5aa0d0}[R.theme]||0x3f7a3a;
       g.fillStyle(cur?(blink?0xffe27a:0xc9a24a):base,1).fillRect(x,y,cw,ch);g.fillStyle(0xffffff,cur?0.6:0.2).fillRect(x,y,cw,1);
       if(R.save)g.fillStyle(0x8fe3ff,1).fillRect(x+3,y+3,4,4);
       if(R.warp&&STATE.warps[R.warp.id]){g.fillStyle(0x6fe0ff,1).fillTriangle(x+cw-8,y+6,x+cw-5,y+3,x+cw-2,y+6).fillTriangle(x+cw-8,y+6,x+cw-5,y+9,x+cw-2,y+6)}
-      if(R.chest&&!STATE.opened[R.chest.id])g.fillStyle(0xffd34a,1).fillRect(x+3,y+ch-7,4,4);
+      if(roomChests(R).some(c=>!STATE.opened[c.id]))g.fillStyle(0xffd34a,1).fillRect(x+3,y+ch-7,4,4);
       if(R.boss&&!bossDone(R.boss.id||'king'))g.fillStyle(0xff4a5a,1).fillRect(x+cw/2-2,y+ch/2-2,5,5);
     });
     M.legend.forEach(([c],i)=>{g.fillStyle(c,1).fillRect(22+i*56,151,5,5)});

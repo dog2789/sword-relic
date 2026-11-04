@@ -1,6 +1,6 @@
 /* 진행 상황 (방을 옮겨도 유지되는 값)
    세이브 석상에 닿으면 localStorage에 저장, 이어하기는 마지막 저장 지점에서 시작 */
-import {START_EQUIP,START_BAG} from './data/items.js';
+import {START_EQUIP,START_BAG,bindState} from './data/items.js';
 const KEY='sr_save2';
 
 function fresh(){
@@ -17,14 +17,19 @@ function fresh(){
     items:{potion:2,ether:1},   // 소모품 개수
     quick:['potion','ether',null,null], // 퀵슬롯 1~4
     flags:{},       // 대화 등 이벤트 기록
+    gold:0,         // 골드
+    wlv:{},         // 무기 강화 단계 {무기id: 1~8}
+    keys:{},        // 가진 열쇠 {red:true}
+    time:0,         // 플레이 시간(초)
     bossDown:false, // 킹슬라임
     bosses:{},      // 그 외 보스 {id:true}
-    visited:{r1:true},
+    visited:{v1:true},
     save:null       // {room}
   };
 }
 
 export const STATE=fresh();
+bindState(STATE);
 
 export const bossDone=id=>id==='king'?!!STATE.bossDown:!!(STATE.bosses&&STATE.bosses[id]);
 export function setBossDone(id){if(id==='king')STATE.bossDown=true;else(STATE.bosses||(STATE.bosses={}))[id]=true}
@@ -35,7 +40,7 @@ export function hasSave(){
 export function loadGame(){
   try{
     const v=JSON.parse(localStorage.getItem(KEY)||'null');
-    if(v&&v.stats&&v.save){const f=fresh();for(const k in STATE)delete STATE[k];Object.assign(STATE,f,v);if(!STATE.bosses)STATE.bosses={};return true}
+    if(v&&v.stats&&v.save){const f=fresh();for(const k in STATE)delete STATE[k];Object.assign(STATE,f,v);if(!STATE.bosses)STATE.bosses={};for(const k of ['wlv','keys'])if(!STATE[k])STATE[k]={};if(STATE.gold==null)STATE.gold=0;if(STATE.time==null)STATE.time=0;return true}
   }catch(_){}
   return false;
 }

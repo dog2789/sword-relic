@@ -22,6 +22,7 @@ npm run build:single  # dist-single/index.html 한 파일짜리 빌드 (Phaser�
 | ↑ (워프 받침대 위) | 워프 메뉴 (등록한 곳이 2개 이상일 때) |
 | X / Space | 점프 (길게 누르면 더 높이) |
 | ↓ + X | 나무 발판 아래로 내려가기 |
+| ↓ + Z (공중) | 하단 찌르기 (적·상자·벽에 닿으면 튀어 오름) |
 | 벽 쪽 방향키 + X | 벽 점프 (박쥐 망토를 꼈을 때, 공중에서 벽에 붙어 있으면) |
 | Z | 공격 (연타 시 3단 콤보), 상자 열기, 금 간 벽 부수기 |
 | C | 검기 (MP 10) |
@@ -42,6 +43,9 @@ src/
     TitleScene.js      타이틀 화면 (새로 시작 / 이어하기)
     CustomizeScene.js  캐릭터 만들기 (새로 시작할 때 인트로 전에 나옴)
     IntroScene.js      인트로 스토리 컷씬 4장
+    economy.js         골드, 대장간(무기 강화), 잡화점
+    gimmicks.js        열쇠·색깔 문, 포탑, 스위치 블록, 물(헤엄), 얼음, 고드름
+    menu.js            장비창(도감 그리드)과 상태창
     PlayScene.js       게임 본체 (플레이어, 전투, 적 AI, 지형 기믹, 장비창, HUD, 미니맵)
     playUI.js          대화창·NPC, 워프, 전체 지도, 퀵슬롯
     monsters.js        슬라임 외 몬스터와 보스 (박쥐, 가시 달팽이, 망령 갑옷, 박쥐 군주, 녹슨 수문장) 스탯과 AI
@@ -66,7 +70,11 @@ src/
 - **장비 획득 위치**: `src/world/rooms.js`의 chest.item, boss.drop
 - **커스텀 색상 목록**: `src/gfx/hero.js`의 `LOOK_OPTS`
 - **방 모양, 적·상자·석상·워프·NPC 위치**: `src/world/rooms.js` (mobs: `{t:'bat'|'snail',tx,ty}`, warp, npc)
-- **NPC 대사**: `src/scenes/playUI.js`의 `NPC_TALK`
+- **NPC 대사**: `src/scenes/playUI.js`의 `NPC_TALK` (방 데이터 `npcs:[{id,tx,tex,name}]`)
+- **컷신**: 방 데이터 `event:{id, lines:[{n:'이름',t:'대사'}]}` (처음 들어올 때 한 번), 보스 처치 후는 `boss.after`
+- **강화 비용·공격력**: `src/data/items.js`의 `WLV_COST`, `wlvAtk`
+- **상점 물건**: `src/scenes/economy.js`의 `SHOP`
+- **장치**: 방 데이터 `doors`, `turrets`, `switches`, `icicles`, `chests:[{gold}|{item:'key_red'}]`, 맵 글자 `~`(물) `A`/`B`(스위치 블록)
 - **몬스터·보스 수치**: `src/scenes/monsters.js`의 `MOBS`
 - **보스 배치**: 방 데이터의 `boss:{id, tx, ty, drop, title(영문 배너), intro(등장 문구)}` (id: king | batlord | rust)
 - **소모품**: `src/data/items.js`의 `CONSUMABLES`

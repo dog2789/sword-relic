@@ -4,11 +4,14 @@ import {buildTextures} from '../gfx/sprites.js';
 import {buildFonts} from '../gfx/fonts.js';
 import {cv,px} from '../gfx/pixel.js';
 import {HERO_W,HERO_H,HERO_FRAMES,LOOK,drawHero} from '../gfx/hero.js';
-import {ITEMS,SETS,SLOTS,SLOT_NAMES,equipBonus,setProgress,statLine} from '../data/items.js';
-import {ROOMS,buildRoomMap,floorTopY,surfaceY} from '../world/rooms.js';
-import {drawFar,drawMid,drawLevel,drawCaveFar,drawCaveMid,drawTreetopMid,drawCastleFar,drawCastleMid} from '../world/meadow.js';
-import {spawnMob,updateMob,makeMobAnims,updateQuakes} from './monsters.js';
+import {ITEMS,SETS,SLOTS,SLOT_NAMES,equipBonus,setProgress,statLine,wlvAtk,weaponName} from '../data/items.js';
+import {ROOMS,buildRoomMap,floorTopY,surfaceY,roomChests} from '../world/rooms.js';
+import {drawFar,drawMid,drawLevel,drawCaveFar,drawCaveMid,drawTreetopMid,drawCastleFar,drawCastleMid,drawIceFar,drawIceMid} from '../world/meadow.js';
+import {spawnMob,updateMob,makeMobAnims,updateQuakes,updateEShots} from './monsters.js';
 import {PlayUI} from './playUI.js';
+import {Economy} from './economy.js';
+import {Gimmicks} from './gimmicks.js';
+import {MenuMixin} from './menu.js';
 import {bossDone,setBossDone,STATE,saveGame} from '../state.js';
 import {RS,fitCameras} from '../zoom.js';
 
@@ -24,7 +27,7 @@ export class PlayScene extends Phaser.Scene{
   create(data={}){
     buildTextures(this);buildFonts(this);
     // 이전 방의 참조 정리
-    Object.assign(this,{slash:null,sword:null,chest:null,chestHint:null,statue:null,crystal:null,tInfo:null,menu:null,pickups:[],walls:[],fallers:[],mushrooms:[],climbing:false,bounceT:0,safe:null,autoUp:false,warpObj:null,npcObj:null,dlg:null,mapv:null,warpm:null,quickUI:[],quakes:[],wallT:0,wallLock:0,wallDir:0});
+    Object.assign(this,{slash:null,sword:null,chests:[],statue:null,crystal:null,tInfo:null,menu:null,pickups:[],walls:[],fallers:[],mushrooms:[],climbing:false,bounceT:0,safe:null,autoUp:false,warpObj:null,npcObjs:[],bubble:null,listm:null,dlg:null,mapv:null,warpm:null,quickUI:[],quakes:[],eshots:[],wallT:0,wallLock:0,wallDir:0});
     const id=data.room&&ROOMS[data.room]?data.room:(ROOMS[STATE.room]?STATE.room:'r1');
     STATE.room=id;STATE.visited[id]=true;
     this.roomId=id;this.R=ROOMS[id];this.map=buildRoomMap(id);this.cols=this.R.cols;this.lw=this.cols*T;
@@ -65,6 +68,7 @@ export class PlayScene extends Phaser.Scene{
     this.hearts=this.physics.add.group();
     this.physics.add.collider(this.hearts,this.solids);this.physics.add.collider(this.hearts,this.oneways);
     this.physics.add.overlap(p,this.hearts,(pl,h)=>{const s=this.stats;
+      if(h.kind==='gold'){this.takeGold(h.val,h.x,h.y);h.destroy();return}
       if(h.kind){STATE.items[h.kind]=(STATE.items[h.kind]||0)+1;this.popText(h.x,h.y-6,(h.kind==='potion'?'POTION':'ETHER')+' +1',h.kind==='potion'?0xff8a95:0x8ab0ff)}
       else{s.hp=Math.min(this.mhp(),s.hp+20);this.popText(h.x,h.y-6,'+20',0x7cff8a)}
       this.goldEm.explode(6,h.x,h.y);h.destroy()});
@@ -74,14 +78,15 @@ export class PlayScene extends Phaser.Scene{
     this.slimeEm=mk([0x5fcf5a,0x2f8a3a,0xe8ffe0]);
     this.kingEm=mk([0x5a8cff,0x2f4fb0,0xf0c040,0xe0ecff],{speed:{min:60,max:200}});
     this.goldEm=mk([0xffd34a,0xfff2a0,0xe8742a],{gravityY:-60,speed:{min:20,max:90}});
-    this.dustEm=mk(R.theme==='cave'?[0x8a849e,0x6a6480]:[0xd8c8a0,0xb8a478],{speed:{min:10,max:45},angle:{min:190,max:350},gravityY:-30,lifespan:{min:200,max:380}});
+    this.dustEm=mk(R.theme==='ice'?[0xffffff,0xcfeaff]:R.theme==='cave'?[0x8a849e,0x6a6480]:[0xd8c8a0,0xb8a478],{speed:{min:10,max:45},angle:{min:190,max:350},gravityY:-30,lifespan:{min:200,max:380}});
     this.rockEm=mk([0x5a5470,0x7a7494,0x3a3448],{speed:{min:40,max:150},gravityY:500,lifespan:{min:400,max:800},scale:{start:1.5,end:0.5}});
     this.batEm=mk([0x5a3a7a,0x8a6aaa,0xffe27a]);
     this.snailEm=mk([0xc86a3a,0x8a3a1a,0xd8c08a,0xf0e8d8]);
+    this.fireEm=mk([0xff7a2a,0xffd060,0xe8402a],{speed:{min:5,max:25},gravityY:-120,lifespan:{min:200,max:420}});
     this.auraEm=mk([0x9ff0ff,0xffd34a,0xffffff],{speed:{min:4,max:18},gravityY:-50,lifespan:{min:300,max:600}});
     this.waves=[];
 
-    this.spawnObjects(entry);this.spawnExtras();
+    this.spawnObjects(entry);this.spawnExtras();this.spawnGimmicks();this.pogo=false;
     (R.slimes||[]).forEach(s=>this.spawnEnemy({x:s.tx*T+8,y:s.ty*T}));
     (R.mobs||[]).forEach(d=>spawnMob(this,d));
     // 위/아래 방에서 사다리를 타고 넘어오면 계속 매달린 채로 시작 (아래에서 올라오면 자동으로 조금 올라감)
@@ -98,22 +103,26 @@ export class PlayScene extends Phaser.Scene{
     this.combo=0;this.comboT=0;this.targetT=0;this.hpGhost=this.stats.hp;this.tGhost=0;
     this.prev=this.heldNow();this.pend={};this.frozen=false;this.leaving=false;
     this.routeCams();
-    if(data.tutorial){this.toast('←→ 이동   X 점프   Z 공격   ↑ 대화   I 장비   M 지도',4600)}
-    else if(!data.quiet)this.toast(R.name,1800);
+    const tut=()=>this.toast('←→ 이동   X 점프   Z 공격   ↑ 대화   I 장비   M 지도',4600);
+    // 방 이벤트(컷신): 처음 들어왔을 때 한 번
+    const ev=R.event&&!STATE.flags[R.event.id]?R.event:null;
+    if(ev)this.time.delayedCall(ev.delay||500,()=>{if(this.leaving||this.overlayOpen())return;STATE.flags[ev.id]=true;this.openDialog('',ev.lines,()=>{if(data.tutorial)tut()})});
+    else if(data.tutorial)tut();
+    if(!data.tutorial&&!data.quiet)this.toast(R.name,1800);
     if(window.onEquipChange)window.onEquipChange();
   }
 
   /* ----- world ----- */
   drawWorld(){
     const id=this.roomId,R=this.R,th=R.theme;
-    const far={cave:drawCaveFar,castle:drawCastleFar}[th]||drawFar,mid={cave:drawCaveMid,treetop:drawTreetopMid,castle:drawCastleMid}[th]||drawMid;
+    const far={cave:drawCaveFar,castle:drawCastleFar,ice:drawIceFar}[th]||drawFar,mid={cave:drawCaveMid,treetop:drawTreetopMid,castle:drawCastleMid,ice:drawIceMid}[th]||drawMid;
     if(!this.textures.exists('far_'+id))this.textures.addCanvas('far_'+id,far(this.lw));
     if(!this.textures.exists('mid_'+id))this.textures.addCanvas('mid_'+id,mid(this.lw));
     if(!this.textures.exists('lvl_'+id))this.textures.addCanvas('lvl_'+id,drawLevel(this.map,this.cols,R.seed,R.deco,th));
     /* 원경(패럴랙스): 고해상도 줌 카메라에서는 scrollFactor가 어긋나서, 화면 왼쪽 위 기준으로 직접 위치를 맞춤 */
     const par=(o,sf)=>{o.sf=sf;o.bx=o.x;o.by=o.y;return o};
     this.par=[par(this.add.image(0,0,'far_'+id).setOrigin(0).setDepth(-10),0.1)];
-    this.clouds=(th==='cave'||th==='castle')?[]:[0,1,2,0,1].map((k,i)=>par(this.add.image(i*90+Math.random()*60,12+Math.random()*50,'cloud'+k).setDepth(-9.5).setAlpha(0.95),0.15));
+    this.clouds=(th==='cave'||th==='castle'||th==='ice')?[]:[0,1,2,0,1].map((k,i)=>par(this.add.image(i*90+Math.random()*60,12+Math.random()*50,'cloud'+k).setDepth(-9.5).setAlpha(0.95),0.15));
     this.par.push(...this.clouds,par(this.add.image(0,0,'mid_'+id).setOrigin(0).setDepth(-9),0.35));
     this.add.image(0,0,'lvl_'+id).setOrigin(0).setDepth(0);
     const cam=this.cameras.main,place=()=>{const v=cam.worldView;for(const o of this.par){o.x=o.bx+v.x*(1-o.sf);o.y=o.by+v.y*(1-o.sf)}};
@@ -155,12 +164,11 @@ export class PlayScene extends Phaser.Scene{
       this.tweens.add({targets:[cr,glow],y:'-=3',duration:900,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});
       this.statue={x,y:g-12};this.atStatue=Math.abs(p.x-x)<20;
     }
-    if(R.chest){
-      const c=R.chest,x=c.tx*T+8,g=surfaceY(m,c.tx),open=!!STATE.opened[c.id];
-      this.chest={def:c,x,y:g,open,spr:this.add.image(x,g,open?'chest1':'chest0').setOrigin(0.5,1).setDepth(4)};
-      this.chestHint=this.add.bitmapText(x,g-20,'pix','Z').setOrigin(0.5,1).setDepth(45).setTint(0xffe27a).setVisible(false);
-      this.tweens.add({targets:this.chestHint,y:'-=3',duration:400,yoyo:true,repeat:-1});
-    }
+    this.chests=roomChests(R).map(c=>{
+      const x=c.tx*T+8,g=c.ty!=null?(c.ty+1)*T:surfaceY(m,c.tx),open=!!STATE.opened[c.id];
+      const hint=this.add.bitmapText(x,g-20,'pix','Z').setOrigin(0.5,1).setDepth(45).setTint(0xffe27a).setVisible(false);
+      this.tweens.add({targets:hint,y:'-=3',duration:400,yoyo:true,repeat:-1});
+      return{def:c,x,y:g,open,hint,spr:this.add.image(x,g,open?'chest1':'chest0').setOrigin(0.5,1).setDepth(4).setTint(c.gold?0xfff0a0:0xffffff)}});
     if(R.crystal&&!STATE.collected[R.crystal.id]){
       const c=R.crystal,x=c.tx*T+8,y=(c.ty+1)*T-8;
       const glow=this.add.image(x,y,'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xff6a9a).setScale(0.7).setDepth(1);
@@ -210,8 +218,7 @@ export class PlayScene extends Phaser.Scene{
     if(this.statue){const near=Math.abs(p.x-this.statue.x)<14&&Math.abs(p.y-this.statue.y)<22;
       if(near&&!this.atStatue&&!p.dead)this.doSave();
       if(!near&&Math.abs(p.x-this.statue.x)>26)this.atStatue=false;}
-    if(this.chest&&!this.chest.open){const d=Math.abs(p.x-this.chest.x);this.chestHint.setVisible(d<40&&Math.abs(p.y-(this.chest.y-8))<30)}
-    else if(this.chestHint)this.chestHint.setVisible(false);
+    this.chests.forEach(c=>c.hint.setVisible(!c.open&&Math.abs(p.x-c.x)<40&&Math.abs(p.y-(c.y-8))<30));
     if(this.crystal&&Math.abs(p.x-this.crystal.x)<11&&Math.abs(p.y-this.crystal.y)<14)this.takeCrystal();
     this.pickups=this.pickups.filter(k=>{if(Math.abs(p.x-k.x)<11&&Math.abs(p.y-k.y)<14){STATE.collected[k.key]=true;k.spr.destroy();k.glow.destroy();this.giveItem(k.itemId,k.x,k.y,true);return false}return true});
     // 움직이는 발판
@@ -246,9 +253,11 @@ export class PlayScene extends Phaser.Scene{
     this.popText(this.statue.x,this.statue.y-22,'SAVE',0x8fe3ff);this.auraEm.explode(16,this.statue.x,this.statue.y-12);
     this.toast('기록했어요. HP와 MP가 모두 회복됐어요',2200);
   }
-  openChest(){
-    const c=this.chest;if(c.open)return;c.open=true;STATE.opened[c.def.id]=true;
+  openChest(c){
+    if(c.open)return;c.open=true;STATE.opened[c.def.id]=true;c.hint.setVisible(false);
     c.spr.setTexture('chest1');this.goldEm.explode(24,c.x,c.y-10);this.shake(80,0.006);
+    if(c.def.gold){this.dropGold(c.x,c.y-12,c.def.gold);return}
+    if(c.def.item&&c.def.item.startsWith('key_')){this.giveKey(c.def.item.slice(4),c.x,c.y-10);return}
     this.giveItem(c.def.item,c.x,c.y-10,false);
   }
   /* 아이템 획득: 가방에 넣고, 해당 칸이 비어 있으면 바로 장착 */
@@ -303,12 +312,26 @@ export class PlayScene extends Phaser.Scene{
 
   /* ----- 장비 ----- */
   mhp(){return this.stats.maxHp+this.bonus.hp}
-  atkVal(){return this.stats.atk+this.bonus.atk}
+  atkVal(){return this.stats.atk+this.bonus.atk+wlvAtk((STATE.wlv||{})[this.equip.weapon]||0)}
   defVal(){return this.bonus.def}
   /* 점프는 최대 2단 (땅 점프 + 공중 1번) */
   maxAirJumps(){return Math.min(1,(STATE.abilities.djump?1:0)+this.bonus.airJumps)}
+  updatePogo(dt){
+    const p=this.player,b=p.body;if(b.velocity.y<240)p.setVelocityY(Math.min(380,b.velocity.y+900*dt));
+    const hb=new Phaser.Geom.Rectangle(p.x-6,b.bottom-4,12,16);let bounce=false;
+    this.enemies.getChildren().slice().forEach(e=>{if(!e.active||this.pogoHit.has(e))return;const eb=e.body;
+      if(Phaser.Geom.Intersects.RectangleToRectangle(hb,new Phaser.Geom.Rectangle(eb.x,eb.y,eb.width,eb.height))){this.pogoHit.add(e);bounce=true;
+        this.hitEnemy(e,Math.round(this.atkVal()*1.25*(0.9+Math.random()*0.2)),false,this.facing,false)}});
+    this.chests.forEach(c=>{if(!c.open&&Phaser.Geom.Intersects.RectangleToRectangle(hb,new Phaser.Geom.Rectangle(c.x-7,c.y-11,14,11))){this.openChest(c);bounce=true}});
+    const wb=this.walls.some(w=>w.hp>0&&Phaser.Geom.Intersects.RectangleToRectangle(hb,w.rect));this.hitWalls(hb,'pogo'+Math.floor(this.time.now/250));if(wb)bounce=true;
+    this.hitSwitches(hb);this.slashShots(hb);
+    if(bounce){p.setVelocityY(-310);this.airJumps=0;this.bounceT=0.3;this.pogoHit=new Set();this.sparkEm.explode(6,p.x,b.bottom+6)}
+  }
   updateSword(){
-    const p=this.player,a=this.atk,on=!p.dead&&p.hurtT<=0&&!this.climbing&&(a.active||this.castT>0);
+    const p=this.player,a=this.atk;
+    if(this.pogo&&!p.dead){this.sword.setVisible(true).setFlipX(false).setAngle(90).setOrigin(0.09,0.5).setPosition(p.x,p.y+2);return}
+    this.sword.setAngle(0);
+    const on=!p.dead&&p.hurtT<=0&&!this.climbing&&(a.active||this.castT>0);
     this.sword.setVisible(on);if(!on)return;
     const f=a.active?a.f:this.facing;
     this.sword.setPosition(p.x+f*7,p.y+4).setFlipX(f<0).setOrigin(f>0?0.09:0.91,0.5);
@@ -328,60 +351,6 @@ export class PlayScene extends Phaser.Scene{
     STATE.items.potion=(STATE.items.potion||0)+5;STATE.items.ether=(STATE.items.ether||0)+5;
     this.setEquip('weapon','slime_blade',true);this.banner('TEST GEAR',0x9ff0ff)}
 
-  /* ----- 장비창 ----- */
-  toggleMenu(){if(this.menu)this.closeMenu();else this.openMenu()}
-  openMenu(){
-    if(this.player.dead||this.leaving)return;
-    this.physics.world.pause();this.anims.pauseAll();
-    const fix=o=>o.setScrollFactor(0).setDepth(200);
-    const M=this.menu={sel:0,objs:[],rows:[]};
-    const g=fix(this.add.graphics());M.objs.push(g);M.g=g;
-    const t=(x,y,s,o={})=>{const o2=fix(this.add.text(x,y,s,Object.assign({fontFamily:F9,fontSize:'10px',color:'#ece7f7'},o)));M.objs.push(o2);return o2};
-    t(22,15,'장비',{fontFamily:F11,fontSize:'12px',color:'#ffe27a'});
-    t(298,17,'I  닫기',{color:'#8f86ab'}).setOrigin(1,0);
-    SLOTS.forEach((sl,i)=>{const y=32+i*16;
-      const icon=fix(this.add.image(30,y+5,'icon_'+(this.equip[sl]||'traveler_sword')));M.objs.push(icon);
-      const lab=t(40,y+1,SLOT_NAMES[sl],{color:'#8f86ab'});
-      const name=t(78,y+1,'',{});
-      const hit=fix(this.add.zone(20,y-2,150,16).setOrigin(0).setInteractive());M.objs.push(hit);
-      hit.on('pointerdown',()=>{M.sel=i;this.cycleEquip(sl,1)});
-      M.rows.push({sl,icon,lab,name});
-    });
-    M.stat=t(179,34,'',{lineSpacing:3});
-    M.desc=t(22,116,'',{color:'#cfc8e4',wordWrap:{width:276},lineSpacing:2});
-    M.help=t(22,144,'↑↓ 칸 선택   ←→ 장비 바꾸기   터치: 칸을 누르면 바뀜',{color:'#6f6890'});
-    this.refreshMenu();
-  }
-  menuOptions(sl){const own=STATE.bag.filter(id=>ITEMS[id]&&ITEMS[id].slot===sl);return sl==='weapon'?own:[null,...own]}
-  cycleEquip(sl,dir){
-    const opts=this.menuOptions(sl);if(opts.length<2)return;
-    const i=opts.indexOf(this.equip[sl]||null),n=opts[(i+dir+opts.length)%opts.length];
-    this.setEquip(sl,n,false);this.refreshMenu();
-  }
-  refreshMenu(){
-    const M=this.menu;if(!M)return;const g=M.g;g.clear();
-    g.fillStyle(0x05030b,0.72).fillRect(0,0,W,H);
-    g.fillStyle(0x161028,1).fillRect(14,10,292,150);g.lineStyle(1,0xc9a24a,1).strokeRect(14.5,10.5,291,149);
-    g.fillStyle(0x221a3a,1).fillRect(174,30,128,78);
-    M.rows.forEach((r,i)=>{const it=ITEMS[this.equip[r.sl]],y=32+i*16,sel=i===M.sel,n=this.menuOptions(r.sl).length;
-      if(sel){g.fillStyle(0x2c2346,1).fillRect(20,y-2,150,16);g.lineStyle(1,0xffe27a,1).strokeRect(20.5,y-1.5,149,15)}
-      r.icon.setTexture(it?'icon_'+this.equip[r.sl]:'icon_traveler_sword').setAlpha(it?1:0.15);
-      r.name.setText((it?it.name:'없음')+(n>1?' ◀▶':'')).setColor(it?'#ece7f7':'#6f6890')});
-    const b=this.bonus,s=this.stats;
-    const lines=['공격  '+this.atkVal()+'   (장비 +'+b.atk+')','방어  '+b.def,'최대 HP  '+this.mhp()+'   (장비 +'+b.hp+')',''];
-    for(const k in SETS){const S=SETS[k],n=setProgress(this.equip,k);lines.push(S.name+'  '+n+'/'+S.need+(n>=S.need?'  발동!':''))}
-    M.stat.setText(lines.join('\n'));
-    const cur=ITEMS[this.equip[SLOTS[M.sel]]];
-    M.desc.setText(cur?(cur.name+' · '+cur.desc+'\n'+statLine(cur)+(cur.set?'   ['+SETS[cur.set].name+']':'')):SLOT_NAMES[SLOTS[M.sel]]+' 칸이 비어 있어요. 상자나 보스에게서 장비를 얻을 수 있어요.');
-  }
-  closeMenu(){const M=this.menu;if(!M)return;M.objs.forEach(o=>o.destroy());this.menu=null;this.physics.world.resume();this.anims.resumeAll()}
-  updateMenu(){
-    const M=this.menu,v=VP,e=this.ed;
-    const up=e('mu',isDown('ArrowUp','KeyW')||v.up),dn=e('md',isDown('ArrowDown','KeyS')||v.down),lf=e('ml',isDown('ArrowLeft','KeyA')||v.left),rt=e('mr',isDown('ArrowRight','KeyD')||v.right);
-    const NS=SLOTS.length;if(up){M.sel=(M.sel+NS-1)%NS;this.refreshMenu()}if(dn){M.sel=(M.sel+1)%NS;this.refreshMenu()}
-    if(lf)this.cycleEquip(SLOTS[M.sel],-1);if(rt)this.cycleEquip(SLOTS[M.sel],1);
-  }
-
   /* ----- HUD ----- */
   buildHud(){
     const y0=H-HUD,fix=o=>o.setScrollFactor(0).setDepth(100);
@@ -395,7 +364,10 @@ export class PlayScene extends Phaser.Scene{
     this.buildQuick();
     this.nameTxt=fix(this.add.text(196,y0+2,'',{fontFamily:F9,fontSize:'10px',color:'#ece7f7'})).setVisible(false);
     this.hintTxt=fix(this.add.text(196,y0+5,'',{fontFamily:F9,fontSize:'10px',color:'#8f86ab'}));
-    this.tHpTxt=fix(this.add.bitmapText(288,y0+14,'pix','')).setVisible(false);
+    this.tHpTxt=fix(this.add.bitmapText(270,y0+14,'pix','')).setVisible(false);
+    // 오른쪽: 골드, 장착 무기 (+강화 단계)
+    this.goldIco=fix(this.add.image(0,y0+6,'coin'));this.goldTxt=fix(this.add.bitmapText(W-5,y0+3,'pix','0')).setOrigin(1,0).setTint(0xffd34a);
+    this.wIco=fix(this.add.image(W-24,y0+15,'icon_traveler_sword')).setScale(0.75);this.wLvTxt=fix(this.add.bitmapText(W-5,y0+13,'pix','')).setOrigin(1,0).setTint(0x9ff0ff);
     this.comboTxt=this.add.bitmapText(8,8,'dmg','').setScrollFactor(0).setDepth(110).setTint(0xffd34a).setLetterSpacing(-2).setVisible(false);
     this.toastTxt=this.add.text(W/2,6,'',{fontFamily:F9,fontSize:'10px',color:'#fff8e0',backgroundColor:'#1a1230dd',padding:{x:7,y:4},align:'center'})
       .setOrigin(0.5,0).setScrollFactor(0).setDepth(130).setVisible(false);
@@ -437,12 +409,12 @@ export class PlayScene extends Phaser.Scene{
       if(e.up&&known(e.up.to)){const[ux]=pos(e.up.to);g.fillStyle(0x7a6a9a,1).fillRect(Math.round((x+ux)/2)+cw/2,y-gap,1,gap)}});
     ids.forEach(i=>{if(!known(i))return;const[x,y]=pos(i),R=ROOMS[i];
       if(!STATE.visited[i]){g.lineStyle(1,0x5a4f7a,1).strokeRect(x+0.5,y+0.5,cw-1,ch-1);return}
-      const cur=i===this.roomId,blink=Math.floor(time/350)%2,base={cave:0x4a4468,treetop:0x5a7a32,castle:0x3a5aa0}[R.theme]||0x3f7a3a;
+      const cur=i===this.roomId,blink=Math.floor(time/350)%2,base={cave:0x4a4468,treetop:0x5a7a32,castle:0x3a5aa0,ice:0x5aa0d0}[R.theme]||0x3f7a3a;
       g.fillStyle(cur?(blink?0xffe27a:0xc9a24a):base,1).fillRect(x,y,cw,ch);
       g.fillStyle(cur?0xfff3b0:0xffffff,cur?1:0.18).fillRect(x,y,cw,1);
       if(R.save)g.fillStyle(0x8fe3ff,1).fillRect(x+2,y+3,2,2);
       if(R.boss&&!bossDone(R.boss.id||'king'))g.fillStyle(0xff4a5a,1).fillRect(x+cw/2-1,y+2,3,3);
-      if(R.chest&&!STATE.opened[R.chest.id])g.fillStyle(0xffd34a,1).fillRect(x+cw-4,y+3,2,2);
+      if(roomChests(R).some(c=>!STATE.opened[c.id]))g.fillStyle(0xffd34a,1).fillRect(x+cw-4,y+3,2,2);
     });
   }
   drawHud(dt,time){
@@ -457,11 +429,13 @@ export class PlayScene extends Phaser.Scene{
     this.lvTxt.setText(String(s.lv));this.hpTxt.setText(Math.ceil(s.hp)+'/'+mh);this.mpTxt.setText(Math.floor(s.mp)+'/'+s.maxMp);
     if(this.tInfo&&this.targetT>0){const e=this.tInfo.e,hp=Math.max(0,e.hp);
       this.tGhost=this.tGhost>hp?Math.max(hp,this.tGhost-e.maxHp*dt*0.8):hp;
-      this.nameTxt.setText(e.nm).setVisible(true);this.hintTxt.setVisible(false);
-      this.bar(g,196,y0+15,88,4,hp/e.maxHp,this.tGhost/e.maxHp,0xe0404f,0xff8a95);
+      const boss=!!(e.boss||e.king);this.nameTxt.setText((boss?'BOSS  ':'')+e.nm).setColor(boss?'#ff7a7a':'#ece7f7').setVisible(true);this.hintTxt.setVisible(false);
+      this.bar(g,196,y0+15,70,4,hp/e.maxHp,this.tGhost/e.maxHp,boss?0xff3a3a:0xe0404f,0xff8a95);
       this.tHpTxt.setText(Math.ceil(hp)+'/'+e.maxHp).setVisible(true);
     }else{this.nameTxt.setVisible(false);this.tHpTxt.setVisible(false);
       this.hintTxt.setText(this.R.name).setVisible(true)}
+    this.goldTxt.setText(String(STATE.gold||0));this.goldIco.setX(W-9-this.goldTxt.width);
+    const wl=(STATE.wlv||{})[this.equip.weapon]||0;this.wIco.setTexture('icon_'+this.equip.weapon);this.wLvTxt.setText(wl?'+'+wl:'');this.wIco.setX(W-11-(wl?this.wLvTxt.width+1:0));
     this.drawMinimap(time);
   }
 
@@ -486,6 +460,7 @@ export class PlayScene extends Phaser.Scene{
     fitCameras(this);this.routeCams();
     const dt=Math.min(delta,50)/1000,inp=this.readInput();
     if(this.dlg){this.updateDialog(dt);this.drawHud(0,time);return}
+    if(this.listm){this.updateList();this.drawHud(0,time);return}
     if(this.warpm){this.updateWarp();this.drawHud(0,time);return}
     if(this.mapv){this.updateMap(time);this.drawHud(0,time);return}
     if(inp.press.menu)this.toggleMenu();
@@ -494,14 +469,15 @@ export class PlayScene extends Phaser.Scene{
     for(let i=0;i<4;i++)if(inp.press['q'+i])this.useQuick(i);
     this.clouds.forEach((c,i)=>{c.bx+=dt*(3+i*1.5);if(c.bx>W+(this.lw-W)*0.15+60)c.bx=-60});
     if(!this.frozen){
+      STATE.time=(STATE.time||0)+dt;
       if(!this.player.dead)this.updatePlayer(dt,inp,time);
-      this.updateAttack(dt);this.updateSword();this.updateWaves(dt);this.updateEnemies(dt,time);updateQuakes(this,dt);
+      this.updateAttack(dt);this.updateSword();this.updateWaves(dt);this.updateEnemies(dt,time);updateQuakes(this,dt);updateEShots(this,dt);
       if(!this.player.dead)this.physics.overlap(this.player,this.enemies,(pl,e)=>this.hurtPlayer(e));
       this.hearts.getChildren().slice().forEach(h=>{h.life-=dt;h.setVelocityX(h.body.velocity.x*0.95);if(h.life<3)h.setAlpha(Math.floor(time/90)%2?.3:1);if(h.life<=0)h.destroy()});
       const s=this.stats;s.mp=Math.min(s.maxMp,s.mp+3*dt);
       if(this.comboT>0){this.comboT-=dt;if(this.comboT<=0){this.combo=0;this.comboTxt.setVisible(false)}}
       if(this.targetT>0)this.targetT-=dt;
-      this.updateObjects(dt,inp.held,inp.press);this.checkExits();
+      this.updateObjects(dt,inp.held,inp.press);this.updateGimmicks(dt);this.checkExits();
     }
     this.drawHud(dt,time);
   }
@@ -544,7 +520,9 @@ export class PlayScene extends Phaser.Scene{
     if(held.down&&onG&&this.isClimb(p.x,b.bottom+3)&&!a.active){this.startClimb();p.y+=3;return}
     const move=(held.right?1:0)-(held.left?1:0);this.move=move;
     if(!a.active&&move)this.facing=move;
-    const slow=a.active?(onG?0.12:0.7):1,target=move*SPEED*(1+this.bonus.speed/100)*slow,k=1-Math.pow(onG?0.62:0.8,dt*60);
+    const swim=this.inWater,ice=onG&&this.onIce&&!this.bonus.noSlip;
+    if(swim){if(b.velocity.y>70)p.setVelocityY(70);this.airJumps=0}
+    const slow=a.active?(onG?0.12:0.7):1,target=move*SPEED*(1+this.bonus.speed/100)*slow*(swim?0.7:1),k=1-Math.pow(ice?0.965:onG?0.62:0.8,dt*60);
     this.nudgeT=(this.nudgeT||0)-dt;
     this.wallLock-=dt;
     if(this.wallLock<=0&&(this.nudgeT<=0||move))p.setVelocityX(b.velocity.x+(target-b.velocity.x)*k);
@@ -554,7 +532,8 @@ export class PlayScene extends Phaser.Scene{
       if(Math.random()<dt*12)this.dustEm.explode(1,p.x+move*5,p.y+2)}
     else this.wallT-=dt;
     const onOne=onG&&(['-','='].includes(this.tileAt(b.center.x,b.bottom+2))||this.platGroup.getChildren().some(s=>s.isFaller&&Math.abs(s.y-3-b.bottom)<3&&Math.abs(s.x-p.x)<s.width/2));
-    if(this.jumpBuf>0&&held.down&&onOne){p.dropT=0.22;this.jumpBuf=0;p.setVelocityY(40)}
+    if(swim&&this.jumpBuf>0){const surf=this.tileAt(p.x,p.y-9)!=='~';p.setVelocityY(surf?-290:-165);this.jumpBuf=0;this.bubbleEm.explode(3,p.x,p.y)}
+    else if(this.jumpBuf>0&&held.down&&onOne){p.dropT=0.22;this.jumpBuf=0;p.setVelocityY(40)}
     else if(this.jumpBuf>0&&this.coyote>0){p.setVelocityY(-JUMP);this.jumpBuf=0;this.coyote=0;this.dustEm.explode(4,p.x,b.bottom)}
     else if(this.jumpBuf>0&&!onG&&this.wallT>0){
       this.jumpBuf=0;this.wallT=0;this.wallLock=0.2;this.facing=-this.wallDir;
@@ -566,12 +545,16 @@ export class PlayScene extends Phaser.Scene{
     }
     this.bounceT-=dt;
     if(!held.jump&&b.velocity.y<-120&&this.bounceT<=0)p.setVelocityY(b.velocity.y*0.6);
-    if(press.atk){
+    // 하단 찌르기: 공중에서 ↓+Z. 아래로 검을 세우고 떨어지다 적·상자·벽에 닿으면 튀어 오름
+    if(press.atk&&!onG&&held.down&&!a.active&&!swim){this.pogo=true;this.pogoHit=new Set();press.atk=false}
+    if(this.pogo){if(onG||swim||p.hurtT>0)this.pogo=false;else this.updatePogo(dt)}
+    if(press.atk&&!this.pogo){
       if(!a.active){const chain=now-this.lastAtkEnd<230&&this.lastStep<3;this.startAttack(chain?this.lastStep+1:1)}
       else if(a.step<3&&a.t>0.06)a.queued=true}
     if(press.skill)this.castSkill();
     p.setFlipX((a.active?a.f:this.facing)<0);
-    if(a.active||this.castT>0){p.anims.stop();p.setTexture(P+'atk0')}
+    if(this.pogo){p.anims.stop();p.setTexture(P+'jump0')}
+    else if(a.active||this.castT>0){p.anims.stop();p.setTexture(P+'atk0')}
     else if(!onG){p.anims.stop();p.setTexture(P+'jump0');if(this.wallT>0.08)p.setFlipX(this.wallDir>0)}
     else if(Math.abs(b.velocity.x)>12&&move)p.anims.play(P+'run',true);
     else p.anims.play(P+'idle',true);
@@ -596,11 +579,10 @@ export class PlayScene extends Phaser.Scene{
       this.enemies.getChildren().slice().forEach(e=>{
         if(!e.active||a.hit.has(e))return;const eb=e.body;
         if(Phaser.Geom.Intersects.RectangleToRectangle(hb,new Phaser.Geom.Rectangle(eb.x,eb.y,eb.width,eb.height))){
-          a.hit.add(e);const crit=Math.random()<0.12,mult=[1,1,1.15,1.7][a.step];
+          a.hit.add(e);const crit=Math.random()<(this.wfx()==='holy'?0.25:0.12),mult=[1,1,1.15,1.7][a.step];
           this.hitEnemy(e,Math.round(this.atkVal()*mult*(0.85+Math.random()*0.3)*(crit?2:1)),crit,a.f,a.step===3)}});
-      const c=this.chest;
-      if(c&&!c.open&&Phaser.Geom.Intersects.RectangleToRectangle(hb,new Phaser.Geom.Rectangle(c.x-7,c.y-11,14,11)))this.openChest();
-      this.hitWalls(hb,a.tag);
+      this.chests.forEach(c=>{if(!c.open&&Phaser.Geom.Intersects.RectangleToRectangle(hb,new Phaser.Geom.Rectangle(c.x-7,c.y-11,14,11)))this.openChest(c)});
+      this.hitWalls(hb,a.tag);this.hitSwitches(hb);this.slashShots(hb);
     }
     if(a.t>=a.dur){if(a.queued&&a.step<3)this.startAttack(a.step+1);else{a.active=false;this.lastAtkEnd=this.time.now;this.lastStep=a.step}}
   }
@@ -608,28 +590,36 @@ export class PlayScene extends Phaser.Scene{
     const s=this.stats,p=this.player;if(this.skillCd>0||p.hurtT>0)return;
     if(s.mp<10){this.popText(p.x,p.y-12,'NO MP',0x8ab0ff);this.skillCd=0.4;return}
     s.mp-=10;this.skillCd=0.5;this.castT=0.18;const f=this.facing;
-    const w=this.add.image(p.x+f*8,p.y+3,'wave').setFlipX(f<0).setDepth(12);
-    this.waves.push({s:w,vx:f*230,life:0.55,hit:new Set(),f,tag:Math.random()});
+    const it=ITEMS[this.equip.weapon],fx=it.fx,big=fx==='holy';
+    const w=this.add.image(p.x+f*8,p.y+3,'wave').setFlipX(f<0).setDepth(12).setScale(big?1.7:1);if(it.wave)w.setTint(it.wave);
+    this.waves.push({s:w,vx:f*(fx==='ice'?200:230),life:big?0.7:0.55,hit:new Set(),f,tag:Math.random(),big,pierce:big});
     this.goldEm.explode(4,p.x+f*8,p.y);
   }
   updateWaves(dt){
     this.waves=this.waves.filter(w=>{
       w.life-=dt;w.s.x+=w.vx*dt;w.s.setAlpha(Math.min(1,w.life*5));
-      const hb=new Phaser.Geom.Rectangle(w.s.x-6,w.s.y-10,12,20);
+      const hb=w.big?new Phaser.Geom.Rectangle(w.s.x-9,w.s.y-16,18,32):new Phaser.Geom.Rectangle(w.s.x-6,w.s.y-10,12,20);
       this.enemies.getChildren().slice().forEach(e=>{if(!e.active||w.hit.has(e))return;const eb=e.body;
         if(Phaser.Geom.Intersects.RectangleToRectangle(hb,new Phaser.Geom.Rectangle(eb.x,eb.y,eb.width,eb.height))){
-          w.hit.add(e);this.hitEnemy(e,Math.round(this.atkVal()*1.3*(0.9+Math.random()*0.2)),false,w.f,false)}});
-      this.hitWalls(hb,w.tag);
+          w.hit.add(e);this.hitEnemy(e,Math.round(this.atkVal()*(w.big?1.6:1.3)*(0.9+Math.random()*0.2)),false,w.f,false)}});
+      this.hitWalls(hb,w.tag);this.hitSwitches(hb);this.slashShots(hb);
       if(this.tileAt(w.s.x+w.f*5,w.s.y)==='#'||this.walls.some(x=>x.hp>0&&Phaser.Geom.Intersects.RectangleToRectangle(hb,x.rect))){w.life=0;this.sparkEm.explode(6,w.s.x,w.s.y)}
       if(w.life<=0){w.s.destroy();return false}return true});
   }
 
   /* ----- combat ----- */
-  hitEnemy(e,d,crit,dir,heavy){
+  wfx(){const it=ITEMS[this.equip.weapon];return it&&it.fx}
+  hitEnemy(e,d,crit,dir,heavy,src){
     if(!this.tInfo||this.tInfo.e!==e){this.tInfo={e};this.tGhost=e.hp}
+    // 무기 효과: 화염(불타서 계속 피해), 서리(느려짐), 슬라임(3단 베기에 주변 폭발)
+    const fx=src==='splash'||src==='burn'?null:this.wfx();
+    if(fx==='fire'){e.burn={t:1.7,tick:0.4,dmg:Math.max(1,Math.round(d*0.22))}}
+    if(fx==='ice'){e.slow=2.4}
+    if(fx==='slime'&&heavy){const ex=e.x,ey=e.y;this.slimeEm.explode(22,ex,ey);this.shake(90,0.008);
+      this.time.delayedCall(30,()=>this.enemies.getChildren().slice().forEach(o=>{if(o!==e&&o.active&&Math.hypot(o.x-ex,o.y-ey)<36)this.hitEnemy(o,Math.round(d*0.55),false,Math.sign(o.x-ex)||1,false,'splash')}))}
     e.hp-=d;e.stun=e.king||e.boss?0.1:0.3;
     const kb=e.kb==null?1:e.kb;e.setVelocity(dir*(heavy?1.6:1)*(e.king?40:110)*kb,e.king?-40:(heavy?-170:-110)*kb);
-    e.setTintFill(0xffffff);this.time.delayedCall(70,()=>{if(e.active){e.clearTint();if(e.baseTint)e.setTint(e.baseTint)}});
+    e.setTintFill(0xffffff);this.time.delayedCall(70,()=>{if(e.active){e.clearTint();if(e.slow>0)e.setTint(0x9fd8ff);else if(e.baseTint)e.setTint(e.baseTint)}});
     this.popNum(e.x+(Math.random()*8-4),e.body.y-2,d,crit?0xffd34a:0xffffff,crit);
     this.sparkEm.explode(crit?10:6,e.x-dir*4,e.body.center.y);
     const st=this.add.image(e.x-dir*4,e.body.center.y,'spark').setDepth(41).setAngle(Math.random()*45);
@@ -652,11 +642,13 @@ export class PlayScene extends Phaser.Scene{
     if(Math.random()<(k?1:0.25))this.dropHeart(e.x,e.y-4);
     else if(!k){const r=Math.random();if(r<0.1)this.dropThing('potion',e.x,e.y-4);else if(r<0.16)this.dropThing('ether',e.x,e.y-4)}
     const ex=e.x,ey=e.y;e.destroy();this.gainExp(e.exp);
+    if(!(d&&d.summon&&Math.random()<0.6))this.dropGold(ex,ey-4,e.exp*(k?2:0.7)*(0.8+Math.random()*0.5));
     if(k){const B=this.R.boss||{},id=e.king?'king':e.boss,ex2=this.R.exits;setBossDone(id);
       this.bossLock=false;this.physics.world.setBoundsCollision(!ex2.left,!ex2.right,!ex2.up,!ex2.down);this.banner((B.title||'KING SLIME')+' DOWN!',0xffd34a);
       if(e.boss)this.enemies.getChildren().filter(o=>o.def&&o.def.summon).forEach(o=>{this.batEm.explode(6,o.x,o.y);o.destroy()});
       const drop=B.drop;if(drop)this.time.delayedCall(600,()=>this.spawnPickup(drop,ex,Math.min(ey,floorTopY(this.map,Math.floor(ex/T))-14),'drop_'+this.roomId));
-      if(e.king)this.time.delayedCall(1500,()=>this.grantDoubleJump())}
+      if(e.king)this.time.delayedCall(1500,()=>this.grantDoubleJump());
+      if(B.after)this.time.delayedCall(2800,()=>{if(!this.leaving&&!this.overlayOpen())this.openDialog('',B.after)})}
     else if(!d.summon)this.time.delayedCall(6000,()=>{if(!this.leaving){if(d.t)spawnMob(this,d);else this.spawnEnemy(d)}});
   }
   spawnEnemy(d){
@@ -664,7 +656,8 @@ export class PlayScene extends Phaser.Scene{
     e.body.setSize(12,8).setOffset(1,k?5:2);if(k)e.setScale(2);
     e.setCollideWorldBounds(true).setDepth(k?6:5);
     if(this.R.theme==='cave'&&!k){e.baseTint=0xc8a0ff;e.setTint(e.baseTint)}
-    Object.assign(e,{def:d,king:k,hp:k?200:30,maxHp:k?200:30,dmg:k?14:6,exp:k?40:6,nm:k?'킹슬라임':(this.R.theme==='cave'?'동굴 슬라임':'슬라임'),nextHop:this.time.now+800+Math.random()*1200,stun:0,wasOnG:false,lastVy:0});
+    if(this.R.theme==='ice'&&!k){e.baseTint=0xa8e0ff;e.setTint(e.baseTint)}
+    Object.assign(e,{def:d,king:k,hp:k?200:30,maxHp:k?200:30,dmg:k?14:6,exp:k?40:6,nm:k?'킹슬라임':({cave:'동굴 슬라임',ice:'얼음 슬라임'}[this.R.theme]||'슬라임'),nextHop:this.time.now+800+Math.random()*1200,stun:0,wasOnG:false,lastVy:0});
     e.play(k?'king_idle':'slime_idle');
     e.setAlpha(0);this.tweens.add({targets:e,alpha:1,duration:400});
   }
@@ -672,6 +665,10 @@ export class PlayScene extends Phaser.Scene{
     const p=this.player;
     this.enemies.getChildren().slice().forEach(e=>{
       if(e.y>LH+40){e.destroy();return}
+      if(e.burn){const b=e.burn;b.t-=dt;b.tick-=dt;if(Math.random()<dt*14)this.fireEm.explode(1,e.x+(Math.random()-.5)*8,e.body.top+4);
+        if(b.tick<=0){b.tick=0.4;e.hp-=b.dmg;this.popNum(e.x,e.body.y-2,b.dmg,0xff9a3a,false);if(e.hp<=0){this.killEnemy(e);return}}
+        if(b.t<=0)e.burn=null}
+      if(e.slow>0){e.slow-=dt;e.body.velocity.x*=0.55;if(e.body.allowGravity===false)e.body.velocity.y*=0.55;if(e.slow<=0){e.clearTint();if(e.baseTint)e.setTint(e.baseTint)}else if(!e.isTinted)e.setTint(0x9fd8ff)}
       if(e.mob){updateMob(this,e,dt,now);return}
       const onG=e.body.blocked.down||e.body.touching.down;
       if(onG&&!e.wasOnG&&e.king&&e.lastVy>150){this.shake(100,0.008);this.dustEm.explode(8,e.x,e.body.bottom)}
@@ -736,4 +733,4 @@ export class PlayScene extends Phaser.Scene{
   }
 }
 
-Object.assign(PlayScene.prototype,PlayUI);
+Object.assign(PlayScene.prototype,PlayUI,Economy,Gimmicks,MenuMixin);

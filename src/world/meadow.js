@@ -57,6 +57,22 @@ export function drawTreetopMid(lw){
   return c;
 }
 
+export function drawIceFar(lw){
+  const FW=Math.ceil(W+(lw-W)*0.1)+4,FH=Math.ceil(H+(LH+HUD-H)*0.1)+4,r=rng(21);
+  const[c,x]=cv(FW,FH);
+  for(let y=0;y<FH;y+=4){const t=y/FH;px(x,`rgb(${90+t*60|0},${140+t*60|0},${200+t*40|0})`,0,y,FW,4)}
+  for(let X=0;X<FW;X+=6+(r()*20|0)){const h=20+(r()*60|0);for(let yy=0;yy<h;yy++){const hw=Math.round(6*(1-yy/h));px(x,'#b8dcf4',X-hw,FH-yy,hw*2+1,1)}}
+  for(let i=0;i<60;i++)px(x,'#ffffff',r()*FW|0,r()*FH|0,1,1);
+  return c;
+}
+export function drawIceMid(lw){
+  const MW=Math.ceil(W+(lw-W)*0.35)+4,MH=Math.ceil(H+(LH+HUD-H)*0.35)+4,r=rng(22);
+  const[c,x]=cv(MW,MH);
+  for(let X=8;X<MW;X+=50+(r()*40|0)){const w=14+(r()*12|0);px(x,'#7aaad8',X,0,w,MH);px(x,'#a8d4f4',X+2,0,3,MH);px(x,'#5a8ab8',X+w-3,0,3,MH);
+    for(let k=0;k<5;k++){const ix=X+(r()*w|0),ih=6+(r()*14|0);for(let d=0;d<ih;d++)px(x,'#cfeaff',ix,(r()*MH|0)+d,1,1)}}
+  for(let i=0;i<30;i++){const sx=r()*MW|0,sy=r()*MH|0;px(x,'#ffffff',sx,sy,2,2)}
+  return c;
+}
 export function drawCastleFar(lw){
   const FW=Math.ceil(W+(lw-W)*0.1)+4,FH=Math.ceil(H+(LH+HUD-H)*0.1)+4,r=rng(8);
   const[c,x]=cv(FW,FH);
@@ -77,6 +93,7 @@ export function drawCastleMid(lw){
 }
 
 /* 레벨 타일과 장식. deco = 방 데이터의 deco */
+const hexDark=h=>'#'+[1,3,5].map(i=>Math.round(parseInt(h.slice(i,i+2),16)*0.72).toString(16).padStart(2,'0')).join('');
 export function drawLevel(m,cols,seed,deco={},theme='meadow'){
   const lw=cols*T,r=rng(seed),[c,x]=cv(lw,LH);
   const at=(tx,ty)=>(ty<0||ty>=ROWS||tx<0||tx>=cols)?'#':m[ty][tx];
@@ -93,7 +110,14 @@ export function drawLevel(m,cols,seed,deco={},theme='meadow'){
     const ch=m[ty][tx],X=tx*T,Y=ty*T;
     if(ch==='#'){
       const e={t:at(tx,ty-1)!=='#',b:at(tx,ty+1)!=='#',l:at(tx-1,ty)!=='#',rt:at(tx+1,ty)!=='#'};
-      if(theme==='castle'){
+      if(theme==='ice'){
+        const deep=!e.t&&!e.b&&!e.l&&!e.rt;
+        px(x,deep?'#5a86b8':'#7fb0dc',X,Y,16,16);px(x,deep?'#6a96c8':'#a8d4f4',X+1,Y+1,6,1);px(x,'#4a76a8',X+9,Y+9,6,1);
+        for(let k=0;k<3;k++)px(x,'#cfeaff',X+(r()*14|0)+1,Y+(r()*14|0)+1,2,1);
+        if(e.l)px(x,'#3a5a88',X,Y,1,16);if(e.rt)px(x,'#3a5a88',X+15,Y,1,16);if(e.b)px(x,'#3a5a88',X,Y+15,16,1);
+        if(e.t){px(x,'#ffffff',X,Y,16,3);px(x,'#e0f2ff',X,Y+3,16,1);for(let k=0;k<16;k+=2)if(r()<.4)px(x,'#ffffff',X+k,Y+3,2,1+(r()*2|0))}
+        if(e.b&&r()<.5){const ix=X+3+(r()*9|0),ih=4+(r()*6|0);for(let d=0;d<ih;d++)px(x,d<2?'#e0f2ff':'#a8d4f4',ix+Math.floor(d/3),Y+16+d,Math.max(1,3-Math.floor(d/2)),1)}
+      }else if(theme==='castle'){
         const deep=!e.t&&!e.b&&!e.l&&!e.rt;
         px(x,deep?'#7a7f8e':'#9a9fae',X,Y,16,16);
         px(x,deep?'#8a8f9e':'#c4c8d2',X,Y,16,1);px(x,deep?'#8a8f9e':'#b4b8c4',X,Y+8,16,1);
@@ -151,6 +175,20 @@ export function drawLevel(m,cols,seed,deco={},theme='meadow'){
       for(let i=0;i<4;i++){const cx=X+i*4;for(let h=0;h<6;h++){const hw=Math.floor(h/2);px(x,'#d8dce8',cx+2-hw,Y+8+h,hw+1,1);px(x,'#8a8e9a',cx+2,Y+8+h,hw,1)}}
     }
   }
+  // 집: [시작 칸, 폭(칸), 지붕색]
+  (deco.houses||[]).forEach(([tx,w,roof])=>{const X=tx*T,G=gy(tx),Wd=w*T,bh=44;
+    px(x,'#3a2410',X+2,G-bh,Wd-4,bh);px(x,'#e8d8b0',X+3,G-bh+1,Wd-6,bh-1);
+    for(let k=X+3;k<X+Wd-3;k+=12)px(x,'#8a6038',k,G-bh+1,2,bh-1);px(x,'#8a6038',X+3,G-bh+14,Wd-6,2);
+    const dX=X+Math.floor(Wd/2)-6;px(x,'#3a2410',dX-1,G-24,14,24);px(x,'#7a4a24',dX,G-23,12,23);px(x,'#5a3418',dX+5,G-23,1,23);px(x,'#ffd34a',dX+8,G-12,2,2);
+    [X+8,X+Wd-22].forEach(wx=>{px(x,'#3a2410',wx-1,G-38,14,12);px(x,'#9fd8ff',wx,G-37,12,10);px(x,'#ffffff',wx+1,G-36,4,2);px(x,'#3a2410',wx+5,G-37,1,10);px(x,'#3a2410',wx,G-33,12,1)});
+    const rh=30,dark=hexDark(roof);
+    for(let yy=0;yy<rh;yy++){const hw=Math.round((Wd/2+8)*(yy+4)/(rh+4));px(x,'#2a1810',X+Wd/2-hw-1,G-bh-rh+yy,hw*2+2,1);px(x,yy%6<3?roof:dark,X+Wd/2-hw,G-bh-rh+yy,hw*2,1)}
+    px(x,'#5a4a40',X+Wd-18,G-bh-rh+2,7,16);px(x,'#7a6a5a',X+Wd-18,G-bh-rh+2,7,2)});
+  // 모루 (대장간)
+  (deco.anvil||[]).forEach(tx=>{const X=tx*T+8,G=gy(tx);px(x,'#2a2836',X-8,G-9,16,3);px(x,'#5a5870',X-7,G-8,14,1);px(x,'#2a2836',X-4,G-6,8,4);px(x,'#2a2836',X-6,G-2,12,2)});
+  // 우물
+  (deco.well||[]).forEach(tx=>{const X=tx*T+8,G=gy(tx);px(x,'#3a3448',X-11,G-12,22,12);px(x,'#8a8e9a',X-10,G-11,20,11);for(let k=X-10;k<X+10;k+=5)px(x,'#6a6e7a',k,G-11,1,11);
+    px(x,'#5a3a20',X-10,G-30,2,18);px(x,'#5a3a20',X+8,G-30,2,18);px(x,'#c0503a',X-13,G-34,26,4);px(x,'#8a3020',X-13,G-31,26,1);px(x,'#3a2410',X-1,G-28,1,12);px(x,'#7a5232',X-3,G-17,5,4)});
   (deco.fence||[]).forEach(([a,b])=>{const G=gy(a);for(let X=a*T;X<=(b+1)*T;X+=8){px(x,'#5a3a20',X,G-11,3,11);px(x,'#c08a50',X,G-11,2,10)}
     px(x,'#c08a50',a*T,G-9,(b-a+1)*T+3,2);px(x,'#c08a50',a*T,G-5,(b-a+1)*T+3,2);px(x,'#8a5a30',a*T,G-8,(b-a+1)*T+3,1)});
   (deco.sign||[]).forEach(tx=>{const X=tx*T+8,G=gy(tx);px(x,'#7a5232',X-1,G-16,3,16);px(x,'#3a2410',X-9,G-20,18,10);px(x,'#c08a50',X-8,G-19,16,8);
