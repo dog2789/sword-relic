@@ -17,7 +17,8 @@ function fresh(){
     items:{potion:2,ether:1},   // 소모품 개수
     quick:['potion','ether',null,null], // 퀵슬롯 1~4
     flags:{},       // 대화 등 이벤트 기록
-    bossDown:false,
+    bossDown:false, // 킹슬라임
+    bosses:{},      // 그 외 보스 {id:true}
     visited:{r1:true},
     save:null       // {room}
   };
@@ -25,13 +26,16 @@ function fresh(){
 
 export const STATE=fresh();
 
+export const bossDone=id=>id==='king'?!!STATE.bossDown:!!(STATE.bosses&&STATE.bosses[id]);
+export function setBossDone(id){if(id==='king')STATE.bossDown=true;else(STATE.bosses||(STATE.bosses={}))[id]=true}
+
 export function hasSave(){
   try{const v=JSON.parse(localStorage.getItem(KEY)||'null');return !!(v&&v.save)}catch(_){return false}
 }
 export function loadGame(){
   try{
     const v=JSON.parse(localStorage.getItem(KEY)||'null');
-    if(v&&v.stats&&v.save){const f=fresh();for(const k in STATE)delete STATE[k];Object.assign(STATE,f,v);return true}
+    if(v&&v.stats&&v.save){const f=fresh();for(const k in STATE)delete STATE[k];Object.assign(STATE,f,v);if(!STATE.bosses)STATE.bosses={};return true}
   }catch(_){}
   return false;
 }

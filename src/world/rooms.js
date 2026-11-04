@@ -76,8 +76,8 @@ export const ROOMS={
     mobs:[{t:'bat',tx:20,ty:6}],
     deco:{}},
 
-  c2:{name:'땅속 개울',theme:'cave',cols:44,grid:[2,1],exits:{left:'c1',up:{to:'r3',tx:40}},seed:83,
-    build(p){p.block(0,0,43,1);p.block(42,0,43,13);p.ground(0,43,12);p.clear(40,0,40,1);p.ladder(40,0,11);
+  c2:{name:'땅속 개울',theme:'cave',cols:44,grid:[2,1],exits:{left:'c1',right:'c3',up:{to:'r3',tx:40}},seed:83,
+    build(p){p.block(0,0,43,1);p.block(43,0,43,8);p.ground(0,43,12);p.clear(40,0,40,1);p.ladder(40,0,11);
       p.clear(10,12,26,12);p.spikes(10,26,12)},
     movers:[{tx:11,ty:9,w:3,axis:'x',range:12,speed:42}],
     slimes:[{tx:35,ty:10}],
@@ -98,8 +98,8 @@ export const ROOMS={
     slimes:[],
     mobs:[{t:'snail',tx:24,ty:10},{t:'bat',tx:28,ty:4}],
     deco:{}},
-  k2:{name:'폭포 회랑',theme:'castle',cols:44,grid:[6,0],exits:{left:'k1',up:{to:'k3',tx:24}},seed:97,
-    build(p){p.block(0,0,43,0);p.ground(0,43,12);p.block(42,0,43,11);
+  k2:{name:'폭포 회랑',theme:'castle',cols:44,grid:[6,0],exits:{left:'k1',right:'k4',up:{to:'k3',tx:24}},seed:97,
+    build(p){p.block(0,0,43,0);p.ground(0,43,12);p.block(43,0,43,8);
       p.block(0,8,13,8);p.block(16,8,29,8);p.block(33,8,41,8);p.ladder(14,8,11);p.ladder(31,4,11);
       p.block(4,4,12,4);p.block(18,4,23,4);p.block(25,4,29,4);p.block(34,4,40,4);
       p.clear(24,0,24,0);p.ladder(24,0,4)},
@@ -107,13 +107,68 @@ export const ROOMS={
     slimes:[{tx:8,ty:7}],
     mobs:[{t:'bat',tx:10,ty:6},{t:'bat',tx:36,ty:2},{t:'snail',tx:22,ty:11},{t:'snail',tx:20,ty:7}],
     deco:{}},
-  k3:{name:'높은 탑',theme:'castle',cols:26,grid:[6,-1],exits:{down:{to:'k2',tx:12}},seed:101,
-    build(p){p.block(0,0,0,12);p.block(25,0,25,12);p.ground(0,25,13);p.clear(12,13,12,13);p.ladder(12,10,13);
-      p.block(2,10,6,10);p.block(18,10,23,10);p.block(8,7,10,7);p.block(15,7,17,7);p.block(2,4,6,4);p.block(19,4,23,4);p.block(9,2,15,2)},
+  k3:{name:'높은 탑',theme:'castle',cols:26,grid:[6,-1],exits:{down:{to:'k2',tx:12},up:{to:'k7',tx:23}},seed:101,
+    build(p){p.block(0,0,25,0);p.block(0,0,0,12);p.block(25,0,25,12);p.ground(0,25,13);p.clear(12,13,12,13);p.ladder(12,10,13);
+      p.block(2,10,6,10);p.block(8,7,10,7);p.block(15,7,17,7);p.block(2,4,6,4);p.block(9,2,15,2);
+      // 오른쪽 좁은 굴뚝: 벽 붙기로만 오를 수 있음 (위로 탑 꼭대기)
+      p.block(22,1,22,8);p.clear(23,0,24,0);p.block(18,10,24,10);p.block(18,4,20,4)},
     chest:{id:'ch_k3',tx:12,item:'wind_ring'},
     fallers:[{tx:11,ty:5,w:2}],
     slimes:[],
-    mobs:[{t:'bat',tx:5,ty:7},{t:'bat',tx:20,ty:2}],
+    mobs:[{t:'bat',tx:5,ty:7},{t:'bat',tx:16,ty:2}],
+    deco:{}},
+  k7:{name:'탑 꼭대기',theme:'castle',cols:26,grid:[6,-2],exits:{down:{to:'k3',tx:23}},seed:107,
+    build(p){p.block(0,0,0,12);p.block(25,0,25,12);p.ground(0,25,13);p.clear(23,13,24,13);p.block(22,9,22,12);
+      p.block(9,9,14,9);p.block(3,6,6,6);p.block(16,5,19,5)},
+    crystal:{id:'c_k7',tx:11.5,ty:7},
+    chest:{id:'ch_k7',tx:4,item:'blue_boots'},
+    slimes:[],
+    mobs:[{t:'bat',tx:8,ty:3},{t:'bat',tx:19,ty:2}],
+    deco:{}},
+
+  /* ----- 땅속 깊은 곳 (땅속 개울 오른쪽) ----- */
+  c3:{name:'수정 동굴',theme:'cave',cols:46,grid:[3,1],exits:{left:'c2',right:'c4'},seed:113,
+    build(p){p.block(0,0,45,1);p.ground(0,45,12);p.block(0,2,0,8);p.block(45,2,45,8);
+      p.clear(14,12,19,12);p.spikes(14,19,12);p.plat(15,18,9);
+      p.ground(22,27,10);p.plat(28,31,7);p.plat(33,36,4);
+      p.clear(37,12,41,12);p.spikes(37,41,12)},
+    save:{tx:4},warp:{id:'w_c3',tx:8},
+    crystal:{id:'c_c3',tx:34.5,ty:2},
+    fallers:[{tx:38,ty:10,w:2}],
+    slimes:[{tx:31,ty:10}],
+    mobs:[{t:'bat',tx:20,ty:5},{t:'snail',tx:24,ty:8},{t:'bat',tx:40,ty:5}],
+    deco:{}},
+  c4:{name:'박쥐 군주의 둥지',theme:'cave',cols:30,grid:[4,1],exits:{left:'c3'},seed:127,
+    build(p){p.block(0,0,29,1);p.ground(0,29,12);p.block(0,2,0,8);p.block(29,2,29,11);
+      p.plat(4,7,8);p.plat(22,25,8);p.plat(12,17,5)},
+    boss:{id:'batlord',tx:15,ty:3,drop:'bat_cape',title:'BAT LORD',intro:'땅속 깊은 곳의 박쥐 군주가 날개를 펼쳤다!'},
+    slimes:[],
+    deco:{}},
+
+  /* ----- 고성 깊은 곳 (폭포 회랑 오른쪽) ----- */
+  k4:{name:'기사단 무기고',theme:'castle',cols:40,grid:[7,0],exits:{left:'k2',right:'k5'},seed:131,
+    build(p){p.block(0,0,39,0);p.ground(0,39,12);p.block(0,1,0,8);p.block(39,1,39,8);
+      p.block(8,9,13,9);p.block(26,9,31,9);p.block(14,5,25,5);p.ladder(19,5,11)},
+    save:{tx:4},warp:{id:'w_k4',tx:2},
+    chest:{id:'ch_k4',tx:23,item:'blue_helm'},
+    slimes:[],
+    mobs:[{t:'haunt',tx:29,ty:10},{t:'haunt',tx:16,ty:3},{t:'bat',tx:34,ty:4}],
+    deco:{}},
+  k5:{name:'어둠의 회랑',theme:'castle',cols:50,grid:[8,0],exits:{left:'k4',right:'k6'},seed:137,
+    build(p){p.block(0,0,49,0);p.ground(0,49,12);p.block(0,1,0,8);p.block(49,1,49,8);
+      p.clear(10,12,16,12);p.spikes(10,16,12);p.block(20,9,24,9);
+      p.clear(28,12,36,12);p.spikes(28,36,12);p.block(37,9,39,9);p.block(40,6,46,6)},
+    movers:[{tx:10,ty:9,w:2,axis:'x',range:4,speed:40}],
+    fallers:[{tx:29,ty:9,w:2},{tx:33,ty:8,w:2}],
+    chest:{id:'ch_k5',tx:44,item:'blue_armor'},
+    slimes:[],
+    mobs:[{t:'haunt',tx:19,ty:10},{t:'haunt',tx:22,ty:7},{t:'haunt',tx:42,ty:4},{t:'bat',tx:32,ty:4}],
+    deco:{}},
+  k6:{name:'왕좌의 방',theme:'castle',cols:30,grid:[9,0],exits:{left:'k5'},seed:139,
+    build(p){p.block(0,0,29,0);p.ground(0,29,12);p.block(0,1,0,8);p.block(29,1,29,11);
+      p.block(4,8,7,8);p.block(22,8,25,8)},
+    boss:{id:'rust',tx:20,ty:9,drop:'blue_sword',title:'RUST WARDEN',intro:'왕좌를 지키던 녹슨 수문장이 깨어났다!'},
+    slimes:[],
     deco:{}}
 };
 

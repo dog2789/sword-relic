@@ -14,13 +14,16 @@ const ICONS={
   boots:["............","..kkk...kkk.","..kfk...kfk.","..kfk...kfk.","..kffk..kffk",".kfffk.kfffk",".kkkkk.kkkkk"],
   acc:["....kkkk....","...kgwGGk...","...kGGGGk...","....kkkk....","...kyyyyk...","..kyk..kyk..","..kyk..kyk..","..kYk..kYk..","...kYYYYk...","....kkkk...."]
 };
+const CAPE_ICON=["...kkkkkk...","..kyccccyk..","..kccccccK..",".kccccccccK.",".kcccCcccCK.","kccCccccCcCK","kcCcccCccCCK","kCcCcCcCcCCK","kkkkkkkkkkkk"];
 const POTION=["..kkk...","..kck...",".kwwwk..","krrrrrk.","krwrrrk.","krrrrRk.",".kRRRk..","..kkk..."];
 function iconPal(it){
   const p=Object.assign({k:'#141020'},it.sword||{},(it.look&&it.look.pal)||{});
   if(p.a&&!p.A)p.A=hexMix(p.a,'#000000',0.35);if(p.a&&!p.i)p.i='#ffffff';if(p.a&&!p.m)p.m=hexMix(p.a,'#ffffff',0.3);if(p.a&&!p.M)p.M=hexMix(p.a,'#000000',0.2);
   if(it.gem){p.g=it.gem[0];p.G=it.gem[1];p.y='#ffd34a';p.Y='#c08a1c';p.w='#ffffff'}
+  if(it.look&&it.look.capePal){p.c=it.look.capePal.c;p.C=it.look.capePal.C;p.K=hexMix(p.C,'#000000',0.4);p.y='#ffd34a'}
   if(!p.g)p.g='#d23a4a';if(!p.f)p.f='#8a96b0';return p;
 }
+function paintPix(x,rows,pal,ox,oy){rows.forEach((r,y)=>{for(let i=0;i<r.length;i++){const c=pal[r[i]];if(c){x.fillStyle=c;x.fillRect(ox+i,oy+y,1,1)}}})}
 export function buildTextures(sc){
   const add=(k,c)=>{if(!sc.textures.exists(k))sc.textures.addCanvas(k,c)};
   for(const id in CONSUMABLES){const c=CONSUMABLES[id];add('icon_'+id,fromRows(POTION,{k:'#1a1020',c:'#c8a070',w:'#ffffff',r:c.col[0],R:c.col[1]}))}
@@ -31,7 +34,7 @@ export function buildTextures(sc){
       add('slashA_'+id,arcTex(14,5,-80,80,it.slashA));
       add('slashC_'+id,arcTex(it.big,it.big>22?10:8,-90,90,it.slashC));
     }
-    add('icon_'+id,fromRows(ICONS[it.slot],iconPal(it)));
+    add('icon_'+id,fromRows(it.look&&it.look.cape&&it.slot==='acc'?CAPE_ICON:ICONS[it.slot],iconPal(it)));
   }
   for(const f in HERO_FRAMES)if(!sc.textures.exists('hero_'+f))sc.textures.createCanvas('hero_'+f,HERO_W,HERO_H);
   add('slime0',fromRows(SL0,SPAL));add('slime1',fromRows(SL1,SPAL));
@@ -81,6 +84,25 @@ export function buildTextures(sc){
   npc('npc_elder',{style:2,hair:3,skin:1,top:4,bottom:3,shoes:1},{});
   npc('npc_merchant',{style:1,hair:1,skin:2,top:3,bottom:1,shoes:1},{armor:null});
   npc('npc_knight',{style:0,hair:3,skin:0,top:5,bottom:3,shoes:3},{helm:'ghost_helm',armor:'ghost_armor'});
+  // 갑옷 몬스터 (망령 갑옷, 녹슨 수문장): 주인공과 같은 그림 + 검. 34x20, 오른쪽을 봄
+  const SW_UP=SWORD[0].split('').map((_,c)=>SWORD.map(r=>r[r.length-1-c]).join('')); // 날이 위로 선 검 (5x11)
+  const knight=(id,look,equip,swPal)=>{
+    const fr={idle0:'idle0',idle1:'idle1',run0:'run0',run1:'run1',wind:'idle0',atk:'atk0'};
+    for(const k in fr){const key='kn_'+id+'_'+k;if(sc.textures.exists(key))continue;const[c,x]=cv(34,20);
+      if(k==='wind')paintPix(x,SW_UP,swPal,6,1);
+      drawHero(x,fr[k],look,equip,8,2);
+      if(k==='atk')paintPix(x,SWORD,swPal,23,12);
+      else if(k!=='wind')paintPix(x,SW_UP,swPal,19,7+(k==='idle1'||k==='run1'?1:0));
+      sc.textures.addCanvas(key,c)}};
+  knight('haunt',{style:0,hair:1,skin:4,top:6,bottom:3,shoes:0},{helm:'haunt_helm',armor:'haunt_armor'},{k:'#141020',l:'#8a88a0',L:'#c8b0ff',m:'#5a2a7a',j:'#2a1a3a'});
+  knight('rust',{style:0,hair:1,skin:3,top:6,bottom:3,shoes:0},{helm:'rust_helm',armor:'rust_armor',boots:'rust_boots'},{k:'#1a0a08',l:'#b08a68',L:'#ffd0a0',m:'#8a2a2a',j:'#3a1a10'});
+  // 박쥐 군주 (박쥐 + 왕관, 붉은 눈)
+  const BLP={k:'#14040e',p:'#7a2a5a',w:'#ff4a3a',y:'#f0c040',r:'#ff4a6a'};
+  const crown=["....y.y.y.....","....yyyyy.....","....yyryy....."].map(r=>'.'+r.slice(0,13));
+  add('batlord0',fromRows([...crown,"k............k","kk..........kk","kpk.k....k.kpk","kppkpkkkkpkppk",".kppppppppppk.","..kppwppwppk..","...kppppppk...","....kk..kk...."],BLP));
+  add('batlord1',fromRows(["",...crown.slice(1),"....k....k....","...kpkkkkpk...","..kppppppppk..",".kpppwppwpppk.","kpkppppppppkpk","kk.kppppppk.kk","k...kk..kk...k"],BLP));
+  // 충격파 (녹슨 수문장 내려찍기)
+  add('quake',fromRows(["....kk....","...krrk...","..krRRrk..",".krRyyRrk.","krRyyyyRrk","kkkkkkkkkk"],{k:'#3a1408',r:'#ff7a2a',R:'#ffb04a',y:'#fff0a0'}));
   // 구름 (흘러가는 장식)
   for(let i=0;i<3;i++){const w=[44,30,58][i],h=[14,10,16][i];const[c,x]=cv(w,h);
     const blobs=[[w*0.25,h*0.62,h*0.38],[w*0.5,h*0.45,h*0.5],[w*0.75,h*0.6,h*0.36],[w*0.4,h*0.7,h*0.3],[w*0.62,h*0.72,h*0.3]];

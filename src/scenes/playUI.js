@@ -3,7 +3,7 @@
 import Phaser from 'phaser';
 import {W,H,T,HUD,VP} from '../config.js';
 import {ROOMS,surfaceY} from '../world/rooms.js';
-import {STATE} from '../state.js';
+import {STATE,bossDone} from '../state.js';
 import {CONSUMABLES} from '../data/items.js';
 import {F9,F11} from '../fonts.js';
 import {isDown} from '../input.js';
@@ -34,9 +34,10 @@ const NPC_TALK={
   knight(){
     return{lines:[
       '...여기까지 왔는가, 젊은 검사여.',
-      '나는 이 성을 지키던 기사였다. 마왕의 군세에 성은 무너지고 말았지.',
-      '회랑 깊은 곳에 레드 링이, 높은 탑 꼭대기엔 바람의 반지가 잠들어 있다.',
-      '바람의 반지는 하늘을 한 번 더 딛게 해줄 것이다. 전설의 검을 찾으려면 그 힘이 필요하리라.']};
+      '나는 이 성을 지키던 청기사단의 기사였다. 마왕의 군세에 성은 무너지고 말았지.',
+      '폭포 회랑 너머 무기고와 어둠의 회랑에 우리 청기사단의 갑옷이 남아 있다.',
+      '왕좌의 방은 녹슨 수문장이 지키고 있다. 내려찍기의 충격파는 뛰어서 피하거라.',
+      '높은 탑의 좁은 굴뚝은 벽을 딛고 오르는 자만 지날 수 있다. 땅속 깊은 곳 박쥐 군주의 망토라면 혹시...']};
   }
 };
 
@@ -163,8 +164,10 @@ export const PlayUI={
   drawMap(time){
     const M=this.mapv,g=M.g;g.clear();
     g.fillStyle(0x05030b,0.8).fillRect(0,0,W,H);g.fillStyle(0x0f0b1e,0.97).fillRect(8,6,304,160);g.lineStyle(1,0xc9a24a,1).strokeRect(8.5,6.5,303,159);
-    const ids=Object.keys(ROOMS),G=i=>ROOMS[i].grid,cw=30,ch=17,gap=8;
+    const ids=Object.keys(ROOMS),G=i=>ROOMS[i].grid;
     const minX=Math.min(...ids.map(i=>G(i)[0])),maxX=Math.max(...ids.map(i=>G(i)[0])),minY=Math.min(...ids.map(i=>G(i)[1])),maxY=Math.max(...ids.map(i=>G(i)[1]));
+    // 방이 늘어나도 지도 창 안에 들어가도록 칸 크기를 맞춤
+    const nx=maxX-minX+1,ny=maxY-minY+1,gap=nx>7?6:8,cw=Math.min(30,Math.floor((292-gap*(nx-1))/nx)),ch=Math.min(17,Math.floor((92-gap*(ny-1))/ny));
     const mw=(maxX-minX+1)*cw+(maxX-minX)*gap,mh=(maxY-minY+1)*ch+(maxY-minY)*gap,x0=Math.round((W-mw)/2),y0=Math.round(46+(84-mh)/2);
     const pos=i=>[x0+(G(i)[0]-minX)*(cw+gap),y0+(G(i)[1]-minY)*(ch+gap)];
     const nb=j=>{const e=ROOMS[j].exits;return[e.left,e.right,e.up&&e.up.to,e.down&&e.down.to].filter(Boolean)};
@@ -180,7 +183,7 @@ export const PlayUI={
       if(R.save)g.fillStyle(0x8fe3ff,1).fillRect(x+3,y+3,4,4);
       if(R.warp&&STATE.warps[R.warp.id]){g.fillStyle(0x6fe0ff,1).fillTriangle(x+cw-8,y+6,x+cw-5,y+3,x+cw-2,y+6).fillTriangle(x+cw-8,y+6,x+cw-5,y+9,x+cw-2,y+6)}
       if(R.chest&&!STATE.opened[R.chest.id])g.fillStyle(0xffd34a,1).fillRect(x+3,y+ch-7,4,4);
-      if(R.boss&&!STATE.bossDown)g.fillStyle(0xff4a5a,1).fillRect(x+cw/2-2,y+ch/2-2,5,5);
+      if(R.boss&&!bossDone(R.boss.id||'king'))g.fillStyle(0xff4a5a,1).fillRect(x+cw/2-2,y+ch/2-2,5,5);
     });
     M.legend.forEach(([c],i)=>{g.fillStyle(c,1).fillRect(22+i*56,151,5,5)});
   },

@@ -32,14 +32,58 @@ export const HAIR_STYLES=[
   "..khhh.hhhhhhk.",".khhh......hhhk","...h..........."],
   back:["","","","",".kk","khhk","khrr","khhk","khk.","khk.","kHk.",".k.."]}
 ];
-export const ARMOR=["","","","","","","","","","","","","","....MaaaaaaM...",".....aagaaa...."];
+/* ----- 장비 레이어 (원본 방향 = 왼쪽을 봄) -----
+   a 강철  A 어두운 강철  i 하이라이트  m 테두리  M 어두운 테두리  v 투구 틈(어둠)
+   n 휘장(천)  N 휘장 어두운  G 건틀릿  b 벨트  y 버클  o 투구 깃털 */
+export const ARMOR=["","","","","","","","","","","","","",
+ "kiaAkMnnnMkiaAk",
+ "kAAkainnnaakAAk",
+ ".kGkbbbybbbkGk.",
+ "..kMAnnnnnAMk.."]
+/* 공격 프레임: 오른쪽을 본 최종 방향, 앞팔을 뻗음 */
+export const ARMOR_ATK=["","","","","","","","","","","","","",
+ "kAaikMnnnMkAaik",
+ "kAAkaannniaGGGGk",
+ ".kGkbbbybbbk....",
+ "..kMAnnnnnAMk.."]
 export const CAPE=["","","","","","","","","","","","","",".kcc........cck",".kcc........cck",".kcC........Cck",".kCC........CCk","..kCk......kCk.","...k........k.."];
-export const HELM_CAP=["","","","....kkkkkk.....","...kaiiaaaak...","..kaiaaaaaaak..",".kaaaaaaaaaaaak",".kmmmmmmmmmmmmk"];
-export const HELM_FULL=["","","......kk.......","....kkmmkkk....","...kaiammaak...","..kaiaammaaak..",".kaaaaammaaaaak",".kaaaaaaaaaaaak",
-  ".kak........kAk",".kak........kAk",".kak........kAk","..kaAAAAAAAAAk.","...kkkkkkkkkk.."];
-export const SHIELD=["kkkkk","kmqmk","kqxqk","kmxmk",".kmk.","..k.."];
+/* 기사 투구: 얼굴을 완전히 덮음 (눈 위치에 가로 틈) */
+export const HELM_FULL=["","","",
+ "....kkkkkkk....",
+ "...kiiaamaAAk..",
+ "..kiiaaamaaAAk.",
+ "..kiaaaamaaaAk.",
+ ".kiaaaaamaaaAAk",
+ ".kmmmmmmmmmmMMk",
+ ".kvvvvvvavvvvAk",
+ ".kiaaaaaaaaaAAk",
+ ".kaavavavavaAAk",
+ "..kaaaaaaaaAAk."]
+export const HELM_CREST=["","ooo",".oooo","..ooo"];   // 투구 위 깃털 (원본 방향)
+export const HELM_CAP=["","","....kkkkkk.....","...kaiiaaaak...","..kaiaaaaaaak..",".kaaaaaaaaaaaak",".kmmmmmmmmmmmmk"];
+export const SHIELD=["kkkkkkk","kqqxqQk","kxxxxxk","kqqxqQk","kqqxqQk",".kqxQk.","..kQk..","...k..."];
 export const SWORD=["..k........","..mkkkkkkk.","jjmLLLLLLLk","..mkkkkkkk.","..k........"];
-export const HERO_FRAMES={idle0:{legs:'idle',bob:0},idle1:{legs:'idle',bob:1},run0:{legs:'runA',bob:0},run1:{legs:'runB',bob:1},jump0:{legs:'jump',bob:0},atk0:{legs:'idle',bob:0,atk:true}};
+
+/* ----- 뒷모습 (사다리 탈 때). 좌우 대칭이라 뒤집지 않고 그림 ----- */
+const sym=s=>s+[...s].reverse().join('');           // 왼쪽 8칸 → 16칸 대칭
+const symRows=(n,rows)=>[...Array(n).fill(''),...rows.map(sym)];
+const HEAD_BACK=symRows(4,[".....kkk","...kkhhh","..khhhhh","..khhhhh","..khhhhh","..khhhhh","..kHhhhh","...kHHhh","....kSss"]);
+const BACK_STYLE=[
+ {top:["","",".......k","......kh"].map(r=>r.padEnd(16,'.'))},
+ {top:symRows(2,["....k..k","...khkkh"])},
+ {over:symRows(12,["..khhhhh","...kkkkk"])},
+ {over:symRows(12,["..khhhhh","..khhhhh","..khhhhh","..kHhhhh","...kHkkk"])},
+ {over:["","","","","","","","","",".......rr.......","......khhk......","......khhk......","......khhk......","......kHHk......",".......kk......."]}];
+const BODY_BACK=symRows(13,["...ktttt","..kttttt","..kBBBBB","...ktttt"]);
+const ARMS_UP=["","","..kk",".kuuk",".kuuk","..ktk","..ktk","","","","","","............ktk.",".............kuk",".............kuk","..............k."].map(r=>r.padEnd(16,'.'));
+const flip=rows=>rows.map(r=>[...r.padEnd(16,'.')].reverse().join(''));
+const LEGS_BACK={A:["....kpk..kfk....","....kfk........."],B:["....kfk..kpk....",".........kfk...."]};
+const HELM_BACK=symRows(3,[".....kkk","...kkiam","..kiaaam","..kiaaam",".kiaaaam",".kmmmmmm",".kaaaaaa",".kAaaaaa",".kAaaaaa","..kAAAAA"]);
+const ARMOR_BACK=symRows(13,["kiaAkaia","kAAkaAaa",".kGkbbbb","..kMAnnn"]);
+const CAPE_BACK=symRows(13,["..kccccc","..kccccc","..kcCccc","..kcCccc",".kcCCccc",".kkkkkkk"]);
+
+export const HERO_FRAMES={idle0:{legs:'idle',bob:0},idle1:{legs:'idle',bob:1},run0:{legs:'runA',bob:0},run1:{legs:'runB',bob:1},jump0:{legs:'jump',bob:0},atk0:{legs:'idle',bob:0,atk:true},
+  climb0:{back:'A',bob:0},climb1:{back:'B',bob:0}};
 
 export const LOOK_OPTS={
  hair:[['갈색','#8e4132'],['검정','#2e2a3a'],['금발','#f2c55c'],['은발','#d8dde8'],['빨강','#d2463a'],['파랑','#3f7ad8'],['분홍','#f08ab0']],
@@ -55,10 +99,15 @@ try{const v=JSON.parse(localStorage.getItem('sr_look3')||'null');if(v)for(const 
 export function saveLook(){try{localStorage.setItem('sr_look3',JSON.stringify(LOOK))}catch(_){}}
 
 export function hexMix(a,b,t){const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));const A=p(a),B=p(b);return'#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('')}
+/* 장착 장비의 모양 정보. 투구·갑옷·망토는 각자 자기 색(pal)을 씀 (서로 색이 섞이지 않게) */
 export function equipLook(equip){
- const L={pal:{},helm:null,armor:false,cape:false,shield:false};
- for(const sl of SLOTS){const it=ITEMS[equip&&equip[sl]];if(!it||!it.look)continue;const lk=it.look;
-  Object.assign(L.pal,lk.pal||{});if(lk.helm)L.helm=lk.helm;if(lk.armor)L.armor=true;if(lk.cape)L.cape=true;if(lk.shield)L.shield=true}
+ const L={base:{},helm:null,armor:null,cape:null,shield:null};
+ for(const sl of SLOTS){const it=ITEMS[equip&&equip[sl]];if(!it||!it.look)continue;const lk=it.look,pal=lk.pal||{};
+  if(lk.helm)L.helm={shape:lk.helm,pal,crest:lk.crest};
+  if(lk.armor)L.armor={pal};
+  if(lk.cape)L.cape={pal:lk.capePal||pal};
+  if(lk.shield)L.shield={pal:lk.shieldPal||pal};
+  if(lk.base)Object.assign(L.base,lk.base)}   // 신발·바지 색처럼 몸에 바로 칠하는 색
  return L;
 }
 export function heroPal(look,EL){
@@ -66,22 +115,39 @@ export function heroPal(look,EL){
  const H=pick('hair'),S=pick('skin'),T=pick('top'),P=pick('bottom'),F=pick('shoes');
  return Object.assign({k:'#120a10',e:'#58102e',y:'#fac802',r:'#c23a44',
   h:H,H:hexMix(H,'#120a10',0.3),s:S,S:hexMix(S,'#f07a20',0.42),u:S,
-  t:T,B:hexMix(T,'#000000',0.65),p:P,f:F},EL.pal);
+  t:T,B:hexMix(T,'#000000',0.65),p:P,f:F},EL.base,EL.armor&&EL.armor.pal.p?{p:EL.armor.pal.p}:{});
 }
+const STEEL={a:'#b8c4dc',A:'#76829e',i:'#eef2fa',m:'#d8dfee',M:'#8a96b0',v:'#141020',G:'#8a96b0',n:'#b8323e',N:'#7a1a26',b:'#5a3a26',y:'#f0c040',o:'#d23a4a'};
 export function paintRows(ctx,rows,pal,ox,oy){rows.forEach((r,y)=>{for(let i=0;i<r.length;i++){const c=pal[r[i]];if(c){ctx.fillStyle=c;ctx.fillRect(ox+i,oy+y,1,1)}}})}
 /* 원본 도트는 왼쪽을 보고 있어서 좌우를 뒤집어 그림 (게임 기준 오른쪽을 보는 모습)
-   공격 팔과 방패는 이미 최종 방향으로 그려둔 데이터라 뒤집지 않음 */
+   공격 팔·방패·뒷모습은 이미 최종 방향으로 그려둔 데이터라 뒤집지 않음 */
 export function drawHero(ctx,frame,look,equip,ox=0,oy=0){
  const F=HERO_FRAMES[frame],EL=equipLook(equip),pal=heroPal(look,EL),st=HAIR_STYLES[look.style]||HAIR_STYLES[0],X=ox+OX,Y=oy-2+F.bob;
+ const hp=EL.helm&&{...pal,...STEEL,...EL.helm.pal},ap=EL.armor&&{...pal,...STEEL,...EL.armor.pal},full=EL.helm&&EL.helm.shape==='full';
+ const cp=EL.cape&&{...pal,c:'#3a4a8a',C:'#22305a',...EL.cape.pal};
+ if(F.back){
+  const bs=BACK_STYLE[look.style]||BACK_STYLE[0],X2=ox,arms=F.back==='A'?ARMS_UP:flip(ARMS_UP);
+  paintRows(ctx,BODY_BACK,pal,X2,Y);
+  paintRows(ctx,LEGS_BACK[F.back],pal,X2,oy-2+17);
+  if(ap)paintRows(ctx,ARMOR_BACK,ap,X2,Y);
+  paintRows(ctx,arms,ap?{...pal,u:ap.G,t:ap.a}:pal,X2,Y);
+  if(cp)paintRows(ctx,CAPE_BACK,cp,X2,Y);
+  if(full){paintRows(ctx,HELM_BACK,hp,X2,Y);if(EL.helm.crest)paintRows(ctx,["","","......oooo"],{...hp,o:EL.helm.crest},X2,Y);return}
+  paintRows(ctx,HEAD_BACK,pal,X2,Y);
+  if(bs.top)paintRows(ctx,bs.top,pal,X2,Y);
+  if(bs.over)paintRows(ctx,bs.over,pal,X2,Y);
+  if(EL.helm)paintRows(ctx,symRows(2,["","....kkkk","...kaiaa","..kaaaaa","..kaaaaa",".kmmmmmm"]),hp,X2,Y);
+  return;
+ }
  const m={set fillStyle(v){ctx.fillStyle=v},fillRect(x,y,w,h){ctx.fillRect(2*ox+HERO_W-x-w,y,w,h)}};
- if(st.back)paintRows(m,st.back,pal,X,Y);
- if(EL.cape)paintRows(m,CAPE,pal,X,Y);
- paintRows(m,HEAD,pal,X,Y);
- EYES.forEach(([x,y])=>{m.fillStyle=pal.e;m.fillRect(X+x,Y+y,1,1)});
+ if(!full&&st.back)paintRows(m,st.back,pal,X,Y);
+ if(cp)paintRows(m,CAPE,cp,X,Y);
+ if(!full){paintRows(m,HEAD,pal,X,Y);EYES.forEach(([x,y])=>{m.fillStyle=pal.e;m.fillRect(X+x,Y+y,1,1)})}
  if(F.atk)paintRows(ctx,BODY_ATK,pal,X,Y);else paintRows(m,BODY,pal,X,Y);
  paintRows(m,LEGS[F.legs],pal,X,oy-2+17);
- if(EL.armor)paintRows(m,ARMOR,pal,X,Y);
- paintRows(m,st.front,pal,X,Y);
- if(EL.helm)paintRows(m,EL.helm==='full'?HELM_FULL:HELM_CAP,pal,X,Y);
- if(EL.shield)paintRows(ctx,SHIELD,pal,X-1,Y+13);
+ if(ap){if(F.atk)paintRows(ctx,ARMOR_ATK,ap,X,Y);else paintRows(m,ARMOR,ap,X,Y)}
+ if(!full)paintRows(m,st.front,pal,X,Y);
+ if(full){paintRows(m,HELM_FULL,hp,X,Y);if(EL.helm.crest)paintRows(m,HELM_CREST,{o:EL.helm.crest},X+8,Y)}
+ else if(EL.helm)paintRows(m,HELM_CAP,hp,X,Y);
+ if(EL.shield)paintRows(ctx,SHIELD,{...pal,k:'#141020',q:'#3a6ad8',Q:'#22408a',x:'#e8eef8',...EL.shield.pal},X-1,Y+12);
 }
