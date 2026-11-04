@@ -61,6 +61,10 @@ export const ITEMS={
   mirage_ring:{slot:'acc',name:'신기루 반지',desc:'피라미드 꼭대기에 잠들어 있던 반지',atk:4,effects:{speed:10},gem:['#ffb04a','#c06a1a']},
   ember_armor:{slot:'armor',name:'불꽃 갑옷',desc:'용암에서 건진 흑요석 갑옷. 용암에 데어도 피해가 절반',def:7,hp:30,effects:{fireRes:true},
     look:{armor:'spike',pal:{a:'#3a2a2e',A:'#24181c',i:'#ff8a2a',M:'#2a1c20',G:'#2a1c20',n:'#ff6a1a',N:'#c0301a',p:'#24181c'}}},
+  clover_charm:{slot:'acc',name:'네잎클로버 부적',desc:'풍차 언덕에서 찾은 행운의 부적',atk:2,hp:15,gem:['#6fe05a','#2f8a3a']},
+  echo_ring:{slot:'acc',name:'메아리 반지',desc:'종유석 굴 깊은 곳에서 울리던 반지',atk:3,def:2,gem:['#c0a0ff','#6a4ab0']},
+  scarab_ring:{slot:'acc',name:'풍뎅이 반지',desc:'사막의 감옥에 갇혀 있던 왕의 반지',atk:5,def:3,gem:['#4ad8c0','#1a7a6a']},
+  phoenix_ring:{slot:'acc',name:'불사조 반지',desc:'불의 시련을 이겨낸 자의 반지',hp:40,def:2,gem:['#ff8a2a','#c0301a']},
   // NPC·몬스터 전용 (획득 불가)
   mummy_look:{slot:'armor',hidden:true,name:'',desc:'',look:{armor:'plate',pal:{a:'#e8dcc0',A:'#b8a888',i:'#ffffff',M:'#a89878',G:'#c8b898',n:'#c8b898',N:'#a89878',p:'#b8a888'}}},
   mummy_helm:{slot:'helm',hidden:true,name:'',desc:'',look:{helm:'full',pal:{a:'#e8dcc0',A:'#b8a888',i:'#ffffff',m:'#d8c8a8',M:'#a89878',v:'#ff4a3a'}}},

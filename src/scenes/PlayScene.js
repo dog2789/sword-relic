@@ -316,7 +316,16 @@ export class PlayScene extends Phaser.Scene{
     if(ex.left&&p.x<-2)this.goRoom(ex.left,'right');
     else if(ex.right&&p.x>this.lw+2)this.goRoom(ex.right,'left');
     else if(ex.up&&p.y<-4)this.goRoom(ex.up.to,'bottom');
-    else if(ex.down&&p.y>LH+6)this.goRoom(ex.down.to,'top');
+    else if(ex.down&&p.y>LH+6){
+      // 아래 출구 구멍으로 떨어졌을 때만 다음 방으로, 다른 곳(용암·가시 구덩이)으로 빠지면 다치고 마지막 안전한 곳으로
+      if(Math.abs(p.x-(ex.down.tx*T+8))<=28)this.goRoom(ex.down.to,'top');
+      else this.fallPit();
+    }
+  }
+  fallPit(){
+    const p=this.player;if(p.dead)return;const sf=this.safe||{x:p.x,y:40};
+    p.body.reset(sf.x,sf.y-2);p.inv=0;this.hurtBy(this.trap(18),sf.x,'pit');
+    p.setVelocity(0,0);if(!p.dead)p.inv=Math.max(p.inv,1);
   }
 
   /* ----- 장비 ----- */
