@@ -38,6 +38,13 @@ export const ITEMS={
   wind_ring:{slot:'acc',name:'바람의 반지',desc:'바람을 두른 반지. 발걸음이 가벼워진다',effects:{speed:15},gem:['#9ff0ff','#3a9ad8']},
   bat_cape:{slot:'acc',name:'박쥐 망토',desc:'박쥐 군주의 날개로 만든 망토. 벽에 붙어 미끄러지다 X로 벽 점프',def:1,effects:{wallCling:true},
     look:{cape:true,capePal:{c:'#4a2a6a',C:'#2a1640'}}},
+  acorn_charm:{slot:'acc',name:'도토리 부적',desc:'들꽃 언덕 꼭대기에서 찾은 부적. 마음이 든든해진다',hp:15,def:1,gem:['#c08a3a','#6a4a20']},
+  feather:{slot:'acc',name:'새털 장식',desc:'큰 새의 둥지에서 찾은 깃털. 몸이 가벼워진다',def:1,effects:{speed:10},gem:['#ffffff','#9ab0c8']},
+  glow_ring:{slot:'acc',name:'반딧불 반지',desc:'버섯 동굴의 빛을 담은 반지',hp:25,gem:['#c0ff6a','#5a9a2a']},
+  knight_ring:{slot:'acc',name:'기사의 인장',desc:'종탑 꼭대기에 잠들어 있던 기사단의 인장 반지',atk:5,gem:['#ffd34a','#a07a1a']},
+  snow_ring:{slot:'acc',name:'눈꽃 반지',desc:'눈꽃 신전 제단에 바쳐져 있던 반지',def:3,hp:15,gem:['#ffffff','#6fb0e0']},
+  royal_helm:{slot:'helm',name:'왕관 투구',desc:'보물고 깊숙이 있던 금빛 투구. 왕실 근위대장의 것',def:4,hp:20,
+    look:{helm:'full',crest:'#e83a4a',pal:{a:'#f0c850',A:'#a07a20',i:'#fff4c0',m:'#ffe890',M:'#c09a3a',v:'#2a1808'}}},
   // NPC·몬스터 전용 (획득 불가)
   ghost_helm:{slot:'helm',hidden:true,name:'',desc:'',look:{helm:'full',crest:'#ffd34a',pal:{a:'#d8e4f0',A:'#8a9ab8',i:'#ffffff',m:'#eef4fa',M:'#a8b8d0',v:'#3a8aff'}}},
   ghost_armor:{slot:'armor',hidden:true,name:'',desc:'',look:{armor:true,cape:true,capePal:{c:'#3a4a8a',C:'#22305a'},pal:{a:'#d8e4f0',A:'#8a9ab8',i:'#ffffff',M:'#a8b8d0',G:'#a8b8d0',n:'#6ff0ff',N:'#3a9ab0',p:'#8a9ab8'}}},

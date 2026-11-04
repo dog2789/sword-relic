@@ -12,6 +12,7 @@ import {PlayUI} from './playUI.js';
 import {Economy} from './economy.js';
 import {Gimmicks} from './gimmicks.js';
 import {MenuMixin} from './menu.js';
+import {Fx,buildFxTextures} from './fx.js';
 import {bossDone,setBossDone,STATE,saveGame} from '../state.js';
 import {RS,fitCameras} from '../zoom.js';
 
@@ -25,7 +26,7 @@ export class PlayScene extends Phaser.Scene{
   constructor(){super('play')}
 
   create(data={}){
-    buildTextures(this);buildFonts(this);
+    buildTextures(this);buildFonts(this);buildFxTextures(this);this.fxEms={};
     // 이전 방의 참조 정리
     Object.assign(this,{slash:null,sword:null,chests:[],statue:null,crystal:null,tInfo:null,menu:null,pickups:[],walls:[],fallers:[],mushrooms:[],climbing:false,bounceT:0,safe:null,autoUp:false,warpObj:null,npcObjs:[],bubble:null,listm:null,dlg:null,mapv:null,warpm:null,quickUI:[],quakes:[],eshots:[],wallT:0,wallLock:0,wallDir:0});
     const id=data.room&&ROOMS[data.room]?data.room:(ROOMS[STATE.room]?STATE.room:'r1');
@@ -38,8 +39,10 @@ export class PlayScene extends Phaser.Scene{
     // 입장 위치
     const entry=data.entry||'start',R=this.R,ex=R.exits;
     let sx,sy,climb=false;
-    if(entry==='left'){sx=8;sy=floorTopY(this.map,0)-9}
-    else if(entry==='right'){sx=this.lw-8;sy=floorTopY(this.map,this.cols-1)-9}
+    // 옆으로 들어올 때: 바닥이 없으면(나무 위 등) 가장 위의 디딜 곳에 섬
+    const edgeY=tx=>{const f=floorTopY(this.map,tx);return(f>=LH?surfaceY(this.map,tx):f)-9};
+    if(entry==='left'){sx=8;sy=edgeY(0)}
+    else if(entry==='right'){sx=this.lw-8;sy=edgeY(this.cols-1)}
     else if(entry==='top'&&ex.up){sx=ex.up.tx*T+8;sy=8;climb=this.isClimb(sx,8)}
     else if(entry==='bottom'&&ex.down){sx=ex.down.tx*T+8;sy=LH-10;climb=this.isClimb(sx,LH-8)}
     else if(entry==='warp'&&R.warp){sx=R.warp.tx*T+8;sy=surfaceY(this.map,R.warp.tx)-9}
@@ -47,7 +50,7 @@ export class PlayScene extends Phaser.Scene{
     const p=this.player=this.physics.add.sprite(sx,sy,'hero_idle0');
     p.body.setSize(9,14).setOffset(4,3);
     this.sword=this.add.image(0,0,'sword_'+this.equip.weapon).setDepth(11).setVisible(false);p.setDepth(10).setCollideWorldBounds(true);
-    Object.assign(p,{inv:entry==='save'?1.5:0,hurtT:0,dropT:0,dead:false});
+    Object.assign(p,{inv:entry==='save'?1.5:(entry==='start'?0:0.9),hurtT:0,dropT:0,dead:false});   // 방에 들어오자마자 맞고 밀려 나가지 않게 잠깐 무적
     this.facing=entry==='right'?-1:1;this.coyote=0;this.jumpBuf=0;this.wasOnG=false;this.prevVy=0;this.skillCd=0;this.castT=0;this.airJumps=0;
     this.lastAtkEnd=-1e9;this.lastStep=0;this.move=0;
     this.atk={active:false,step:0,t:0,queued:false,hit:new Set(),dur:0,on:[0,0],f:1};
@@ -244,8 +247,10 @@ export class PlayScene extends Phaser.Scene{
       }});
     // 가시
     if(!p.dead&&p.inv<=0){const yb=b.bottom-1;
-      if(this.tileAt(b.left+2,yb)==='^'||this.tileAt(b.right-2,yb)==='^'||this.tileAt(b.center.x,yb)==='^'){this.hurtBy(12,p.x+this.facing*10,'spike');
-        if(!p.dead&&this.safe){const sf=this.safe;this.time.delayedCall(350,()=>{if(p.dead)return;p.setPosition(sf.x,sf.y);p.setVelocity(0,0);p.hurtT=0;this.cameras.main.flash(120,255,255,255)})}}}
+      // 가시: 제자리에서 위·뒤로 살짝 튕겨 나가며 피해만 입음 (무적 시간 동안 빠져나오면 됨)
+      if(this.tileAt(b.left+2,yb)==='^'||this.tileAt(b.right-2,yb)==='^'||this.tileAt(b.center.x,yb)==='^'){
+        const back=Math.abs(b.velocity.x)>10?-Math.sign(b.velocity.x):-this.facing;this.hurtBy(12,p.x-back*10,'spike');
+        if(!p.dead){p.setVelocity(back*90,-280);this.sparkEm.explode(6,p.x,b.bottom)}}}
   }
   doSave(){
     const s=this.stats;this.atStatue=true;
@@ -317,7 +322,7 @@ export class PlayScene extends Phaser.Scene{
   /* 점프는 최대 2단 (땅 점프 + 공중 1번) */
   maxAirJumps(){return Math.min(1,(STATE.abilities.djump?1:0)+this.bonus.airJumps)}
   updatePogo(dt){
-    const p=this.player,b=p.body;if(b.velocity.y<240)p.setVelocityY(Math.min(380,b.velocity.y+900*dt));
+    const p=this.player,b=p.body;if(b.velocity.y<240)p.setVelocityY(Math.min(380,b.velocity.y+900*dt));this.fxPogo(dt);
     const hb=new Phaser.Geom.Rectangle(p.x-6,b.bottom-4,12,16);let bounce=false;
     this.enemies.getChildren().slice().forEach(e=>{if(!e.active||this.pogoHit.has(e))return;const eb=e.body;
       if(Phaser.Geom.Intersects.RectangleToRectangle(hb,new Phaser.Geom.Rectangle(eb.x,eb.y,eb.width,eb.height))){this.pogoHit.add(e);bounce=true;
@@ -325,7 +330,7 @@ export class PlayScene extends Phaser.Scene{
     this.chests.forEach(c=>{if(!c.open&&Phaser.Geom.Intersects.RectangleToRectangle(hb,new Phaser.Geom.Rectangle(c.x-7,c.y-11,14,11))){this.openChest(c);bounce=true}});
     const wb=this.walls.some(w=>w.hp>0&&Phaser.Geom.Intersects.RectangleToRectangle(hb,w.rect));this.hitWalls(hb,'pogo'+Math.floor(this.time.now/250));if(wb)bounce=true;
     this.hitSwitches(hb);this.slashShots(hb);
-    if(bounce){p.setVelocityY(-310);this.airJumps=0;this.bounceT=0.3;this.pogoHit=new Set();this.sparkEm.explode(6,p.x,b.bottom+6)}
+    if(bounce){p.setVelocityY(-310);this.airJumps=0;this.bounceT=0.3;this.pogoHit=new Set();this.fxPogoImpact(p.x,b.bottom+6)}
   }
   updateSword(){
     const p=this.player,a=this.atk;
@@ -566,14 +571,14 @@ export class PlayScene extends Phaser.Scene{
     Object.assign(a,{active:true,step,t:0,queued:false,hit:new Set(),f:this.facing,dur:step===3?0.34:0.24,on:step===3?[0.05,0.2]:[0.03,0.14],tag:Math.random()});
     if(this.slash)this.slash.destroy();
     const f=a.f,s=this.add.image(p.x+f*4,p.y+3,(step===3?'slashC_':'slashA_')+w).setOrigin(f>0?0:1,0.5).setFlipX(f<0).setFlipY(step===2).setDepth(12).setAlpha(0);
-    this.slash=s;
+    this.slash=s;this.fxSwing(s,step,f);
     this.tweens.add({targets:s,alpha:{from:1,to:0},delay:a.on[0]*1000,duration:(a.dur-a.on[0])*1000,ease:'Quad.easeIn'});
     if(p.body.blocked.down)p.setVelocityX(f*(step===3?130:60));
   }
   updateAttack(dt){
     const a=this.atk,p=this.player;if(!a.active)return;
     a.t+=dt;
-    if(this.slash){this.slash.x=p.x+a.f*4;this.slash.y=p.y+3}
+    if(this.slash){this.slash.x=p.x+a.f*4;this.slash.y=p.y+3;if(this.slashGlow&&this.slashGlow.active)this.slashGlow.setPosition(this.slash.x,this.slash.y)}
     if(a.t>=a.on[0]&&a.t<=a.on[1]){
       const reach=(a.step===3?26:20),hb=new Phaser.Geom.Rectangle(a.f>0?p.x:p.x-reach,p.y-10,reach,22);
       this.enemies.getChildren().slice().forEach(e=>{
@@ -621,9 +626,7 @@ export class PlayScene extends Phaser.Scene{
     const kb=e.kb==null?1:e.kb;e.setVelocity(dir*(heavy?1.6:1)*(e.king?40:110)*kb,e.king?-40:(heavy?-170:-110)*kb);
     e.setTintFill(0xffffff);this.time.delayedCall(70,()=>{if(e.active){e.clearTint();if(e.slow>0)e.setTint(0x9fd8ff);else if(e.baseTint)e.setTint(e.baseTint)}});
     this.popNum(e.x+(Math.random()*8-4),e.body.y-2,d,crit?0xffd34a:0xffffff,crit);
-    this.sparkEm.explode(crit?10:6,e.x-dir*4,e.body.center.y);
-    const st=this.add.image(e.x-dir*4,e.body.center.y,'spark').setDepth(41).setAngle(Math.random()*45);
-    this.tweens.add({targets:st,scale:{from:.6,to:1.6},alpha:{from:1,to:0},duration:140,onComplete:()=>st.destroy()});
+    this.fxHit(e.x-dir*4,e.body.center.y,dir,crit,heavy,src==='splash'?'slime':null);
     this.combo++;this.comboT=1.5;
     if(this.combo>=2){this.comboTxt.setText(this.combo+' HIT').setVisible(true).setAlpha(1);this.tweens.add({targets:this.comboTxt,scale:{from:1.4,to:1},duration:120})}
     this.targetT=3.5;
@@ -733,4 +736,4 @@ export class PlayScene extends Phaser.Scene{
   }
 }
 
-Object.assign(PlayScene.prototype,PlayUI,Economy,Gimmicks,MenuMixin);
+Object.assign(PlayScene.prototype,PlayUI,Economy,Gimmicks,MenuMixin,Fx);

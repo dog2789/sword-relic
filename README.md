@@ -44,7 +44,8 @@ src/
     CustomizeScene.js  캐릭터 만들기 (새로 시작할 때 인트로 전에 나옴)
     IntroScene.js      인트로 스토리 컷씬 4장
     economy.js         골드, 대장간(무기 강화), 잡화점
-    gimmicks.js        열쇠·색깔 문, 포탑, 스위치 블록, 물(헤엄), 얼음, 고드름
+    gimmicks.js        열쇠·색깔 문, 포탑, 스위치 블록(시간 스위치), 상자·누름판·철문, 횃불, 물(헤엄), 얼음, 고드름
+    fx.js              무기별 공격 이펙트, 하단 찌르기 잔상·충격파
     menu.js            장비창(도감 그리드)과 상태창
     PlayScene.js       게임 본체 (플레이어, 전투, 적 AI, 지형 기믹, 장비창, HUD, 미니맵)
     playUI.js          대화창·NPC, 워프, 전체 지도, 퀵슬롯
@@ -74,7 +75,7 @@ src/
 - **컷신**: 방 데이터 `event:{id, lines:[{n:'이름',t:'대사'}]}` (처음 들어올 때 한 번), 보스 처치 후는 `boss.after`
 - **강화 비용·공격력**: `src/data/items.js`의 `WLV_COST`, `wlvAtk`
 - **상점 물건**: `src/scenes/economy.js`의 `SHOP`
-- **장치**: 방 데이터 `doors`, `turrets`, `switches`, `icicles`, `chests:[{gold}|{item:'key_red'}]`, 맵 글자 `~`(물) `A`/`B`(스위치 블록)
+- **장치**: 방 데이터 `doors`, `turrets`, `switches`(`timer` 초), `icicles`, `crates`, `plates`(`gate` id, `latch`), `gates`, `torches`(`gate` id), `chests:[{gold}|{item:'key_red'}]`, 맵 글자 `~`(물) `A`/`B`(스위치 블록)
 - **몬스터·보스 수치**: `src/scenes/monsters.js`의 `MOBS`
 - **보스 배치**: 방 데이터의 `boss:{id, tx, ty, drop, title(영문 배너), intro(등장 문구)}` (id: king | batlord | rust)
 - **소모품**: `src/data/items.js`의 `CONSUMABLES`

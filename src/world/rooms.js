@@ -30,7 +30,7 @@ function painter(m){
 
 export const ROOMS={
   /* ----- 고향 마을 (시작 지점) ----- */
-  v1:{name:'고향 마을',theme:'meadow',cols:46,grid:[-1,0],exits:{right:'r1'},seed:7,
+  v1:{name:'고향 마을',theme:'meadow',cols:46,grid:[-1,0],exits:{left:'v2',right:'r1'},seed:7,
     build(p){p.ground(0,45,12);p.plat(17,20,6);p.plat(31,35,6);p.plat(24,26,9)},
     start:{tx:8},save:{tx:13},warp:{id:'w_v1',tx:41},
     npcs:[{id:'mother',tx:6,tex:'npc_mother',name:'엄마'},{id:'smith',tx:22,tex:'npc_smith',name:'대장장이'},
@@ -75,17 +75,17 @@ export const ROOMS={
     slimes:[],
     deco:{bigtree:[14],fence:[[2,4],[25,27]]}},
 
-  t1:{name:'고목 꼭대기',theme:'treetop',cols:30,grid:[3,-1],exits:{down:{to:'r4',tx:14}},seed:61,
+  t1:{name:'고목 꼭대기',theme:'treetop',cols:30,grid:[3,-1],exits:{down:{to:'r4',tx:14},right:'t2'},seed:61,
     build(p){p.block(8,6,13,6);p.block(15,6,21,6);p.vine(14,6,13);
-      p.leaf(22,26,3);p.leaf(2,6,3);p.leaf(1,5,9);p.leaf(23,28,9);p.leaf(9,12,2)},
+      p.leaf(22,26,3);p.leaf(2,6,3);p.leaf(1,5,9);p.leaf(23,29,9);p.leaf(9,12,2)},
     chest:{id:'ch_t1',tx:24,item:'iron_helm'},
     chests:[{id:'ch_t1b',tx:10,ty:1,gold:50}],
     mushrooms:[{tx:10,ty:5}],
     slimes:[{tx:18,ty:4},{tx:3,ty:7}],
     deco:{}},
 
-  c1:{name:'이끼 동굴',theme:'cave',cols:40,grid:[1,1],exits:{right:'c2',up:{to:'r2',tx:5}},seed:71,
-    build(p){p.block(0,0,39,1);p.block(0,0,1,13);p.ground(0,39,12);p.clear(5,0,5,1);p.ladder(5,0,11);
+  c1:{name:'이끼 동굴',theme:'cave',cols:40,grid:[1,1],exits:{right:'c2',up:{to:'r2',tx:5},down:{to:'c10',tx:8}},seed:71,
+    build(p){p.block(0,0,39,1);p.block(0,0,1,13);p.ground(0,39,12);p.clear(5,0,5,1);p.ladder(5,0,11);p.clear(8,12,8,13);p.ladder(8,12,13);
       p.clear(13,12,23,12);p.spikes(13,23,12);p.block(28,5,33,5);p.block(35,2,39,8)},
     fallers:[{tx:15,ty:10,w:2},{tx:19,ty:9,w:2}],
     mushrooms:[{tx:26,ty:11}],
@@ -166,19 +166,19 @@ export const ROOMS={
     slimes:[{tx:31,ty:10}],
     mobs:[{t:'bat',tx:20,ty:5},{t:'snail',tx:24,ty:8},{t:'bat',tx:40,ty:5}],
     deco:{}},
-  c4:{name:'박쥐 군주의 둥지',theme:'cave',cols:30,grid:[4,1],exits:{left:'c3'},seed:127,
-    build(p){p.block(0,0,29,1);p.ground(0,29,12);p.block(0,2,0,8);p.block(29,2,29,11);
+  c4:{name:'박쥐 군주의 둥지',theme:'cave',cols:30,grid:[4,1],exits:{left:'c3',right:'c6'},seed:127,
+    build(p){p.block(0,0,29,1);p.ground(0,29,12);p.block(0,2,0,8);p.block(29,2,29,8);
       p.plat(4,7,8);p.plat(22,25,8);p.plat(12,17,5)},
     boss:{id:'batlord',tx:15,ty:3,drop:'bat_cape',title:'BAT LORD',intro:'땅속 깊은 곳의 박쥐 군주가 날개를 펼쳤다!'},
     slimes:[],
     deco:{}},
 
   /* ----- 고성 깊은 곳 (폭포 회랑 오른쪽) ----- */
-  k4:{name:'기사단 무기고',theme:'castle',cols:40,grid:[7,0],exits:{left:'k2',right:'k5'},seed:131,
+  k4:{name:'기사단 무기고',theme:'castle',cols:40,grid:[7,0],exits:{left:'k2',right:'k5',down:{to:'c8',tx:36}},seed:131,
     build(p){p.block(0,0,39,0);p.ground(0,39,12);p.block(0,1,0,8);p.block(39,1,39,8);
       p.block(8,9,13,9);p.block(26,9,31,9);p.block(14,5,26,5);p.ladder(19,5,11);
       // 무기고 금고: 빨간 블록이 막고 있음. 위층 스위치를 치면 열리고, 대신 파란 블록이 사다리 위를 막음
-      p.block(26,1,26,4);p.blockA(21,1,21,4);p.blockB(18,4,20,4)},
+      p.block(26,1,26,4);p.blockA(21,1,21,4);p.blockB(18,4,20,4);p.clear(36,12,36,13);p.ladder(36,12,13)},
     save:{tx:4},warp:{id:'w_k4',tx:2},
     chest:{id:'ch_k4',tx:15,item:'blue_helm'},
     chests:[{id:'ch_k4b',tx:24,ty:4,item:'flame_sword'}],
@@ -186,10 +186,10 @@ export const ROOMS={
     slimes:[],
     mobs:[{t:'haunt',tx:29,ty:10},{t:'haunt',tx:16,ty:3},{t:'bat',tx:34,ty:4}],
     deco:{}},
-  k5:{name:'어둠의 회랑',theme:'castle',cols:50,grid:[8,0],exits:{left:'k4',right:'k6'},seed:137,
+  k5:{name:'어둠의 회랑',theme:'castle',cols:50,grid:[8,0],exits:{left:'k4',right:'k6',up:{to:'k11',tx:24}},seed:137,
     build(p){p.block(0,0,49,0);p.ground(0,49,12);p.block(0,1,0,8);p.block(49,1,49,8);
       p.clear(10,12,16,12);p.spikes(10,16,12);p.block(20,9,24,9);
-      p.clear(28,12,36,12);p.spikes(28,36,12);p.block(37,9,39,9);p.block(40,6,46,6)},
+      p.clear(28,12,36,12);p.spikes(28,36,12);p.block(37,9,39,9);p.block(40,6,46,6);p.clear(24,0,24,0);p.ladder(24,0,8)},
     movers:[{tx:10,ty:9,w:2,axis:'x',range:4,speed:40}],
     fallers:[{tx:29,ty:9,w:2},{tx:33,ty:8,w:2}],
     chest:{id:'ch_k5',tx:44,item:'blue_armor'},
@@ -198,8 +198,8 @@ export const ROOMS={
     slimes:[],
     mobs:[{t:'haunt',tx:19,ty:10},{t:'haunt',tx:22,ty:7},{t:'haunt',tx:42,ty:4},{t:'bat',tx:32,ty:4}],
     deco:{}},
-  k6:{name:'왕좌의 방',theme:'castle',cols:30,grid:[9,0],exits:{left:'k5'},seed:139,
-    build(p){p.block(0,0,29,0);p.ground(0,29,12);p.block(0,1,0,8);p.block(29,1,29,11);
+  k6:{name:'왕좌의 방',theme:'castle',cols:30,grid:[9,0],exits:{left:'k5',right:'k8'},seed:139,
+    build(p){p.block(0,0,29,0);p.ground(0,29,12);p.block(0,1,0,8);p.block(29,1,29,8);
       p.block(4,8,7,8);p.block(22,8,25,8)},
     boss:{id:'rust',tx:20,ty:9,drop:'blue_sword',title:'RUST WARDEN',intro:'왕좌를 지키던 녹슨 수문장이 깨어났다!',
       after:[{n:'유령 기사',t:'...해냈구나. 수문장의 저주가 풀리고 성에 빛이 돌아왔다.'},{n:'유령 기사',t:'전설의 검은 이 성보다 더 깊은 곳, 얼어붙은 땅 아래에 봉인되어 있다고 전해진다.'},{n:'나',t:'얼어붙은 땅... 수정 동굴의 푸른 문 너머일지도 몰라.'}]},
@@ -207,9 +207,9 @@ export const ROOMS={
     deco:{}},
 
   /* ----- 지하 호수와 얼음 땅 (수정 동굴의 푸른 문 아래) ----- */
-  c5:{name:'지하 호수',theme:'cave',cols:40,grid:[3,2],exits:{up:{to:'c3',tx:11},right:'i1'},seed:149,
+  c5:{name:'지하 호수',theme:'cave',cols:40,grid:[3,2],exits:{up:{to:'c3',tx:11},right:'i1',left:'c9',down:{to:'c11',tx:36}},seed:149,
     build(p){p.block(0,0,39,1);p.clear(11,0,11,1);p.ladder(11,0,4);p.block(6,5,15,5);
-      p.water(0,6,39,12);p.ground(0,39,13);p.block(0,2,0,12);
+      p.water(0,6,39,12);p.ground(0,39,13);p.block(0,2,0,5);p.clear(36,13,36,13);p.water(36,13,36,13);
       p.block(19,6,20,10);p.block(26,10,29,12);p.block(33,5,39,5);p.block(30,9,31,9)},
     chests:[{id:'ch_c5',tx:23,ty:12,gold:120},{id:'ch_c5b',tx:3,ty:12,gold:90}],
     crystal:{id:'c_c5',tx:27.5,ty:8},
@@ -240,12 +240,194 @@ export const ROOMS={
     slimes:[{tx:8,ty:10}],
     mobs:[{t:'snail',tx:34,ty:10},{t:'bat',tx:30,ty:3}],
     deco:{}},
-  i3:{name:'얼어붙은 왕좌',theme:'ice',cols:30,grid:[6,2],exits:{left:'i2'},seed:163,
-    build(p){p.block(0,0,29,1);p.ground(0,29,12);p.block(0,2,0,8);p.block(29,2,29,11);p.block(5,8,8,8);p.block(21,8,24,8)},
+  i3:{name:'얼어붙은 왕좌',theme:'ice',cols:30,grid:[6,2],exits:{left:'i2',right:'i4'},seed:163,
+    build(p){p.block(0,0,29,1);p.ground(0,29,12);p.block(0,2,0,8);p.block(29,2,29,8);p.block(5,8,8,8);p.block(21,8,24,8)},
     boss:{id:'turtle',tx:18,ty:9,drop:'frost_blade',title:'FROST TURTLE',intro:'얼음 속에 잠들어 있던 서리 거북이 깨어났다!',
       after:[{n:'나',t:'이 냉기... 아직 더 깊은 곳이 있는 것 같아.'},{n:'나',t:'전설의 검이 가까워지고 있어. 조금만 더 가 보자.'}]},
     slimes:[],
-    deco:{}}
+    deco:{}},
+
+  /* ===== 초원 확장 ===== */
+  v2:{name:'마을 뒷산',theme:'meadow',cols:40,grid:[-2,0],exits:{right:'v1',left:'v3',up:{to:'v4',tx:10}},seed:171,
+    build(p){p.ground(0,39,12);p.block(24,1,24,8);p.vine(10,0,11);p.plat(14,17,8);p.plat(4,7,6)},
+    gates:[{id:'g_v2',tx:24,ty:9,h:3}],plates:[{tx:28,ty:11,gate:'g_v2'}],crates:[{tx:35,ty:11}],
+    chests:[{id:'ch_v2',tx:5,ty:5,gold:45}],
+    slimes:[{tx:16,ty:10}],mobs:[{t:'bat',tx:6,ty:3}],
+    deco:{trees:[2,20,38],rocks:[33]},
+    event:{id:'ev_crate',delay:400,lines:[{n:'나',t:'길을 철문이 막고 있네. 바닥에 누름판이 있어...'},{n:'나',t:'저 나무 상자를 밀어서 누름판 위에 올려 두면 열릴지도 몰라.'}]}},
+  v3:{name:'들꽃 언덕',theme:'meadow',cols:44,grid:[-3,0],exits:{right:'v2'},seed:173,
+    build(p){p.ground(0,43,12);p.ground(0,6,8);p.clear(1,9,6,11);p.plat(8,10,10);p.plat(12,15,9);p.plat(18,21,6);p.ground(25,30,10);p.plat(33,36,7);p.block(38,2,43,2)},
+    breaks:[{id:'w_v3',tx:6,ty:9,h:3}],
+    mushrooms:[{tx:35,ty:6}],
+    crystal:{id:'c_v3',tx:41,ty:0},
+    chests:[{id:'ch_v3',tx:2,ty:7,item:'acorn_charm'},{id:'ch_v3b',tx:3,ty:11,gold:80}],
+    slimes:[{tx:20,ty:4},{tx:28,ty:8}],mobs:[{t:'bat',tx:15,ty:4},{t:'snail',tx:34,ty:10}],
+    deco:{trees:[23,31],rocks:[11]}},
+  v4:{name:'버섯 숲',theme:'treetop',cols:40,grid:[-2,-1],exits:{down:{to:'v2',tx:10}},seed:179,
+    build(p){p.vine(10,6,13);p.leaf(8,13,6);p.leaf(16,19,9);p.leaf(22,25,6);p.leaf(28,31,3);p.leaf(34,38,6);p.leaf(2,6,3);p.leaf(14,16,2)},
+    mushrooms:[{tx:17,ty:8},{tx:36,ty:5}],
+    crystal:{id:'c_v4',tx:29.5,ty:1},
+    chests:[{id:'ch_v4',tx:4,ty:2,gold:60}],
+    slimes:[{tx:36,ty:4},{tx:23,ty:4}],mobs:[{t:'bat',tx:24,ty:2}],
+    deco:{}},
+  t2:{name:'고목 가지 길',theme:'treetop',cols:40,grid:[4,-1],exits:{left:'t1',right:'t3'},seed:181,
+    build(p){p.leaf(0,5,9);p.block(16,8,21,8);p.blockB(23,8,29,8);p.block(30,6,39,6);p.block(33,2,36,2)},
+    movers:[{tx:6,ty:9,w:2,axis:'x',range:7,speed:40}],
+    fallers:[{tx:23,ty:5,w:2},{tx:27,ty:4,w:2}],
+    switches:[{tx:18,ty:7,timer:5}],
+    chests:[{id:'ch_t2',tx:34,ty:1,gold:70}],
+    slimes:[{tx:19,ty:6}],mobs:[{t:'bat',tx:12,ty:4},{t:'bat',tx:32,ty:3}],
+    deco:{}},
+  t3:{name:'새 둥지',theme:'treetop',cols:30,grid:[5,-1],exits:{left:'t2'},seed:183,
+    build(p){p.block(0,6,6,6);p.block(8,8,13,8);p.block(15,7,29,7);p.block(23,3,29,3);p.block(23,4,23,4);p.block(29,4,29,6)},
+    gates:[{id:'g_t3',tx:23,ty:5,h:2}],plates:[{tx:17,ty:6,gate:'g_t3'}],crates:[{tx:20,ty:6}],
+    chests:[{id:'ch_t3',tx:26,ty:6,item:'feather'}],
+    mobs:[{t:'bat',tx:10,ty:4},{t:'bat',tx:20,ty:2}],
+    deco:{}},
+
+  /* ===== 동굴 확장 ===== */
+  c6:{name:'수정 갱도',theme:'cave',cols:44,grid:[5,1],exits:{left:'c4',right:'c7'},seed:191,
+    build(p){p.block(0,0,43,1);p.ground(0,43,12);p.block(0,2,0,8);p.block(43,2,43,8);
+      p.block(4,8,10,8);p.plat(12,14,10);p.block(30,2,30,8);p.clear(33,12,38,12);p.spikes(33,38,12)},
+    gates:[{id:'g_c6',tx:30,ty:9,h:3}],plates:[{tx:22,ty:11,gate:'g_c6'}],crates:[{tx:8,ty:7}],
+    fallers:[{tx:33,ty:10,w:2},{tx:36,ty:9,w:2}],
+    chests:[{id:'ch_c6',tx:5,ty:7,gold:90}],
+    mobs:[{t:'bat',tx:20,ty:5},{t:'snail',tx:26,ty:10},{t:'bat',tx:40,ty:4}],
+    deco:{}},
+  c7:{name:'광산 승강기',theme:'cave',cols:34,grid:[6,1],exits:{left:'c6',right:'c8'},seed:193,
+    build(p){p.block(0,0,33,1);p.block(0,2,0,8);p.block(33,2,33,8);p.ground(0,33,13);p.spikes(6,27,12);p.ground(0,5,12);p.ground(28,33,12);p.block(16,8,18,8)},
+    movers:[{tx:7,ty:5,w:2,axis:'y',range:5,speed:35},{tx:11,ty:4,w:3,axis:'x',range:6,speed:40},{tx:23,ty:6,w:2,axis:'y',range:5,speed:40}],
+    chests:[{id:'ch_c7',tx:17,ty:7,gold:100}],
+    mobs:[{t:'bat',tx:16,ty:3},{t:'bat',tx:26,ty:3}],
+    deco:{}},
+  c8:{name:'무너진 갱도',theme:'cave',cols:40,grid:[7,1],exits:{left:'c7',up:{to:'k4',tx:36}},seed:197,
+    build(p){p.block(0,0,39,1);p.ground(0,39,12);p.block(0,2,0,8);p.block(39,2,39,11);p.clear(36,0,36,1);p.ladder(36,0,11);
+      p.block(14,2,14,8);p.block(20,6,30,6);p.plat(16,18,9)},
+    breaks:[{id:'w_c8a',tx:14,ty:9,h:3}],
+    turrets:[{tx:38,ty:5,dir:'l',rate:3}],
+    chests:[{id:'ch_c8',tx:25,ty:5,gold:130}],
+    slimes:[{tx:30,ty:10}],mobs:[{t:'snail',tx:18,ty:10},{t:'bat',tx:22,ty:3}],
+    deco:{}},
+  c9:{name:'버섯 동굴',theme:'cave',cols:40,grid:[2,2],exits:{right:'c5'},seed:199,
+    build(p){p.block(0,0,39,1);p.ground(0,39,13);p.ground(0,21,11);p.block(22,4,23,12);p.water(24,6,39,12);
+      p.block(4,3,12,3);p.block(4,4,4,6);p.block(4,7,12,7);p.plat(16,20,8)},
+    gates:[{id:'g_c9',tx:8,ty:4,h:3}],torches:[{tx:2,ty:10,gate:'g_c9'},{tx:14,ty:10,gate:'g_c9'},{tx:18,ty:7,gate:'g_c9'}],
+    mushrooms:[{tx:11,ty:10}],
+    chests:[{id:'ch_c9',tx:6,ty:6,item:'glow_ring'},{id:'ch_c9b',tx:30,ty:12,gold:70}],
+    slimes:[{tx:6,ty:9}],mobs:[{t:'fish',tx:30,ty:9},{t:'fish',tx:35,ty:7},{t:'bat',tx:15,ty:3}],
+    deco:{},
+    event:{id:'ev_torch',delay:500,lines:[{n:'나',t:'꺼진 횃불이 여기저기 있어. 칼로 쳐서 불을 붙여 볼까?'}]}},
+  c10:{name:'잊혀진 지하실',theme:'cave',cols:36,grid:[1,2],exits:{up:{to:'c1',tx:8}},seed:211,
+    build(p){p.block(0,0,35,1);p.clear(8,0,8,1);p.ladder(8,0,11);p.ground(0,35,12);p.block(0,2,0,11);p.block(35,2,35,11);
+      p.clear(12,12,24,13);p.spikes(12,24,13);p.blockB(12,12,24,12);p.blockA(28,8,28,11);p.block(28,2,28,7)},
+    switches:[{tx:4,ty:11,timer:6},{tx:32,ty:11}],
+    crystal:{id:'c_c10',tx:31,ty:8},
+    chests:[{id:'ch_c10',tx:33,ty:11,gold:200}],
+    mobs:[{t:'bat',tx:18,ty:4},{t:'bat',tx:30,ty:4}],
+    deco:{},
+    event:{id:'ev_timer',delay:400,lines:[{n:'나',t:'가시 위에 다리를 놓는 스위치 같은데... 시간이 지나면 사라지려나?'}]}},
+  c11:{name:'가라앉은 사원',theme:'cave',cols:40,grid:[3,3],exits:{up:{to:'c5',tx:36},right:'i10'},seed:223,
+    build(p){p.block(0,0,39,1);p.clear(36,0,36,1);p.water(1,2,38,12);p.water(36,0,36,1);p.ground(0,39,13);p.block(0,2,0,12);p.block(39,2,39,8);
+      p.block(8,4,9,12);p.block(16,2,17,10);p.blockA(24,2,25,12);p.blockB(4,6,6,6)},
+    switches:[{tx:34,ty:12}],
+    crystal:{id:'c_c11',tx:12,ty:3},
+    chests:[{id:'ch_c11',tx:4,ty:12,gold:150}],
+    mobs:[{t:'fish',tx:12,ty:8},{t:'fish',tx:20,ty:11},{t:'fish',tx:31,ty:6}],
+    deco:{}},
+
+  /* ===== 고성 확장 ===== */
+  k8:{name:'왕실 회랑',theme:'castle',cols:44,grid:[10,0],exits:{left:'k6',right:'k10',up:{to:'k9',tx:40}},seed:227,
+    build(p){p.block(0,0,43,0);p.clear(40,0,40,0);p.ladder(40,0,11);p.ground(0,43,12);p.block(0,1,0,8);p.block(42,1,43,8);
+      p.block(13,8,17,8);p.block(23,5,27,5);p.block(30,8,33,8)},
+    gates:[{id:'g_k8',tx:42,ty:9,h:3}],torches:[{tx:6,ty:11,gate:'g_k8'},{tx:15,ty:7,gate:'g_k8'},{tx:25,ty:4,gate:'g_k8'},{tx:34,ty:11,gate:'g_k8'}],
+    turrets:[{tx:20,ty:1,dir:'d',rate:2.6}],
+    chests:[{id:'ch_k8',tx:31,ty:7,gold:120}],
+    mobs:[{t:'haunt',tx:17,ty:10},{t:'haunt',tx:31,ty:6},{t:'bat',tx:36,ty:3}],
+    deco:{}},
+  k9:{name:'종탑',theme:'castle',cols:26,grid:[10,-1],exits:{down:{to:'k8',tx:20}},seed:229,
+    build(p){p.block(0,0,25,0);p.block(0,0,0,12);p.block(25,0,25,12);p.ground(0,25,13);p.clear(20,13,20,13);p.ladder(20,10,13);
+      p.block(21,7,24,7);p.block(2,6,6,6);p.block(8,3,11,3);p.block(16,2,22,2);p.block(14,10,18,10);p.block(16,5,18,5)},
+    movers:[{tx:12,ty:4,w:2,axis:'y',range:5,speed:35}],
+    turrets:[{tx:1,ty:9,dir:'r',rate:2.8}],
+    crystal:{id:'c_k9',tx:4,ty:4},
+    chests:[{id:'ch_k9',tx:19,ty:1,item:'knight_ring'}],
+    mobs:[{t:'bat',tx:8,ty:8},{t:'bat',tx:12,ty:8}],
+    deco:{}},
+  k10:{name:'보물고',theme:'castle',cols:34,grid:[11,0],exits:{left:'k8'},seed:233,
+    build(p){p.block(0,0,33,0);p.ground(0,33,12);p.block(0,1,0,8);p.block(33,1,33,11);
+      p.block(20,1,20,8);p.block(22,1,29,7);p.clear(22,12,29,13);p.spikes(22,29,13);p.blockB(22,12,29,12)},
+    gates:[{id:'g_k10',tx:20,ty:9,h:3}],plates:[{tx:12,ty:11,gate:'g_k10'}],crates:[{tx:5,ty:11}],
+    switches:[{tx:21,ty:11,timer:4},{tx:32,ty:11}],
+    chests:[{id:'ch_k10',tx:30,ty:11,item:'royal_helm'},{id:'ch_k10b',tx:2,ty:11,gold:150}],
+    mobs:[{t:'bat',tx:14,ty:4}],
+    deco:{}},
+  k11:{name:'기사 훈련장',theme:'castle',cols:40,grid:[8,-1],exits:{down:{to:'k5',tx:20}},seed:239,
+    build(p){p.block(0,0,39,0);p.block(0,0,0,11);p.block(39,0,39,11);p.ground(0,39,12);p.clear(20,12,20,13);p.ladder(20,12,13);
+      p.block(14,8,18,8);p.block(22,4,29,4);p.block(30,4,38,4)},
+    gates:[{id:'g_k11',tx:30,ty:1,h:3}],plates:[{tx:13,ty:11,gate:'g_k11'},{tx:27,ty:11,gate:'g_k11'}],crates:[{tx:6,ty:11},{tx:34,ty:11}],
+    crystal:{id:'c_k11',tx:36,ty:2},
+    chests:[{id:'ch_k11',tx:33,ty:3,gold:220}],
+    mobs:[{t:'haunt',tx:9,ty:10},{t:'haunt',tx:25,ty:2},{t:'haunt',tx:31,ty:10}],
+    deco:{},
+    event:{id:'ev_train',delay:400,lines:[{n:'나',t:'누름판이 두 개야. 둘 다 눌러야 위쪽 철문이 열리는 것 같아.'}]}},
+
+  /* ===== 얼음 땅 확장 ===== */
+  i4:{name:'눈보라 고개',theme:'ice',cols:46,grid:[7,2],exits:{left:'i3',right:'i5'},seed:241,
+    build(p){p.block(0,0,45,1);p.ground(0,45,12);p.block(0,2,0,8);p.block(45,2,45,8);
+      p.clear(8,12,14,12);p.spikes(8,14,12);p.block(10,9,11,9);p.clear(20,12,30,12);p.spikes(20,30,12);p.block(34,8,38,8);p.block(40,5,44,5)},
+    fallers:[{tx:21,ty:9,w:2},{tx:25,ty:8,w:2},{tx:28,ty:9,w:2}],
+    icicles:[{tx:12,ty:2},{tx:23,ty:2},{tx:27,ty:2},{tx:36,ty:2}],
+    chests:[{id:'ch_i4',tx:42,ty:4,gold:120}],
+    slimes:[{tx:17,ty:10}],mobs:[{t:'bat',tx:33,ty:4},{t:'snail',tx:36,ty:10}],
+    deco:{}},
+  i5:{name:'얼음 미로',theme:'ice',cols:40,grid:[8,2],exits:{left:'i4',down:{to:'i6',tx:36}},seed:251,
+    build(p){p.block(0,0,39,1);p.ground(0,39,12);p.block(0,2,0,8);p.block(39,2,39,12);p.clear(36,12,36,13);p.ladder(36,12,13);
+      p.block(8,2,8,8);p.blockA(8,9,8,11);p.block(16,5,16,11);p.blockB(16,2,16,4);p.block(24,2,24,8);p.blockA(24,9,24,11);
+      p.block(10,8,12,8);p.block(13,5,14,5)},
+    switches:[{tx:4,ty:11},{tx:12,ty:11},{tx:20,ty:11},{tx:30,ty:11}],
+    chests:[{id:'ch_i5',tx:18,ty:11,gold:140}],
+    slimes:[{tx:20,ty:9},{tx:33,ty:10}],
+    deco:{},
+    event:{id:'ev_maze',delay:400,lines:[{n:'나',t:'빨간 벽과 파란 벽... 스위치를 칠 때마다 서로 바뀌는구나.'},{n:'나',t:'어느 쪽을 열어 둘지 잘 생각해야겠어.'}]}},
+  i6:{name:'빙하 동굴',theme:'ice',cols:40,grid:[8,3],exits:{up:{to:'i5',tx:36},left:'i7'},seed:257,
+    build(p){p.block(0,0,39,1);p.clear(36,0,36,1);p.ladder(36,0,10);p.ground(0,29,12);p.ground(30,39,11);
+      p.clear(18,12,21,12);p.spikes(18,21,12);p.clear(8,12,10,12);p.spikes(8,10,12);p.block(4,7,7,7);p.block(13,9,15,9);p.block(24,8,27,8)},
+    icicles:[{tx:9,ty:2},{tx:19,ty:2},{tx:26,ty:2},{tx:32,ty:2}],
+    crystal:{id:'c_i6',tx:5.5,ty:5},
+    chests:[{id:'ch_i6',tx:25,ty:7,gold:110}],
+    slimes:[{tx:14,ty:10}],mobs:[{t:'bat',tx:12,ty:4},{t:'bat',tx:28,ty:4},{t:'snail',tx:15,ty:10}],
+    deco:{}},
+  i7:{name:'얼어붙은 호수',theme:'ice',cols:44,grid:[7,3],exits:{right:'i6',left:'i8'},seed:263,
+    build(p){p.block(0,0,43,1);p.ground(0,43,13);p.ground(0,8,8);p.ground(35,43,8);p.water(9,8,34,12);
+      p.block(14,6,17,6);p.block(24,5,27,5);p.block(30,7,33,7)},
+    icicles:[{tx:20,ty:2},{tx:29,ty:2}],
+    chests:[{id:'ch_i7',tx:22,ty:12,gold:130}],
+    mobs:[{t:'fish',tx:14,ty:10},{t:'fish',tx:22,ty:11},{t:'fish',tx:30,ty:10}],
+    deco:{}},
+  i8:{name:'고드름 회랑',theme:'ice',cols:46,grid:[6,3],exits:{right:'i7',left:'i9'},seed:269,
+    build(p){p.block(0,0,45,1);p.ground(0,45,12);p.block(0,2,0,8);p.block(45,2,45,8);
+      p.block(8,9,11,9);p.block(16,7,20,7);p.block(26,9,29,9);p.block(34,6,38,6);p.clear(12,12,15,12);p.spikes(12,15,12);p.clear(30,12,33,12);p.spikes(30,33,12)},
+    icicles:[{tx:6,ty:2},{tx:10,ty:2},{tx:14,ty:2},{tx:18,ty:2},{tx:22,ty:2},{tx:31,ty:2},{tx:36,ty:2},{tx:41,ty:2}],
+    turrets:[{tx:44,ty:4,dir:'l',rate:2.8}],
+    chests:[{id:'ch_i8',tx:36,ty:5,gold:120}],
+    mobs:[{t:'haunt',tx:24,ty:10},{t:'haunt',tx:36,ty:10}],
+    deco:{}},
+  i9:{name:'눈꽃 신전',theme:'ice',cols:40,grid:[5,3],exits:{right:'i8',left:'i10'},seed:271,
+    build(p){p.block(0,0,39,1);p.ground(0,39,12);p.block(0,2,0,8);p.block(39,2,39,8);
+      p.block(15,3,24,3);p.block(15,4,15,8);p.block(24,4,24,11);p.block(8,8,12,8);p.block(33,7,37,7)},
+    gates:[{id:'g_i9',tx:15,ty:9,h:3}],torches:[{tx:4,ty:11,gate:'g_i9'},{tx:10,ty:7,gate:'g_i9'},{tx:30,ty:11,gate:'g_i9'},{tx:35,ty:6,gate:'g_i9'}],
+    chests:[{id:'ch_i9',tx:20,ty:11,item:'snow_ring'}],
+    slimes:[{tx:28,ty:10}],mobs:[{t:'bat',tx:27,ty:4},{t:'bat',tx:6,ty:4}],
+    deco:{}},
+  i10:{name:'얼음 감옥',theme:'ice',cols:40,grid:[4,3],exits:{right:'i9',left:'c11'},seed:277,
+    build(p){p.block(0,0,39,1);p.ground(0,39,12);p.block(39,2,39,8);
+      p.block(27,3,34,3);p.block(27,4,27,8);p.block(34,4,34,11);p.block(22,11,22,11);p.block(2,11,2,11);p.block(5,8,8,8)},
+    gates:[{id:'g_i10',tx:27,ty:9,h:3}],plates:[{tx:21,ty:11,gate:'g_i10'}],crates:[{tx:12,ty:11}],
+    crystal:{id:'c_i10',tx:30,ty:9},
+    chests:[{id:'ch_i10',tx:32,ty:11,gold:200}],
+    slimes:[{tx:16,ty:10}],mobs:[{t:'bat',tx:10,ty:4},{t:'bat',tx:36,ty:6}],
+    deco:{},
+    event:{id:'ev_slide',delay:400,lines:[{n:'나',t:'얼음 위에서는 상자가 미끄러져서 벽에 닿아야 멈추겠는걸.'}]}}
 };
 
 /* 방의 상자 목록 (chest 하나 또는 chests 여러 개) */

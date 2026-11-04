@@ -31,8 +31,10 @@ export function buildTextures(sc){
     const it=ITEMS[id];if(it.hidden)continue;
     if(it.slot==='weapon'){
       add('sword_'+id,fromRows(SWORD,{k:'#1a1222',...it.sword}));
-      add('slashA_'+id,arcTex(14,5,-80,80,it.slashA));
+      add('slashA_'+id,arcTex(16,6,-85,85,it.slashA));
       add('slashC_'+id,arcTex(it.big,it.big>22?10:8,-90,90,it.slashC));
+      // 휘두를 때 겹치는 빛 (조금 크고 두꺼운 호)
+      add('glowA_'+id,arcTex(19,9,-88,88,[it.slashA[1],it.slashA[2],it.slashA[2]]));add('glowC_'+id,arcTex(it.big+4,it.big>22?14:12,-92,92,[it.slashC[1],it.slashC[2],it.slashC[2]]));
     }
     add('icon_'+id,fromRows(it.look&&it.look.cape&&it.slot==='acc'?CAPE_ICON:ICONS[it.slot],iconPal(it)));
   }
@@ -142,6 +144,13 @@ export function buildTextures(sc){
   const[sc0,sx0]=cv(18,10);paintPix(sx0,shell.slice(0,7).map(r=>r.slice(0,19)),TP,0,2);add('turtle_spin',sc0);
   // 고드름 (천장에서 떨어짐)
   add('icicle',fromRows(["kkkkkkk","kWbbbBk",".kbbBk.",".kWbBk.","..kbk..","..kbk..","...k..."],{k:'#1a3a6a',W:'#ffffff',b:'#bfeeff',B:'#6fc8ff'}));
+  // 퍼즐: 나무 상자, 누름판, 철문, 횃불
+  add('crate',fromRows(["kkkkkkkkkkkkkkkk","kLLLLLLLLLLLLLLk","kLbbbbbbbbbbbbDk","kLbLbbbbbbbbDbDk","kLbbLbbbbbbDbbDk","kLbbbLbbbbDbbbDk","kLbbbbLbbDbbbbDk","kLbbbbbLDbbbbbDk","kLbbbbbDLbbbbbDk","kLbbbbDbbLbbbbDk","kLbbbDbbbbLbbbDk","kLbbDbbbbbbLbbDk","kLbDbbbbbbbbLbDk","kLbbbbbbbbbbbbDk","kDDDDDDDDDDDDDDk","kkkkkkkkkkkkkkkk"],{k:'#2a1608',L:'#e8b070',b:'#b07a40',D:'#7a4a20'}));
+  add('plate0',fromRows(["..kkkkkkkkkkkk..",".kYyyyyyyyyyyYk.","kkkkkkkkkkkkkkkk"],{k:'#2a2230',y:'#c8a040',Y:'#8a6a20'}));
+  add('plate1',fromRows(["................",".kkkkkkkkkkkkkk.","kkYYYYYYYYYYYYkk"],{k:'#2a2230',Y:'#ffe27a'}));
+  add('gate',fromRows(["kkkkkkkkkkkkkkkk","kMMMMMMMMMMMMMMk","k.ka..ka..ka..kk","k.ka..ka..ka..kk","k.ka..ka..ka..kk","k.ka..ka..ka..kk","kMMMMMMMMMMMMMMk","k.ka..ka..ka..kk","k.ka..ka..ka..kk","k.ka..ka..ka..kk","k.ka..ka..ka..kk","kMMMMMMMMMMMMMMk","k.ka..ka..ka..kk","k.ka..ka..ka..kk","k.kA..kA..kA..kk","kkkkkkkkkkkkkkkk"],{k:'#14101c',M:'#6a6478',a:'#a8a4b8',A:'#c8c4d8'}));
+  add('torch0',fromRows(["......","......","......","......","......",".kkkk.","kMmmMk",".kMMk.","..kk..","..kk..","..kk..",".kkkk."],{k:'#14101c',M:'#5a5468',m:'#3a3448'}));
+  add('torch1',fromRows(["..y...","..yy..",".yRy..",".yRRy.",".RWRy.",".kkkk.","kMmmMk",".kMMk.","..kk..","..kk..","..kk..",".kkkk."],{k:'#14101c',M:'#5a5468',m:'#3a3448',y:'#ffd060',R:'#ff6a2a',W:'#ffffff'}));
   // 구름 (흘러가는 장식)
   for(let i=0;i<3;i++){const w=[44,30,58][i],h=[14,10,16][i];const[c,x]=cv(w,h);
     const blobs=[[w*0.25,h*0.62,h*0.38],[w*0.5,h*0.45,h*0.5],[w*0.75,h*0.6,h*0.36],[w*0.4,h*0.7,h*0.3],[w*0.62,h*0.72,h*0.3]];
