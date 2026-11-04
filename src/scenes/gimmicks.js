@@ -3,7 +3,7 @@
 import Phaser from 'phaser';
 import {T,LH,ROWS} from '../config.js';
 import {KEYS} from '../data/items.js';
-import {STATE} from '../state.js';
+import {STATE,bossDone} from '../state.js';
 import {cv,px} from '../gfx/pixel.js';
 
 export const Gimmicks={
@@ -14,6 +14,7 @@ export const Gimmicks={
     (R.gates||[]).forEach(d=>{const o={def:d,imgs:[],zones:[],open:false,perm:!!STATE.opened[d.id]};
       for(let j=0;j<(d.h||3);j++){const x=d.tx*T+8,y=(d.ty+j)*T+8;o.imgs.push(this.add.image(x,y,'gate').setDepth(3));
         const z=this.add.zone(x,y,T,T);this.physics.add.existing(z,true);this.wallGroup.add(z);o.zones.push(z)}
+      if(d.boss&&bossDone(d.boss)){o.perm=true}
       this.gates.push(o);if(o.perm)this.setGate(o,true,true)});
     (R.plates||[]).forEach(d=>{const x=d.tx*T+8,y=(d.ty+1)*T;this.plates.push({def:d,x,y,on:false,s:this.add.image(x,y,'plate0').setOrigin(0.5,1).setDepth(3)})});
     (R.torches||[]).forEach((d,i)=>{const key='torch_'+this.roomId+'_'+i,lit=!!STATE.opened[key],x=d.tx*T+8,y=(d.ty+1)*T;
@@ -39,7 +40,7 @@ export const Gimmicks={
     // 포탑: dir 방향으로 rate초마다 불덩이 발사
     (R.turrets||[]).forEach(d=>{const x=d.tx*T+8,y=d.ty*T+8,dir={l:[-1,0],r:[1,0],u:[0,-1],d:[0,1]}[d.dir||'l'];
       const s=this.add.image(x,y,'turret').setDepth(3).setAngle({l:0,r:180,u:90,d:-90}[d.dir||'l']);
-      this.turrets.push({def:d,x,y,dir,s,t:d.offset||0,rate:d.rate||2.2})});
+      this.turrets.push({def:d,x,y,dir,s,t:d.offset||0,rate:(d.rate||2.2)*0.8})});
     // 스위치 블록: 맵 글자 A(빨강) / B(파랑). 스위치를 치면 서로 바뀜
     for(let ty=0;ty<ROWS;ty++)for(let tx=0;tx<this.cols;tx++){const c=m[ty][tx];if(c!=='A'&&c!=='B')continue;
       const x=tx*T+8,y=ty*T+8,z=this.add.zone(x,y,T,T);this.physics.add.existing(z,true);this.wallGroup.add(z);
@@ -49,6 +50,17 @@ export const Gimmicks={
     if(this.blocks.length)this.applySwitch();
     // 고드름: 아래로 지나가면 흔들리다 떨어짐
     (R.icicles||[]).forEach(d=>{const x=d.tx*T+8,y=d.ty*T;this.icicles.push({x,y0:y,s:this.add.image(x,y,'icicle').setOrigin(0.5,0).setDepth(4),st:'hang',t:0,vy:0})});
+    // 화염 분출구: period초마다 잠깐 경고 후 불기둥
+    this.geysers=(R.geysers||[]).map(d=>{const x=d.tx*T+8,y=d.ty*T;
+      const fl=this.add.image(x,y,'geyser').setOrigin(0.5,1).setDepth(13).setBlendMode(Phaser.BlendModes.ADD).setVisible(false);
+      return{x,y,fl,t:d.offset||0,period:d.period||3}});
+    // 용암: 위에 일렁이는 빛을 덮음
+    if(m.some(r=>r.includes('L'))){const key='lavaglow_'+this.roomId;
+      if(!this.textures.exists(key)){const[c,x]=cv(this.cols*T,LH);for(let ty=0;ty<ROWS;ty++)for(let tx=0;tx<this.cols;tx++)if(m[ty][tx]==='L'){
+        px(x,'rgba(255,120,40,0.35)',tx*T,ty*T,T,T);if(ty>0&&m[ty-1][tx]!=='L'&&m[ty-1][tx]!=='#'){px(x,'rgba(255,140,60,0.22)',tx*T,ty*T-10,T,10);px(x,'rgba(255,140,60,0.12)',tx*T,ty*T-20,T,10)}}
+        this.textures.addCanvas(key,c)}
+      const gl=this.add.image(0,0,key).setOrigin(0).setDepth(13).setBlendMode(Phaser.BlendModes.ADD);this.tweens.add({targets:gl,alpha:{from:0.6,to:1},duration:900,yoyo:true,repeat:-1,ease:'Sine.easeInOut'})}
+    this.inSand=false;this.sandT=0;
     // 물: 맵 글자 '~'. 위에 반투명 물을 덮어 그림
     this.hasWater=m.some(r=>r.includes('~'));
     if(this.hasWater){const key='water_'+this.roomId;
@@ -59,6 +71,8 @@ export const Gimmicks={
       this.waterImg=this.add.image(0,0,key).setOrigin(0).setDepth(14);
       this.bubbleEm=this.add.particles(0,0,'px',{lifespan:900,speedY:{min:-40,max:-20},speedX:{min:-6,max:6},scale:{start:1,end:0.4},tint:0xcff4ff,alpha:{start:0.9,end:0},emitting:false}).setDepth(15)}
     this.inWater=false;this.onIce=R.theme==='ice';
+    // 숨 게이지: 머리까지 물에 잠기면 줄고, 물 밖에 나오면 금방 다시 참
+    this.breath=1;this.drownT=0;this.breathG=this.add.graphics().setDepth(47);
   },
   giveKey(color,x,y){
     STATE.keys[color]=true;const K=KEYS[color];
@@ -116,7 +130,7 @@ export const Gimmicks={
       if(open&&ps.some(pl=>pl.def.latch)){g.perm=true;STATE.opened[g.def.id]=true}
       this.setGate(g,open)});
     // 상자가 가시·구덩이에 빠지면 제자리로
-    this.crates.getChildren().forEach(c=>{if(c.y>LH+20||c.x<-12||c.x>this.lw+12||this.tileAt(c.x,c.body.bottom-2)==='^'){c.setPosition(c.home.x,c.home.y);c.setVelocity(0,0);this.dustEm.explode(6,c.x,c.y)}});
+    this.crates.getChildren().forEach(c=>{if(c.y>LH+20||c.x<-12||c.x>this.lw+12||this.tileAt(c.x,c.y)==='L'||this.tileAt(c.x,c.body.bottom-2)==='^'){c.setPosition(c.home.x,c.home.y);c.setVelocity(0,0);this.dustEm.explode(6,c.x,c.y)}});
     // 문
     this.doors=this.doors.filter(o=>{
       const near=pb.right>o.rect.x-3&&pb.left<o.rect.right+3&&pb.bottom>o.rect.y-3&&pb.top<o.rect.bottom+3;if(!near)return true;
@@ -128,23 +142,54 @@ export const Gimmicks={
       return true});
     // 포탑
     this.turrets.forEach(t=>{t.t+=dt;if(t.t>=t.rate){t.t=0;
-      const s=this.add.image(t.x+t.dir[0]*9,t.y+t.dir[1]*9,'fireball').setDepth(12);this.shots.push({s,vx:t.dir[0]*95,vy:t.dir[1]*95,life:6})}});
+      const s=this.add.image(t.x+t.dir[0]*9,t.y+t.dir[1]*9,'fireball').setDepth(12);this.shots.push({s,vx:t.dir[0]*120,vy:t.dir[1]*120,life:6})}});
     this.shots=this.shots.filter(f=>{f.life-=dt;f.s.x+=f.vx*dt;f.s.y+=f.vy*dt;f.s.rotation+=dt*8;
       const c=this.tileAt(f.s.x,f.s.y);if(c==='#'||(this.blocks.some(b=>b.z.body.enable&&Math.abs(b.z.x-f.s.x)<9&&Math.abs(b.z.y-f.s.y)<9)))f.life=0;
-      if(f.life>0&&!p.dead&&Math.abs(p.x-f.s.x)<7&&Math.abs(p.y-f.s.y)<10){f.life=0;this.hurtBy(10,f.s.x,'enemy')}
+      if(f.life>0&&!p.dead&&Math.abs(p.x-f.s.x)<7&&Math.abs(p.y-f.s.y)<10){f.life=0;this.hurtBy(this.trap(14),f.s.x,'enemy')}
       if(f.life<=0){this.sparkEm.explode(4,f.s.x,f.s.y);f.s.destroy();return false}return true});
     // 고드름
     this.icicles.forEach(c=>{
       if(c.st==='hang'){if(!p.dead&&Math.abs(p.x-c.x)<16&&p.y>c.y0&&p.y-c.y0<170){c.st='shake';c.t=0.45}}
       else if(c.st==='shake'){c.t-=dt;c.s.x=c.x+(Math.floor(c.t*40)%2?1:-1);if(c.t<=0){c.st='fall';c.s.x=c.x;c.vy=0}}
       else if(c.st==='fall'){c.vy+=700*dt;c.s.y+=c.vy*dt;
-        if(!p.dead&&Math.abs(p.x-c.x)<8&&c.s.y+7>pb.top&&c.s.y<pb.bottom){this.hurtBy(14,c.x,'enemy');this.breakIcicle(c)}
+        if(!p.dead&&Math.abs(p.x-c.x)<8&&c.s.y+7>pb.top&&c.s.y<pb.bottom){this.hurtBy(this.trap(16),c.x,'enemy');this.breakIcicle(c)}
         else if(this.tileAt(c.x,c.s.y+8)==='#'||c.s.y>LH)this.breakIcicle(c)}
       else if(c.st==='gone'){c.t-=dt;if(c.t<=0){c.st='hang';c.s.setPosition(c.x,c.y0).setAlpha(0).setVisible(true);this.tweens.add({targets:c.s,alpha:1,duration:400})}}});
     // 물
     if(this.hasWater){const w=this.tileAt(p.x,p.y)==='~';
       if(w!==this.inWater){this.inWater=w;this.bubbleEm.explode(8,p.x,p.y-4);pb.setGravityY(w?-560:0);if(w)p.setVelocityY(pb.velocity.y*0.35)}
-      if(w&&Math.random()<dt*2.5)this.bubbleEm.explode(1,p.x+this.facing*3,p.y-6)}
+      if(w&&Math.random()<dt*2.5)this.bubbleEm.explode(1,p.x+this.facing*3,p.y-6);
+      const under=this.tileAt(p.x,p.y-6)==='~';
+      if(under&&!p.dead){this.breath=Math.max(0,this.breath-dt/8);
+        if(this.breath<=0){this.drownT-=dt;if(this.drownT<=0){this.drownT=1;const s=this.stats,d=this.trap(8);s.hp=Math.max(0,s.hp-d);
+          this.popNum(p.x,p.y-12,d,0x8ab0ff,false);p.setTintFill(0x6a9aff);this.time.delayedCall(90,()=>{if(!p.dead)p.clearTint()});if(s.hp<=0)this.die();else if(this.breathMsg!==1){this.breathMsg=1;this.toast('숨이 막혀요! 물 밖으로 나가세요',1800)}}}}
+      else{this.breath=Math.min(1,this.breath+dt*1.2);this.drownT=0;this.breathMsg=0}}
+    // 숨 방울: 숨이 줄었을 때만 머리 위에 표시 (5칸)
+    if(this.breathG){const g=this.breathG;g.clear();
+      if(this.hasWater&&this.breath<1&&!p.dead){const n=Math.ceil(this.breath*5),x0=p.x-12,y0=p.y-22,low=this.breath<0.3&&Math.floor(this.time.now/150)%2;
+        for(let i=0;i<5;i++){const on=i<n;g.fillStyle(0x0f0b1e,0.7).fillCircle(x0+i*6,y0,3);g.fillStyle(on?(low?0xff8a95:0xcff4ff):0x3a4a6a,1).fillCircle(x0+i*6,y0,2);if(on)g.fillStyle(0xffffff,1).fillRect(x0+i*6-1,y0-1,1,1)}}}
+  },
+  openBossGates(id){this.gates.forEach(g=>{if(g.def.boss===id){g.perm=true;STATE.opened[g.def.id]=true;this.setGate(g,true)}})},
+  /* 용암·유사·분출구 (매 프레임) */
+  updateHazards(dt){
+    const p=this.player,pb=p.body;if(p.dead)return;
+    // 용암: 닿으면 크게 데이며 위로 튕겨 오름
+    if(p.inv<=0&&(this.tileAt(p.x,pb.bottom-2)==='L'||this.tileAt(p.x,p.y)==='L')){
+      const d=Math.round(this.trap(26)*(this.bonus.fireRes?0.5:1));this.hurtBy(d,p.x-this.facing*10,'lava');
+      if(!p.dead){p.setVelocity(-this.facing*60,-420);this.fireEm.explode(14,p.x,pb.bottom)}}
+    // 유사: 천천히 가라앉고 움직임이 느려짐, 머리까지 잠기면 숨 막힘. 모래 장화가 있으면 위를 걸음
+    const inS=this.tileAt(p.x,pb.bottom-3)==='S'&&!this.climbing;
+    if(inS!==this.inSand){this.inSand=inS;pb.setGravityY(inS&&!this.bonus.noSand?-740:0);if(inS)this.dustEm.explode(5,p.x,pb.bottom)}
+    if(inS){
+      if(this.bonus.noSand){const tx=Math.floor(p.x/T);let ty=Math.floor((pb.bottom-3)/T);while(ty>0&&this.map[ty-1][tx]==='S')ty--;const top=ty*T;
+        if(pb.bottom>top){p.y-=pb.bottom-top;if(pb.velocity.y>0)p.setVelocityY(0);this.coyote=0.09;this.airJumps=0}}
+      else{if(pb.velocity.y>20)p.setVelocityY(20);if(Math.random()<dt*6)this.dustEm.explode(1,p.x,pb.bottom-4);
+        if(this.tileAt(p.x,p.y-6)==='S'){this.sandT-=dt;if(this.sandT<=0){this.sandT=0.8;const s=this.stats,d=this.trap(6);s.hp=Math.max(0,s.hp-d);this.popNum(p.x,p.y-12,d,0xe0b070,false);if(s.hp<=0)this.die()}}}}
+    // 분출구
+    this.geysers.forEach(g=>{g.t+=dt;const ph=g.t%g.period,warn=ph>g.period-1.4&&ph<=g.period-0.9,fire=ph>g.period-0.9;
+      if(warn&&Math.random()<dt*20)this.fireEm.explode(1,g.x+(Math.random()-.5)*8,g.y-2);
+      g.fl.setVisible(fire);if(fire){g.fl.setScale(0.8+Math.random()*0.4,Math.min(1,(ph-(g.period-0.9))*8));
+        if(p.inv<=0&&Math.abs(p.x-g.x)<7&&pb.bottom>g.y-46&&pb.top<g.y)this.hurtBy(this.trap(20),g.x,'enemy')}});
   },
   breakIcicle(c){c.st='gone';c.t=4;c.s.setVisible(false);this.sparkEm.explode(8,c.x,c.s.y+4)}
 };

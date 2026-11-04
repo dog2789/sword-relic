@@ -6,8 +6,8 @@ import {cv,px} from '../gfx/pixel.js';
 import {HERO_W,HERO_H,HERO_FRAMES,LOOK,drawHero,MY} from '../gfx/hero.js';
 import {ITEMS,SETS,SLOTS,SLOT_NAMES,equipBonus,setProgress,statLine,wlvAtk,weaponName} from '../data/items.js';
 import {ROOMS,buildRoomMap,floorTopY,surfaceY,roomChests} from '../world/rooms.js';
-import {drawFar,drawMid,drawLevel,drawCaveFar,drawCaveMid,drawTreetopMid,drawCastleFar,drawCastleMid,drawIceFar,drawIceMid} from '../world/meadow.js';
-import {spawnMob,updateMob,makeMobAnims,updateQuakes,updateEShots} from './monsters.js';
+import {drawFar,drawMid,drawLevel,drawCaveFar,drawCaveMid,drawTreetopMid,drawCastleFar,drawCastleMid,drawIceFar,drawIceMid,drawDesertFar,drawDesertMid,drawLavaFar,drawLavaMid} from '../world/meadow.js';
+import {spawnMob,updateMob,makeMobAnims,updateQuakes,updateEShots,tierOf} from './monsters.js';
 import {PlayUI} from './playUI.js';
 import {Economy} from './economy.js';
 import {Gimmicks} from './gimmicks.js';
@@ -28,7 +28,7 @@ export class PlayScene extends Phaser.Scene{
   create(data={}){
     buildTextures(this);buildFonts(this);buildFxTextures(this);this.fxEms={};
     // 이전 방의 참조 정리
-    Object.assign(this,{slash:null,sword:null,chests:[],statue:null,crystal:null,tInfo:null,menu:null,pickups:[],walls:[],fallers:[],mushrooms:[],climbing:false,bounceT:0,safe:null,autoUp:false,warpObj:null,npcObjs:[],bubble:null,listm:null,dlg:null,mapv:null,warpm:null,quickUI:[],quakes:[],eshots:[],wallT:0,wallLock:0,wallDir:0});
+    Object.assign(this,{slash:null,sword:null,chests:[],statue:null,crystal:null,tInfo:null,menu:null,pickups:[],walls:[],fallers:[],mushrooms:[],climbing:false,bounceT:0,safe:null,autoUp:false,warpObj:null,npcObjs:[],bubble:null,listm:null,dlg:null,mapv:null,warpm:null,quickUI:[],quakes:[],eshots:[],geysers:[],inSand:false,wallT:0,wallLock:0,wallDir:0});
     const id=data.room&&ROOMS[data.room]?data.room:(ROOMS[STATE.room]?STATE.room:'r1');
     STATE.room=id;STATE.visited[id]=true;
     this.roomId=id;this.R=ROOMS[id];this.map=buildRoomMap(id);this.cols=this.R.cols;this.lw=this.cols*T;
@@ -81,7 +81,7 @@ export class PlayScene extends Phaser.Scene{
     this.slimeEm=mk([0x5fcf5a,0x2f8a3a,0xe8ffe0]);
     this.kingEm=mk([0x5a8cff,0x2f4fb0,0xf0c040,0xe0ecff],{speed:{min:60,max:200}});
     this.goldEm=mk([0xffd34a,0xfff2a0,0xe8742a],{gravityY:-60,speed:{min:20,max:90}});
-    this.dustEm=mk(R.theme==='ice'?[0xffffff,0xcfeaff]:R.theme==='cave'?[0x8a849e,0x6a6480]:[0xd8c8a0,0xb8a478],{speed:{min:10,max:45},angle:{min:190,max:350},gravityY:-30,lifespan:{min:200,max:380}});
+    this.dustEm=mk(R.theme==='ice'?[0xffffff,0xcfeaff]:R.theme==='desert'?[0xf0d090,0xd8a868]:R.theme==='lava'?[0x5a4448,0xff8a2a]:R.theme==='cave'?[0x8a849e,0x6a6480]:[0xd8c8a0,0xb8a478],{speed:{min:10,max:45},angle:{min:190,max:350},gravityY:-30,lifespan:{min:200,max:380}});
     this.rockEm=mk([0x5a5470,0x7a7494,0x3a3448],{speed:{min:40,max:150},gravityY:500,lifespan:{min:400,max:800},scale:{start:1.5,end:0.5}});
     this.batEm=mk([0x5a3a7a,0x8a6aaa,0xffe27a]);
     this.snailEm=mk([0xc86a3a,0x8a3a1a,0xd8c08a,0xf0e8d8]);
@@ -118,14 +118,14 @@ export class PlayScene extends Phaser.Scene{
   /* ----- world ----- */
   drawWorld(){
     const id=this.roomId,R=this.R,th=R.theme;
-    const far={cave:drawCaveFar,castle:drawCastleFar,ice:drawIceFar}[th]||drawFar,mid={cave:drawCaveMid,treetop:drawTreetopMid,castle:drawCastleMid,ice:drawIceMid}[th]||drawMid;
+    const far={cave:drawCaveFar,castle:drawCastleFar,ice:drawIceFar,desert:drawDesertFar,lava:drawLavaFar}[th]||drawFar,mid={cave:drawCaveMid,treetop:drawTreetopMid,castle:drawCastleMid,ice:drawIceMid,desert:drawDesertMid,lava:drawLavaMid}[th]||drawMid;
     if(!this.textures.exists('far_'+id))this.textures.addCanvas('far_'+id,far(this.lw));
     if(!this.textures.exists('mid_'+id))this.textures.addCanvas('mid_'+id,mid(this.lw));
     if(!this.textures.exists('lvl_'+id))this.textures.addCanvas('lvl_'+id,drawLevel(this.map,this.cols,R.seed,R.deco,th));
     /* 원경(패럴랙스): 고해상도 줌 카메라에서는 scrollFactor가 어긋나서, 화면 왼쪽 위 기준으로 직접 위치를 맞춤 */
     const par=(o,sf)=>{o.sf=sf;o.bx=o.x;o.by=o.y;return o};
     this.par=[par(this.add.image(0,0,'far_'+id).setOrigin(0).setDepth(-10),0.1)];
-    this.clouds=(th==='cave'||th==='castle'||th==='ice')?[]:[0,1,2,0,1].map((k,i)=>par(this.add.image(i*90+Math.random()*60,12+Math.random()*50,'cloud'+k).setDepth(-9.5).setAlpha(0.95),0.15));
+    this.clouds=(th==='cave'||th==='castle'||th==='ice'||th==='lava')?[]:[0,1,2,0,1].map((k,i)=>par(this.add.image(i*90+Math.random()*60,12+Math.random()*50,'cloud'+k).setDepth(-9.5).setAlpha(0.95),0.15));
     this.par.push(...this.clouds,par(this.add.image(0,0,'mid_'+id).setOrigin(0).setDepth(-9),0.35));
     this.add.image(0,0,'lvl_'+id).setOrigin(0).setDepth(0);
     const cam=this.cameras.main,place=()=>{const v=cam.worldView;for(const o of this.par){o.x=o.bx+v.x*(1-o.sf);o.y=o.by+v.y*(1-o.sf)}};
@@ -249,7 +249,7 @@ export class PlayScene extends Phaser.Scene{
     if(!p.dead&&p.inv<=0){const yb=b.bottom-1;
       // 가시: 제자리에서 위·뒤로 살짝 튕겨 나가며 피해만 입음 (무적 시간 동안 빠져나오면 됨)
       if(this.tileAt(b.left+2,yb)==='^'||this.tileAt(b.right-2,yb)==='^'||this.tileAt(b.center.x,yb)==='^'){
-        const back=Math.abs(b.velocity.x)>10?-Math.sign(b.velocity.x):-this.facing;this.hurtBy(12,p.x-back*10,'spike');
+        const back=Math.abs(b.velocity.x)>10?-Math.sign(b.velocity.x):-this.facing;this.hurtBy(this.trap(18),p.x-back*10,'spike');
         if(!p.dead){p.setVelocity(back*90,-280);this.sparkEm.explode(6,p.x,b.bottom)}}}
   }
   doSave(){
@@ -277,6 +277,10 @@ export class PlayScene extends Phaser.Scene{
       const before=equipBonus(this.equip).sets;
       if(auto)this.setEquip(it.slot,id,true);
       this.banner('NEW ITEM!',0xffd34a);
+      if(id==='relic_sword'&&!STATE.flags.ending)this.time.delayedCall(3800,()=>{STATE.flags.ending=true;this.openDialog('',[
+        {n:'나',t:'이게... 할아버지가 평생 찾아 헤매던 전설의 검.'},{n:'할아버지의 목소리',t:'...잘 해냈구나. 고향을 떠나 여기까지 온 네가 자랑스럽다.'},
+        {n:'할아버지의 목소리',t:'그 검은 이제 네 것이다. 네가 지키고 싶은 것을 위해 휘두르거라.'},{n:'나',t:'고마워요, 할아버지. 이제 집으로 돌아가요. 엄마가 기다리고 있을 거예요.'},
+        {n:'',t:'- 소드 레릭 1부 끝 -   (계속 탐험하며 남은 보물을 모을 수 있어요)'}])});
       this.toast(josa(it.name,'을','를')+' 얻었다!  '+statLine(it)+(auto?'':'  (I 키로 장착)'),3400);
       const after=equipBonus(this.equip).sets.filter(k=>!before.includes(k));
       after.forEach(k=>this.time.delayedCall(3600,()=>{this.banner('SET BONUS!',0x9ff0ff);this.toast(SETS[k].name+' 완성!  '+SETS[k].desc,3400);this.auraEm.explode(30,this.player.x,this.player.y)}));
@@ -414,7 +418,7 @@ export class PlayScene extends Phaser.Scene{
       if(e.up&&known(e.up.to)){const[ux]=pos(e.up.to);g.fillStyle(0x7a6a9a,1).fillRect(Math.round((x+ux)/2)+cw/2,y-gap,1,gap)}});
     ids.forEach(i=>{if(!known(i))return;const[x,y]=pos(i),R=ROOMS[i];
       if(!STATE.visited[i]){g.lineStyle(1,0x5a4f7a,1).strokeRect(x+0.5,y+0.5,cw-1,ch-1);return}
-      const cur=i===this.roomId,blink=Math.floor(time/350)%2,base={cave:0x4a4468,treetop:0x5a7a32,castle:0x3a5aa0,ice:0x5aa0d0}[R.theme]||0x3f7a3a;
+      const cur=i===this.roomId,blink=Math.floor(time/350)%2,base={cave:0x4a4468,treetop:0x5a7a32,castle:0x3a5aa0,ice:0x5aa0d0,desert:0xc09050,lava:0xa03a1a}[R.theme]||0x3f7a3a;
       g.fillStyle(cur?(blink?0xffe27a:0xc9a24a):base,1).fillRect(x,y,cw,ch);
       g.fillStyle(cur?0xfff3b0:0xffffff,cur?1:0.18).fillRect(x,y,cw,1);
       if(R.save)g.fillStyle(0x8fe3ff,1).fillRect(x+2,y+3,2,2);
@@ -482,7 +486,7 @@ export class PlayScene extends Phaser.Scene{
       const s=this.stats;s.mp=Math.min(s.maxMp,s.mp+3*dt);
       if(this.comboT>0){this.comboT-=dt;if(this.comboT<=0){this.combo=0;this.comboTxt.setVisible(false)}}
       if(this.targetT>0)this.targetT-=dt;
-      this.updateObjects(dt,inp.held,inp.press);this.updateGimmicks(dt);this.checkExits();
+      this.updateObjects(dt,inp.held,inp.press);this.updateGimmicks(dt);this.updateHazards(dt);this.checkExits();
     }
     this.drawHud(dt,time);
   }
@@ -527,7 +531,7 @@ export class PlayScene extends Phaser.Scene{
     if(!a.active&&move)this.facing=move;
     const swim=this.inWater,ice=onG&&this.onIce&&!this.bonus.noSlip;
     if(swim){if(b.velocity.y>70)p.setVelocityY(70);this.airJumps=0}
-    const slow=a.active?(onG?0.12:0.7):1,target=move*SPEED*(1+this.bonus.speed/100)*slow*(swim?0.7:1),k=1-Math.pow(ice?0.965:onG?0.62:0.8,dt*60);
+    const slow=a.active?(onG?0.12:0.7):1,target=move*SPEED*(1+this.bonus.speed/100)*slow*(swim?0.7:1)*(this.inSand&&!this.bonus.noSand?0.45:1),k=1-Math.pow(ice?0.965:onG?0.62:0.8,dt*60);
     this.nudgeT=(this.nudgeT||0)-dt;
     this.wallLock-=dt;
     if(this.wallLock<=0&&(this.nudgeT<=0||move))p.setVelocityX(b.velocity.x+(target-b.velocity.x)*k);
@@ -538,6 +542,7 @@ export class PlayScene extends Phaser.Scene{
     else this.wallT-=dt;
     const onOne=onG&&(['-','='].includes(this.tileAt(b.center.x,b.bottom+2))||this.platGroup.getChildren().some(s=>s.isFaller&&Math.abs(s.y-3-b.bottom)<3&&Math.abs(s.x-p.x)<s.width/2));
     if(swim&&this.jumpBuf>0){const surf=this.tileAt(p.x,p.y-9)!=='~';p.setVelocityY(surf?-290:-165);this.jumpBuf=0;this.bubbleEm.explode(3,p.x,p.y)}
+    else if(this.inSand&&!this.bonus.noSand&&this.jumpBuf>0){p.setVelocityY(-230);this.jumpBuf=0;this.dustEm.explode(4,p.x,b.bottom)}
     else if(this.jumpBuf>0&&held.down&&onOne){p.dropT=0.22;this.jumpBuf=0;p.setVelocityY(40)}
     else if(this.jumpBuf>0&&this.coyote>0){p.setVelocityY(-JUMP);this.jumpBuf=0;this.coyote=0;this.dustEm.explode(4,p.x,b.bottom)}
     else if(this.jumpBuf>0&&!onG&&this.wallT>0){
@@ -615,13 +620,18 @@ export class PlayScene extends Phaser.Scene{
   /* ----- combat ----- */
   wfx(){const it=ITEMS[this.equip.weapon];return it&&it.fx}
   hitEnemy(e,d,crit,dir,heavy,src){
+    if(!e.body||!e.body.enable)return;
     if(!this.tInfo||this.tInfo.e!==e){this.tInfo={e};this.tGhost=e.hp}
     // 무기 효과: 화염(불타서 계속 피해), 서리(느려짐), 슬라임(3단 베기에 주변 폭발)
     const fx=src==='splash'||src==='burn'?null:this.wfx();
-    if(fx==='fire'){e.burn={t:1.7,tick:0.4,dmg:Math.max(1,Math.round(d*0.22))}}
+    if(fx==='fire'){const bb=ITEMS[this.equip.weapon].burnBoost;e.burn={t:bb?3:1.7,tick:0.4,dmg:Math.max(1,Math.round(d*(bb?0.3:0.22)))}}
+    if(fx==='poison'){e.burn={t:3.2,tick:0.5,dmg:Math.max(1,Math.round(d*0.18)),poison:true}}
     if(fx==='ice'){e.slow=2.4}
     if(fx==='slime'&&heavy){const ex=e.x,ey=e.y;this.slimeEm.explode(22,ex,ey);this.shake(90,0.008);
       this.time.delayedCall(30,()=>this.enemies.getChildren().slice().forEach(o=>{if(o!==e&&o.active&&Math.hypot(o.x-ex,o.y-ey)<36)this.hitEnemy(o,Math.round(d*0.55),false,Math.sign(o.x-ex)||1,false,'splash')}))}
+    // 적 방어력, 녹슨 수문장은 앞에서 친 약한 공격을 방패로 막음
+    d=Math.max(1,Math.round(d*30/(30+(e.arm||0))));
+    if(e.guard&&!heavy&&src!=='burn'&&!this.pogo&&Math.sign(this.player.x-e.x)===e.dir&&e.state!=='atk'&&e.state!=='wind'){d=Math.max(1,Math.round(d*0.3));this.popText(e.x,e.body.top-6,'GUARD',0x9fb0c8)}
     e.hp-=d;e.stun=e.king||e.boss?0.1:0.3;
     const kb=e.kb==null?1:e.kb;e.setVelocity(dir*(heavy?1.6:1)*(e.king?40:110)*kb,e.king?-40:(heavy?-170:-110)*kb);
     e.setTintFill(0xffffff);this.time.delayedCall(70,()=>{if(e.active){e.clearTint();if(e.slow>0)e.setTint(0x9fd8ff);else if(e.baseTint)e.setTint(e.baseTint)}});
@@ -651,6 +661,7 @@ export class PlayScene extends Phaser.Scene{
       if(e.boss)this.enemies.getChildren().filter(o=>o.def&&o.def.summon).forEach(o=>{this.batEm.explode(6,o.x,o.y);o.destroy()});
       const drop=B.drop;if(drop)this.time.delayedCall(600,()=>this.spawnPickup(drop,ex,Math.min(ey,floorTopY(this.map,Math.floor(ex/T))-14),'drop_'+this.roomId));
       if(e.king)this.time.delayedCall(1500,()=>this.grantDoubleJump());
+      this.openBossGates(id);
       if(B.after)this.time.delayedCall(2800,()=>{if(!this.leaving&&!this.overlayOpen())this.openDialog('',B.after)})}
     else if(!d.summon)this.time.delayedCall(6000,()=>{if(!this.leaving){if(d.t)spawnMob(this,d);else this.spawnEnemy(d)}});
   }
@@ -660,7 +671,8 @@ export class PlayScene extends Phaser.Scene{
     e.setCollideWorldBounds(true).setDepth(k?6:5);
     if(this.R.theme==='cave'&&!k){e.baseTint=0xc8a0ff;e.setTint(e.baseTint)}
     if(this.R.theme==='ice'&&!k){e.baseTint=0xa8e0ff;e.setTint(e.baseTint)}
-    Object.assign(e,{def:d,king:k,hp:k?200:30,maxHp:k?200:30,dmg:k?14:6,exp:k?40:6,nm:k?'킹슬라임':({cave:'동굴 슬라임',ice:'얼음 슬라임'}[this.R.theme]||'슬라임'),nextHop:this.time.now+800+Math.random()*1200,stun:0,wasOnG:false,lastVy:0});
+    const tr=k?1:tierOf(this),shp=k?340:Math.round(34*tr);
+    Object.assign(e,{def:d,king:k,hp:shp,maxHp:shp,dmg:k?18:Math.round(8*(0.6+0.4*tr)),exp:k?50:Math.round(6*tr),arm:k?2:Math.round((tr-1)*6),nm:k?'킹슬라임':({cave:'동굴 슬라임',ice:'얼음 슬라임'}[this.R.theme]||'슬라임'),nextHop:this.time.now+800+Math.random()*1200,stun:0,wasOnG:false,lastVy:0});
     e.play(k?'king_idle':'slime_idle');
     e.setAlpha(0);this.tweens.add({targets:e,alpha:1,duration:400});
   }
@@ -668,13 +680,16 @@ export class PlayScene extends Phaser.Scene{
     const p=this.player;
     this.enemies.getChildren().slice().forEach(e=>{
       if(e.y>LH+40){e.destroy();return}
-      if(e.burn){const b=e.burn;b.t-=dt;b.tick-=dt;if(Math.random()<dt*14)this.fireEm.explode(1,e.x+(Math.random()-.5)*8,e.body.top+4);
-        if(b.tick<=0){b.tick=0.4;e.hp-=b.dmg;this.popNum(e.x,e.body.y-2,b.dmg,0xff9a3a,false);if(e.hp<=0){this.killEnemy(e);return}}
+      if(e.burn){const b=e.burn;b.t-=dt;b.tick-=dt;if(Math.random()<dt*14)(b.poison?this.fxEmitter('poison'):this.fireEm).explode(1,e.x+(Math.random()-.5)*8,e.body.top+4);
+        if(b.tick<=0){b.tick=0.4;e.hp-=b.dmg;this.popNum(e.x,e.body.y-2,b.dmg,b.poison?0xc080ff:0xff9a3a,false);if(e.hp<=0){this.killEnemy(e);return}}
         if(b.t<=0)e.burn=null}
       if(e.slow>0){e.slow-=dt;e.body.velocity.x*=0.55;if(e.body.allowGravity===false)e.body.velocity.y*=0.55;if(e.slow<=0){e.clearTint();if(e.baseTint)e.setTint(e.baseTint)}else if(!e.isTinted)e.setTint(0x9fd8ff)}
       if(e.mob){updateMob(this,e,dt,now);return}
       const onG=e.body.blocked.down||e.body.touching.down;
-      if(onG&&!e.wasOnG&&e.king&&e.lastVy>150){this.shake(100,0.008);this.dustEm.explode(8,e.x,e.body.bottom)}
+      if(onG&&!e.wasOnG&&e.king&&e.lastVy>150){this.shake(100,0.008);this.dustEm.explode(8,e.x,e.body.bottom);
+        // 킹슬라임 착지: 체력 절반 이하면 충격파, 한 번은 작은 슬라임 둘을 부름
+        if(e.hp<e.maxHp/2){[-1,1].forEach(dd=>{const q=this.add.image(e.x+dd*16,e.body.bottom,'quake').setOrigin(0.5,1).setDepth(12).setFlipX(dd<0).setTint(0x8ab0ff);this.quakes.push({s:q,vx:dd*140,life:1,dmg:14,hit:false})});
+          if(!e.called){e.called=true;[-1,1].forEach(dd=>this.spawnEnemy({x:e.x+dd*30,y:e.y-20,summon:true}));this.toast('킹슬라임이 부하를 불렀다!',1600)}}}
       e.wasOnG=onG;e.lastVy=e.body.velocity.y;
       if(e.stun>0){e.stun-=dt;return}
       if(onG){
@@ -685,18 +700,21 @@ export class PlayScene extends Phaser.Scene{
           const ahead=this.tileAt(e.x+dir*20,e.body.bottom+4),below=this.tileAt(e.x+dir*20,e.body.bottom-2);
           if(!e.king&&(below==='^'||ahead==='.'&&this.tileAt(e.x+dir*20,e.body.bottom+20)==='.')){e.nextHop=now+600;return}
           e.setVelocity(dir*(near?(e.king?90:65):35),near?(e.king?-280:-200):-140);
-          e.nextHop=now+(near?(e.king?900:700):1600)+Math.random()*700;
+          e.nextHop=now+(near?(e.king?(e.hp<e.maxHp/2?600:850):520):1400)+Math.random()*500;
         }
       }
     });
   }
+  trap(base){return Math.round(base*(0.6+0.4*tierOf(this)))}
   hurtPlayer(e){if(e.stun>0.15)return;this.hurtBy(e.dmg+Math.floor(Math.random()*3),e.x,'enemy')}
   hurtBy(raw,fromX,kind){
     const p=this.player,s=this.stats;if(p.inv>0||p.dead)return;
-    const d=Math.max(1,raw-this.defVal());s.hp=Math.max(0,s.hp-d);
+    // 방어력은 비율로 피해를 줄임 (방어 40이면 절반) — 방어구를 많이 껴도 아예 안 아프진 않게
+    const d=Math.max(1,Math.round(raw*40/(40+this.defVal())));s.hp=Math.max(0,s.hp-d);
     this.popNum(p.x,p.y-12,d,0xff5a5a,false);p.inv=1.1;p.hurtT=0.28;
     if(this.climbing)this.stopClimb();
-    p.setVelocity((Math.sign(p.x-fromX)||1)*150,kind==='spike'?-260:-170);
+    let kx=(Math.sign(p.x-fromX)||1)*150;if((p.x<28&&kx<0)||(p.x>this.lw-28&&kx>0))kx=0;   // 맞고 밀려서 방 밖으로 나가지 않게
+    p.setVelocity(kx,kind==='spike'?-260:-170);
     this.atk.active=false;if(this.slash){this.slash.destroy();this.slash=null}
     this.shake(120,0.01);p.setTintFill(0xff4a5a);this.time.delayedCall(90,()=>p.clearTint());
     if(s.hp<=0)this.die();

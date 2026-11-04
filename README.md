@@ -75,8 +75,9 @@ src/
 - **컷신**: 방 데이터 `event:{id, lines:[{n:'이름',t:'대사'}]}` (처음 들어올 때 한 번), 보스 처치 후는 `boss.after`
 - **강화 비용·공격력**: `src/data/items.js`의 `WLV_COST`, `wlvAtk`
 - **상점 물건**: `src/scenes/economy.js`의 `SHOP`
-- **장치**: 방 데이터 `doors`, `turrets`, `switches`(`timer` 초), `icicles`, `crates`, `plates`(`gate` id, `latch`), `gates`, `torches`(`gate` id), `chests:[{gold}|{item:'key_red'}]`, 맵 글자 `~`(물) `A`/`B`(스위치 블록)
-- **몬스터·보스 수치**: `src/scenes/monsters.js`의 `MOBS`
+- **장치**: 방 데이터 `doors`, `turrets`, `switches`(`timer` 초), `icicles`, `crates`, `plates`(`gate` id, `latch`), `gates`, `torches`(`gate` id), `chests:[{gold}|{item:'key_red'}]`, 맵 글자 `~`(물) `A`/`B`(스위치 블록) `S`(모래 늪) `L`(용암), `geysers`(화염 분출구), `gates`의 `boss`(보스를 쓰러뜨리면 열림)
+- **몬스터·보스 수치**: `src/scenes/monsters.js`의 `MOBS`, 지역별 강화 배율은 `TIER` (함정 피해도 같은 배율)
+- **방어 공식**: 받는 피해 = 원래 피해 × 40 / (40 + 방어), 적은 × 30 / (30 + 적 방어)
 - **보스 배치**: 방 데이터의 `boss:{id, tx, ty, drop, title(영문 배너), intro(등장 문구)}` (id: king | batlord | rust)
 - **소모품**: `src/data/items.js`의 `CONSUMABLES`
 - **방 추가**: `ROOMS`에 항목을 추가하고 이웃 방의 `exits`에 연결 (미니맵은 `grid` 좌표로 자동 표시)

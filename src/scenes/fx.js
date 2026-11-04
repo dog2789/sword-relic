@@ -9,6 +9,7 @@ const FX={
   slime:{main:0x7fe07a,cols:[0x9fff8a,0x3fbf4a,0xe8ffe0],grav:520,speed:[50,140],life:[300,600],hit:'drop'},
   fire:{main:0xff8a2a,cols:[0xffd060,0xff7a2a,0xe8402a,0xffffff],grav:-160,speed:[20,80],life:[300,650],hit:'flame'},
   ice:{main:0x9ff0ff,cols:[0xffffff,0xbfeeff,0x6fc8ff],grav:60,speed:[30,110],life:[350,700],hit:'shard'},
+  poison:{main:0xb06aff,cols:[0xd8a0ff,0x7a2ac0,0x9fff8a],grav:-60,speed:[20,90],life:[300,650],hit:'drop'},
   holy:{main:0x9fc0ff,cols:[0xffffff,0xbcd4ff,0xffe27a],grav:-40,speed:[20,100],life:[300,600],hit:'cross'}
 };
 

@@ -30,7 +30,13 @@ const SWORDS={
   flame_sword:["..k...k...k..","..mkkkLkkkLk.","jjmLLLLLLLLLk","..mkkLkkkLkk.","..k..k...k..."],
   frost_blade:["..k.....kk....","..mkkkkkLLkk..","jjmLLLLLLLLLLk","..mkkkkkLLkk..","..k.....kk...."],
   blue_sword:[".mm............","..mkkkkkkkkkk..","jjmLLLLLLLLLLLk","..mkkkkkkkkkk..",".mm............"]};
+SWORDS.scimitar=["..k.........k.","..mkkkkkkkkLk.","jjmLLLLLLLLLk.","..mkkkkkkLLk..","..k.....kk...."];
+SWORDS.magma_blade=["..k..k.k.k.k..","..mkkLkLkLkLk.","jjmLLLLLLLLLLk","..mkkkkkkkkkk.","..k..........."];
+SWORDS.relic_sword=["mm..............",".mmkkkkkkkkkkk..","jjmLLLLLLLLLLLLk",".mmkkkkkkkkkkk..","mm.............."];
 const SWORD_ICONS={
+  scimitar:["......kkkk..",".....kLLLk..","....kLllk...","....kLlk....","....kLlk....","....kLlk....","..k.kLk.....","..kmkLk.....","...kmk......","..kjkmk.....",".kjk.kk.....","kkk........."],
+  magma_blade:["......k.k.kk",".......kLkLk","....k.kLLLlk",".....kLLllk.","...k.kLlLk..",".....kLlk...","..k.kLlk....","..kmkLk.....","...kmk......","..kjkmk.....",".kjk.kk.....","kkk........."],
+  relic_sword:["..........kk",".........kLk","........kLlk",".......kLlk.","......kLlk..",".....kLlk...","..mmkLlk....",".mmmmLk.....","..mmmk......","..kjmmm.....",".kjk.mmm....","kkk........."],
   slime_blade:[".........kkk","........kLLk",".......kLLlk","......kLlLk.",".....kLlLk..","....kLLlk...","..k.kLlk....","..kmkLk.....","...kmk......","..kjkmk.....",".kjk.kk.....","kkk........."],
   flame_sword:["........k.kk",".......kLkLk","........kLlk",".....k.kLlk.","....kLkLlk..",".....kLlk...","..k.kLlk....","..kmkLk.....","...kmk......","..kjkmk.....",".kjk.kk.....","kkk........."],
   frost_blade:["........kkkk",".......kLLLk","......kLLllk",".....kLLllk.","....kLLllk..","....kLllk...","..k.kLlk....","..kmkLk.....","...kmk......","..kjkmk.....",".kjk.kk.....","kkk........."],
@@ -119,12 +125,13 @@ export function buildTextures(sc){
   const knight=(id,look,equip,swPal)=>{
     const fr={idle0:'idle0',idle1:'idle1',run0:'run0',run1:'run1',wind:'idle0',atk:'atk0'};
     for(const k in fr){const key='kn_'+id+'_'+k;if(sc.textures.exists(key))continue;const[c,x]=cv(34,23);
-      if(k==='wind')paintPix(x,SW_UP,swPal,6,4);
+      if(k==='wind'&&swPal)paintPix(x,SW_UP,swPal,6,4);
       drawHero(x,fr[k],look,equip,6,2);
-      if(k==='atk')paintPix(x,SWORD,swPal,23,15);
+      if(!swPal){}else if(k==='atk')paintPix(x,SWORD,swPal,23,15);
       else if(k!=='wind')paintPix(x,SW_UP,swPal,19,10+(k==='idle1'||k==='run1'?1:0));
       sc.textures.addCanvas(key,c)}};
   knight('haunt',{style:0,hair:1,skin:4,top:6,bottom:3,shoes:0},{helm:'haunt_helm',armor:'haunt_armor'},{k:'#141020',l:'#8a88a0',L:'#c8b0ff',m:'#5a2a7a',j:'#2a1a3a'});
+  knight('mummy',{style:0,hair:3,skin:0,top:5,bottom:4,shoes:3},{helm:'mummy_helm',armor:'mummy_look'},null);
   knight('rust',{style:0,hair:1,skin:3,top:6,bottom:3,shoes:0},{helm:'rust_helm',armor:'rust_armor',boots:'rust_boots'},{k:'#1a0a08',l:'#b08a68',L:'#ffd0a0',m:'#8a2a2a',j:'#3a1a10'});
   // 박쥐 군주 (박쥐 + 왕관, 붉은 눈)
   const BLP={k:'#14040e',p:'#7a2a5a',w:'#ff4a3a',y:'#f0c040',r:'#ff4a6a'};
@@ -166,6 +173,22 @@ export function buildTextures(sc){
   const turtle=fr=>{const[c,x]=cv(22,10);paintPix(x,shell.slice(0,7),TP,0,0);paintPix(x,head,TP,0,-1);paintPix(x,[fr?".kGgk..kGgk..kGgk....":"..kGgk..kGgk..kGgk..."],TP,0,8);px(x,'#10203a',0,9,0,0);return c};
   add('turtle0',turtle(0));add('turtle1',turtle(1));
   const[sc0,sx0]=cv(18,10);paintPix(sx0,shell.slice(0,7).map(r=>r.slice(0,19)),TP,0,2);add('turtle_spin',sc0);
+  add('sonic',fromRows(["..kkkk..",".k....k.","k..pp..k","k.p..p.k","k.p..p.k","k..pp..k",".k....k.","..kkkk.."],{k:'#c070ff',p:'#ffffff'}));
+  // 사막·용암 몬스터
+  const SCP={k:'#2a1608',b:'#c87a3a',B:'#8a4a1a',y:'#ffd060',r:'#ff3a2a'};
+  const scorp=fr=>["..........kkk..",".........kbbbk.","........kbk.kk.","........kbk....","..kk...kbbk....",".kbbkkkbbbbkkk.","kbbbbbbbbbbbbrk","kBbBbBbBbBbbbk.",fr?".k.k.k.k.k.kk..":"k.k.k.k.k.k.k.."];
+  add('scorp0',fromRows(scorp(0),SCP));add('scorp1',fromRows(scorp(1),SCP));
+  add('scorpk0',fromRows(scorp(0),{...SCP,b:'#e8b040',B:'#a0701a',r:'#ff2a2a'}));add('scorpk1',fromRows(scorp(1),{...SCP,b:'#e8b040',B:'#a0701a',r:'#ff2a2a'}));
+  const SAL={k:'#2a0a08',r:'#e8502a',R:'#a02a1a',y:'#ffd060',w:'#ffffff'};
+  const sal=fr=>["..........kkk...","........kkrrrk..",".kkkkkkkrrwkrk..","krrrrrrrrrrrrrk.","kRyRyRrrrrrRRk..",fr?".k.k....k.k....":"k.k......k.k...."];
+  add('sala0',fromRows(sal(0),SAL));add('sala1',fromRows(sal(1),SAL));
+  // 화염 골렘 (보스): 바위 몸 + 용암 틈
+  const GP={k:'#14080a',a:'#4a3a3e',A:'#2e2226',i:'#6a5a5e',l:'#ff6a1a',y:'#ffd060',e:'#ffe080'};
+  const gol=fr=>["....kkkkkk....","...kiaaaaak...","..kiaeaaeaAk..","..kaaaaaaaAk..","kkkaalllaaAkkk","kiakaaylaaAkak","kaaakaaaaAkaak","kaaakallaaAkak",".kk.kaaaaaAk.k","....kaAkkaAk..",fr?"...kaAk..kaAk.":"...kaAk..kaAk.",fr?"..kkkk....kkk.":"...kkk...kkkk."];
+  add('golem0',fromRows(gol(0),GP));add('golem1',fromRows(gol(1),GP));
+  add('sandball',fromRows([".kkk.","kyyYk","kyYYk",".kkk."],{k:'#7a4a1a',y:'#f0d090',Y:'#c89a60'}));
+  add('magma',fromRows([".kkkk.","kryyrk","kyWyyk","kryyrk",".kkkk."],{k:'#3a1408',r:'#c0301a',y:'#ff8a2a',W:'#ffe080'}));
+  {const[c,x]=cv(10,48);for(let y=0;y<48;y++){const t=y/48,w=Math.round(2+t*3);px(x,t<0.3?'#ffe080':t<0.6?'#ffb040':'#ff6a1a',5-w,y,w*2,1);if(y%5===0)px(x,'#ffffff',4,y,2,1)}add('geyser',c)}
   // 고드름 (천장에서 떨어짐)
   add('icicle',fromRows(["kkkkkkk","kWbbbBk",".kbbBk.",".kWbBk.","..kbk..","..kbk..","...k..."],{k:'#1a3a6a',W:'#ffffff',b:'#bfeeff',B:'#6fc8ff'}));
   // 퍼즐: 나무 상자, 누름판, 철문, 횃불

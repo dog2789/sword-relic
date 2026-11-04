@@ -46,6 +46,10 @@ const NPC_TALK={
     return{lines:STATE.bosses&&STATE.bosses.rust?['형! 고성의 녹슨 수문장을 쓰러뜨렸다며? 진짜 멋있다!']:
       ['형, 몬스터를 쓰러뜨리면 반짝이는 골드가 나온대!','골드를 모으면 대장간에서 검을 강화할 수 있어. 나도 크면 기사가 될 거야!']};
   },
+  grandpa(){
+    return{lines:STATE.flags.ending?['고향에 돌아가면 어머니께 안부 전해 다오.','그리고... 남은 보물도 찾아보거라. 세상은 아직 넓단다.']:
+      ['...드디어 왔구나, 내 손주야.','제단 위의 검을 집어 보거라. 그것이 네가 찾던 전설의 검이란다.']};
+  },
   knight(){
     return{lines:[
       '...여기까지 왔는가, 젊은 검사여.',
@@ -200,7 +204,7 @@ export const PlayUI={
   mapLayout(){
     const ids=Object.keys(ROOMS),G=i=>ROOMS[i].grid;
     const minX=Math.min(...ids.map(i=>G(i)[0])),maxX=Math.max(...ids.map(i=>G(i)[0])),minY=Math.min(...ids.map(i=>G(i)[1])),maxY=Math.max(...ids.map(i=>G(i)[1]));
-    const nx=maxX-minX+1,ny=maxY-minY+1,gap=nx>7?6:8,cw=Math.min(30,Math.floor((292-gap*(nx-1))/nx)),ch=Math.min(17,Math.floor((92-gap*(ny-1))/ny));
+    const nx=maxX-minX+1,ny=maxY-minY+1,gap=nx>14?3:nx>7?6:8,cw=Math.min(30,Math.floor((292-gap*(nx-1))/nx)),ch=Math.min(17,Math.floor((92-gap*(ny-1))/ny));
     const mw=nx*cw+(nx-1)*gap,mh=ny*ch+(ny-1)*gap,x0=Math.round((W-mw)/2),y0=Math.round(44+(88-mh)/2);
     return{ids,cw,ch,gap,pos:i=>[x0+(G(i)[0]-minX)*(cw+gap),y0+(G(i)[1]-minY)*(ch+gap)]};
   },
@@ -215,7 +219,7 @@ export const PlayUI={
     ids.forEach(i=>{if(!known(i))return;const[x,y]=pos(i),R=ROOMS[i];
       if(!STATE.visited[i]){g.lineStyle(1,0x5a4f7a,1).strokeRect(x+0.5,y+0.5,cw-1,ch-1);return}
       const cur=i===this.roomId,isW=warp&&warp.warps.includes(i);
-      const base={cave:0x4a4468,treetop:0x5a7a32,castle:0x3a5aa0,ice:0x5aa0d0}[R.theme]||0x3f7a3a;
+      const base={cave:0x4a4468,treetop:0x5a7a32,castle:0x3a5aa0,ice:0x5aa0d0,desert:0xc09050,lava:0xa03a1a}[R.theme]||0x3f7a3a;
       g.fillStyle(warp?(isW?base:0x2a2440):(cur?(blink?0xffe27a:0xc9a24a):base),1).fillRect(x,y,cw,ch);g.fillStyle(0xffffff,cur&&!warp?0.6:0.2).fillRect(x,y,cw,1);
       if(warp){
         if(isW){g.fillStyle(0x6fe0ff,1).fillTriangle(x+cw/2-3,y+ch/2,x+cw/2,y+ch/2-3,x+cw/2+3,y+ch/2).fillTriangle(x+cw/2-3,y+ch/2,x+cw/2,y+ch/2+3,x+cw/2+3,y+ch/2)}

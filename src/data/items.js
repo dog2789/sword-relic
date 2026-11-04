@@ -49,7 +49,21 @@ export const ITEMS={
     look:{helm:'horned',pal:{a:'#5a5a6e',A:'#34344a',i:'#8a8aa0',m:'#6a6a80',M:'#44445a',v:'#ff4a3a',O:'#efe4c8',o:'#a8946a'}}},
   dark_armor:{slot:'armor',name:'흑철 갑옷',desc:'가시 어깨받이가 달린 검은 갑옷과 붉은 망토',def:5,hp:15,set:'dark',
     look:{armor:'spike',cape:true,capePal:{c:'#8a2a2a',C:'#5a1616'},pal:{a:'#5a5a6e',A:'#34344a',i:'#8a8aa0',M:'#44445a',G:'#44445a',n:'#8a2a2a',N:'#5a1616',p:'#34344a'}}},
+  /* 사막·용암 */
+  scimitar:{slot:'weapon',name:'사막의 곡도',desc:'전갈왕의 독침으로 담금질한 곡도. 베인 적이 독에 걸린다',atk:20,fx:'poison',wave:0xb06aff,
+    sword:{l:'#e8d8a0',L:'#fffbe0',m:'#7a3aa0',j:'#3a1a10'},slashA:['#ffffff','#e0b0ff','#9a4ad8'],slashC:['#ffffff','#d8a0ff','#7a2ac0'],big:23},
+  magma_blade:{slot:'weapon',name:'용암검',desc:'화염 골렘의 심장으로 만든 검. 화상이 훨씬 오래간다',atk:26,fx:'fire',wave:0xff4a1a,burnBoost:true,
+    sword:{l:'#ff6a1a',L:'#ffd060',m:'#2a1418',j:'#1a0a08'},slashA:['#fff0a0','#ff8a2a','#c0301a'],slashC:['#ffffff','#ffb040','#c0201a'],big:24},
+  relic_sword:{slot:'weapon',name:'전설의 검',desc:'할아버지가 찾아 헤매던 전설의 검. 빛의 검기가 모든 것을 꿰뚫는다',atk:34,fx:'holy',wave:0xfff0a0,
+    sword:{l:'#fff4c0',L:'#ffffff',m:'#f0c040',j:'#6a3a8a'},slashA:['#ffffff','#fff0a0','#f0c040'],slashC:['#ffffff','#fff4c0','#ffd060'],big:26},
+  sand_boots:{slot:'boots',name:'모래 장화',desc:'바닥이 넓은 장화. 모래 늪에 빠지지 않고 위를 걸을 수 있다',def:3,effects:{noSand:true},
+    look:{base:{f:'#c89a60'},cuff:'#f0d090'}},
+  mirage_ring:{slot:'acc',name:'신기루 반지',desc:'피라미드 꼭대기에 잠들어 있던 반지',atk:4,effects:{speed:10},gem:['#ffb04a','#c06a1a']},
+  ember_armor:{slot:'armor',name:'불꽃 갑옷',desc:'용암에서 건진 흑요석 갑옷. 용암에 데어도 피해가 절반',def:7,hp:30,effects:{fireRes:true},
+    look:{armor:'spike',pal:{a:'#3a2a2e',A:'#24181c',i:'#ff8a2a',M:'#2a1c20',G:'#2a1c20',n:'#ff6a1a',N:'#c0301a',p:'#24181c'}}},
   // NPC·몬스터 전용 (획득 불가)
+  mummy_look:{slot:'armor',hidden:true,name:'',desc:'',look:{armor:'plate',pal:{a:'#e8dcc0',A:'#b8a888',i:'#ffffff',M:'#a89878',G:'#c8b898',n:'#c8b898',N:'#a89878',p:'#b8a888'}}},
+  mummy_helm:{slot:'helm',hidden:true,name:'',desc:'',look:{helm:'full',pal:{a:'#e8dcc0',A:'#b8a888',i:'#ffffff',m:'#d8c8a8',M:'#a89878',v:'#ff4a3a'}}},
   ghost_helm:{slot:'helm',hidden:true,name:'',desc:'',look:{helm:'full',crest:'#ffd34a',pal:{a:'#d8e4f0',A:'#8a9ab8',i:'#ffffff',m:'#eef4fa',M:'#a8b8d0',v:'#3a8aff'}}},
   ghost_armor:{slot:'armor',hidden:true,name:'',desc:'',look:{armor:'heavy',cape:true,capePal:{c:'#3a4a8a',C:'#22305a'},pal:{a:'#d8e4f0',A:'#8a9ab8',i:'#ffffff',M:'#a8b8d0',G:'#a8b8d0',n:'#6ff0ff',N:'#3a9ab0',p:'#8a9ab8'}}},
   haunt_helm:{slot:'helm',hidden:true,name:'',desc:'',look:{helm:'horned',pal:{a:'#6a6880',A:'#44425a',i:'#8a88a0',m:'#7a7890',M:'#54526a',v:'#c070ff'}}},
@@ -80,17 +94,17 @@ let _st=null;export const bindState=s=>{_st=s};   // state.js가 연결 (서로 
 export const weaponName=id=>{const lv=((_st&&_st.wlv)||{})[id]||0;return ITEMS[id].name+(lv?' +'+lv:'')};
 
 /* 열쇠 (상자에서 'key_red' 처럼 나옴, 같은 색 문을 모두 엶) */
-export const KEYS={red:{name:'붉은 열쇠',col:['#ff5a5a','#a01a2a']},blue:{name:'푸른 열쇠',col:['#6fb0ff','#2a4aa0']}};
+export const KEYS={red:{name:'붉은 열쇠',col:['#ff5a5a','#a01a2a']},blue:{name:'푸른 열쇠',col:['#6fb0ff','#2a4aa0']},yellow:{name:'노란 열쇠',col:['#ffd34a','#a07a1a']}};
 
 export const START_EQUIP={weapon:'traveler_sword',helm:null,armor:null,boots:null,acc:null};
 export const START_BAG=['traveler_sword'];
 
 /* 장착 장비의 능력치 합계 + 세트 효과 */
 export function equipBonus(equip){
-  const b={atk:0,def:0,hp:0,airJumps:0,speed:0,noSlip:false,wallCling:false,sets:[]},count={};
+  const b={atk:0,def:0,hp:0,airJumps:0,speed:0,noSand:false,fireRes:false,noSlip:false,wallCling:false,sets:[]},count={};
   for(const s of SLOTS){const it=ITEMS[equip[s]];if(!it)continue;
     b.atk+=it.atk||0;b.def+=it.def||0;b.hp+=it.hp||0;
-    const e=it.effects||{};b.airJumps+=e.airJumps||0;b.speed+=e.speed||0;if(e.noSlip)b.noSlip=true;if(e.wallCling)b.wallCling=true;
+    const e=it.effects||{};b.airJumps+=e.airJumps||0;b.speed+=e.speed||0;if(e.noSlip)b.noSlip=true;if(e.noSand)b.noSand=true;if(e.fireRes)b.fireRes=true;if(e.wallCling)b.wallCling=true;
     if(it.set)count[it.set]=(count[it.set]||0)+1}
   for(const k in count){const S=SETS[k];if(S&&count[k]>=S.need){b.sets.push(k);b.atk+=S.bonus.atk||0;b.def+=S.bonus.def||0;b.hp+=S.bonus.hp||0}}
   return b;
@@ -100,6 +114,6 @@ export function statLine(it){
   const p=[];if(it.atk)p.push('공격 +'+it.atk);if(it.def)p.push('방어 +'+it.def);if(it.hp)p.push('HP +'+it.hp);
   if(it.effects&&it.effects.airJumps)p.push('공중 점프 +'+it.effects.airJumps);
   if(it.effects&&it.effects.speed)p.push('이동 속도 +'+it.effects.speed+'%');
-  if(it.effects&&it.effects.noSlip)p.push('빙판 미끄럼 방지');if(it.effects&&it.effects.wallCling)p.push('벽 붙기');
+  if(it.effects&&it.effects.noSlip)p.push('빙판 미끄럼 방지');if(it.effects&&it.effects.noSand)p.push('모래 늪 위를 걸음');if(it.effects&&it.effects.fireRes)p.push('용암 피해 절반');if(it.effects&&it.effects.wallCling)p.push('벽 붙기');
   return p.join('  ')||'능력치 없음';
 }

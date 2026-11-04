@@ -73,22 +73,70 @@ export function drawIceMid(lw){
   for(let i=0;i<30;i++){const sx=r()*MW|0,sy=r()*MH|0;px(x,'#ffffff',sx,sy,2,2)}
   return c;
 }
+/* 성 안: 뒤쪽은 어두운 돌벽과 아치 창문(달빛 밤하늘), 앞쪽은 기둥·붉은 깃발·횃불 */
+export function drawDesertFar(lw){
+  const FW=Math.ceil(W+(lw-W)*0.1)+4,FH=Math.ceil(H+(LH+HUD-H)*0.1)+4,r=rng(31);
+  const[c,x]=cv(FW,FH);
+  for(let y=0;y<FH;y+=4){const t=y/FH;px(x,`rgb(${240-t*20|0},${190-t*30|0},${120-t*40|0})`,0,y,FW,4)}
+  disc(x,'#fff6c8',Math.round(FW*0.7),34,14);disc(x,'#ffe890',Math.round(FW*0.7),34,10);
+  for(let X=30;X<FW;X+=120+(r()*60|0)){const b=150,h=38+(r()*20|0);for(let yy=0;yy<h;yy++){px(x,'#c89a60',X-yy,b-h+yy,yy*2+1,1);px(x,'#a87a48',X,b-h+yy,yy+1,1)}}
+  for(let X=0;X<FW;X++){const y0=Math.round(150+Math.sin(X/40)*6+Math.sin(X/17)*3);px(x,'#d8aa70',X,y0,1,FH-y0)}
+  return c;
+}
+export function drawDesertMid(lw){
+  const MW=Math.ceil(W+(lw-W)*0.35)+4,MH=Math.ceil(H+(LH+HUD-H)*0.35)+4,r=rng(32);
+  const[c,x]=cv(MW,MH);
+  for(let X=0;X<MW;X++){const y0=Math.round(150+Math.sin(X/55+1)*10+Math.sin(X/23)*4);px(x,'#e0b478',X,y0,1,MH-y0);px(x,'#f0c890',X,y0,1,1)}
+  for(let X=30;X<MW;X+=70+(r()*60|0)){const G=Math.round(150+Math.sin(X/55+1)*10+Math.sin(X/23)*4);
+    if(r()<.5){px(x,'#3f7a3a',X-1,G-20,3,20);px(x,'#3f7a3a',X-6,G-14,5,2);px(x,'#3f7a3a',X-6,G-18,2,5);px(x,'#3f7a3a',X+2,G-12,5,2);px(x,'#3f7a3a',X+5,G-16,2,5)}
+    else{px(x,'#8a5a30',X,G-30,2,30);for(let k=0;k<5;k++){const a=k*1.2;for(let d=0;d<10;d++)px(x,'#4a8a3a',X+Math.round(Math.cos(a)*d),G-30+Math.round(Math.sin(a)*d*0.5+d*0.2),2,1)}}}
+  return c;
+}
+export function drawLavaFar(lw){
+  const FW=Math.ceil(W+(lw-W)*0.1)+4,FH=Math.ceil(H+(LH+HUD-H)*0.1)+4,r=rng(41);
+  const[c,x]=cv(FW,FH);
+  for(let y=0;y<FH;y+=4){const t=y/FH;px(x,`rgb(${40+t*60|0},${12+t*14|0},${16+t*6|0})`,0,y,FW,4)}
+  const vx=Math.round(FW*0.45);for(let yy=0;yy<90;yy++){const hw=8+yy;px(x,'#2a1418',vx-hw,70+yy,hw*2,1)}
+  px(x,'#ff6a1a',vx-6,66,12,4);for(let k=0;k<20;k++)px(x,'#ff8a2a',vx-3+(r()*6|0),70+(r()*40|0),1,3);
+  for(let i=0;i<50;i++)px(x,r()<.5?'#ff8a2a':'#ffd060',r()*FW|0,r()*FH|0,1,1);
+  return c;
+}
+export function drawLavaMid(lw){
+  const MW=Math.ceil(W+(lw-W)*0.35)+4,MH=Math.ceil(H+(LH+HUD-H)*0.35)+4,r=rng(42);
+  const[c,x]=cv(MW,MH);
+  for(let X=0;X<MW;X+=10+(r()*16|0)){const h=30+(r()*60|0),w=10+(r()*10|0);for(let yy=0;yy<h;yy++){const hw=Math.round(w*(yy/h)/2)+1;px(x,'#1c1014',X-hw,MH-h+yy,hw*2,1)}}
+  for(let X=40;X<MW;X+=90+(r()*60|0)){px(x,'#c0301a',X,0,6,MH);px(x,'#ff6a1a',X+1,0,3,MH);for(let y=0;y<MH;y+=7)px(x,'#ffd060',X+2,y+(r()*5|0),1,2)}
+  return c;
+}
 export function drawCastleFar(lw){
   const FW=Math.ceil(W+(lw-W)*0.1)+4,FH=Math.ceil(H+(LH+HUD-H)*0.1)+4,r=rng(8);
   const[c,x]=cv(FW,FH);
-  for(let y=0;y<FH;y+=4){const t=y/FH;px(x,`rgb(${42-t*12|0},${92-t*30|0},${200-t*50|0})`,0,y,FW,4)}
-  for(let i=0;i<70;i++){const X=r()*FW|0,Y=r()*FH|0;px(x,'#4a7ae0',X,Y,4+(r()*8|0),1)}
+  px(x,'#1c1a2c',0,0,FW,FH);
+  for(let y=0;y<FH;y+=8)for(let X=(y/8%2)*8;X<FW;X+=16){px(x,'#24223a',X,y,15,7);px(x,'#2c2a44',X,y,15,1);if(r()<.1)px(x,'#1f1d30',X+3,y+3,4,2)}
+  for(let X=18;X<FW-20;X+=58){const w=22,top=26,bot=110;
+    px(x,'#12101e',X-3,top-3,w+6,bot-top+6);
+    for(let y=top;y<bot;y++){const t=(y-top)/(bot-top);const half=y<top+11?Math.round(Math.sqrt(Math.max(0,121-(top+11-y)**2))):11;
+      px(x,`rgb(${20+t*12|0},${30+t*20|0},${70+t*30|0})`,X+11-half,y,half*2,1)}
+    for(let i=0;i<6;i++)px(x,'#ffffff',X+2+(r()*18|0),top+4+(r()*60|0),1,1);
+    px(x,'#12101e',X+10,top,2,bot-top);px(x,'#12101e',X,top+40,w,2);
+    px(x,'#5a5470',X-3,bot+2,w+6,3);px(x,'#7a7494',X-3,bot+2,w+6,1)}
+  const mx=Math.round(FW*0.62);for(let yy=-9;yy<=9;yy++)for(let xx=-9;xx<=9;xx++){const d=xx*xx+yy*yy;if(d<=81){x.fillStyle=d<50?'rgba(255,250,220,0.10)':'rgba(255,250,220,0.05)';x.fillRect(mx+xx,40+yy,1,1)}}
   return c;
 }
 export function drawCastleMid(lw){
   const MW=Math.ceil(W+(lw-W)*0.35)+4,MH=Math.ceil(H+(LH+HUD-H)*0.35)+4,r=rng(12);
   const[c,x]=cv(MW,MH);
-  for(let X=14;X<MW;X+=64+(r()*20|0)){const w=18;
-    px(x,'#3a70c8',X-1,0,w+2,MH);px(x,'#4f8fe8',X,0,w,MH);
-    for(let k=0;k<7;k++){const sx=X+1+(r()*(w-2)|0);for(let y=(r()*8|0);y<MH;y+=6+(r()*6|0))px(x,r()<.5?'#9fd0ff':'#cfe8ff',sx,y,1,3+(r()*3|0))}
-    px(x,'#5e6272',X-4,0,w+8,8);px(x,'#9a9fae',X-4,0,w+8,6);px(x,'#c4c8d2',X-4,0,w+8,1);
-    for(let k=0;k<6;k++){const fx=X-3+(r()*(w+6)|0),fy=MH-4-(r()*6|0);px(x,'#e8f4ff',fx,fy,3,2)}
-  }
+  for(let X=10;X<MW;X+=72+(r()*16|0)){const w=16;
+    px(x,'#16141f',X-1,0,w+2,MH);px(x,'#3a3650',X,0,w,MH);px(x,'#4c4866',X+2,0,3,MH);px(x,'#2a2740',X+w-3,0,3,MH);
+    for(let y=0;y<MH;y+=12)px(x,'#2e2b44',X,y,w,1);
+    px(x,'#5a5674',X-3,MH-14,w+6,4);px(x,'#5a5674',X-3,6,w+6,4);px(x,'#6a6684',X-3,6,w+6,1);
+    // 깃발
+    const bx=X+w+12,bw=14,bh=40;px(x,'#8a6a2a',bx-2,14,bw+4,2);
+    for(let y=0;y<bh;y++){const cut=y>bh-7?Math.abs(y-(bh-7))*2:0;px(x,y%9<1?'#a01a2a':'#c0303a',bx+Math.min(cut,bw/2),16+y,Math.max(0,bw-cut*2),1)}
+    px(x,'#f0c040',bx+5,26,4,4);px(x,'#ffe27a',bx+6,27,2,2);
+    // 횃불
+    const tx=X-12;px(x,'#3a3448',tx,60,4,8);px(x,'#ff8a2a',tx,55,4,5);px(x,'#ffd060',tx+1,56,2,3);
+    x.fillStyle='rgba(255,160,60,0.10)';x.fillRect(tx-8,46,20,24)}
   return c;
 }
 
@@ -110,7 +158,21 @@ export function drawLevel(m,cols,seed,deco={},theme='meadow'){
     const ch=m[ty][tx],X=tx*T,Y=ty*T;
     if(ch==='#'){
       const e={t:at(tx,ty-1)!=='#',b:at(tx,ty+1)!=='#',l:at(tx-1,ty)!=='#',rt:at(tx+1,ty)!=='#'};
-      if(theme==='ice'){
+      if(theme==='desert'){
+        const deep=!e.t&&!e.b&&!e.l&&!e.rt;
+        px(x,deep?'#b88a50':'#d8a868',X,Y,16,16);px(x,deep?'#a07840':'#c09050',X,Y+7,16,1);px(x,deep?'#a07840':'#c09050',X,Y+15,16,1);
+        px(x,deep?'#a07840':'#c09050',X+((ty%2)?4:11),Y,1,7);px(x,deep?'#a07840':'#c09050',X+((ty%2)?11:4),Y+8,1,7);
+        for(let k=0;k<3;k++)px(x,'#e8c088',X+(r()*15|0),Y+(r()*15|0),1,1);
+        if(e.l)px(x,'#7a5a30',X,Y,1,16);if(e.rt)px(x,'#7a5a30',X+15,Y,1,16);if(e.b)px(x,'#7a5a30',X,Y+15,16,1);
+        if(e.t){px(x,'#f0d090',X,Y,16,2);px(x,'#e0b878',X,Y+2,16,1);for(let k=0;k<16;k+=3)if(r()<.5)px(x,'#f8e0a8',X+k,Y-1,2,1)}
+      }else if(theme==='lava'){
+        const deep=!e.t&&!e.b&&!e.l&&!e.rt;
+        px(x,deep?'#24181c':'#3a2a2e',X,Y,16,16);
+        for(let k=0;k<5;k++)px(x,r()<.5?'#2c2024':'#4a3438',X+(r()*15|0),Y+(r()*15|0),r()<.3?2:1,1);
+        if(r()<.35){let cx=X+(r()*12|0)+2,cy=Y+(r()*10|0)+3;for(let k=0;k<5;k++){px(x,k<2?'#ff8a2a':'#c0401a',cx,cy,1,1);cx+=r()<.5?1:0;cy+=1}}
+        if(e.l)px(x,'#160e10',X,Y,1,16);if(e.rt)px(x,'#160e10',X+15,Y,1,16);if(e.b)px(x,'#160e10',X,Y+15,16,1);
+        if(e.t){px(x,'#5a4448',X,Y,16,1);px(x,'#6a5054',X,Y+1,16,1)}
+      }else if(theme==='ice'){
         const deep=!e.t&&!e.b&&!e.l&&!e.rt;
         px(x,deep?'#5a86b8':'#7fb0dc',X,Y,16,16);px(x,deep?'#6a96c8':'#a8d4f4',X+1,Y+1,6,1);px(x,'#4a76a8',X+9,Y+9,6,1);
         for(let k=0;k<3;k++)px(x,'#cfeaff',X+(r()*14|0)+1,Y+(r()*14|0)+1,2,1);
@@ -170,6 +232,18 @@ export function drawLevel(m,cols,seed,deco={},theme='meadow'){
     }else if(ch==='V'){
       for(let k=0;k<16;k++){const yy=Y+k;px(x,'#2f6a20',X+6+Math.round(Math.sin(yy/3)*1.5),yy);px(x,'#3f8a2a',X+9+Math.round(Math.cos(yy/3)*1.5),yy)}
       for(let k=1;k<16;k+=5){px(x,'#6fbf4a',X+3,Y+k,3,2);px(x,'#6fbf4a',X+11,Y+k+2,3,2)}
+    }else if(ch==='S'){
+      // 유사(모래 늪): 빠지면 천천히 가라앉음
+      const top=at(tx,ty-1)!=='S';px(x,'#c89858',X,Y,16,16);for(let k=0;k<6;k++)px(x,'#b08040',X+(r()*15|0),Y+(r()*15|0),2,1);
+      if(top){px(x,'#e0b070',X,Y,16,2);for(let k=0;k<16;k+=4)px(x,'#a07038',X+k+((ty*3)%4),Y+4,3,1)}
+    }else if(ch==='L'){
+      // 용암
+      const top=at(tx,ty-1)!=='L';px(x,'#c0301a',X,Y,16,16);for(let k=0;k<5;k++)px(x,'#ff6a1a',X+(r()*14|0),Y+(r()*14|0)+(top?3:0),3,2);
+      if(top){px(x,'#ffd060',X,Y,16,2);px(x,'#ff8a2a',X,Y+2,16,2);for(let k=0;k<16;k+=5)px(x,'#ffe8a0',X+k+(r()*3|0),Y,2,1)}
+    }else if(ch==='^'&&theme==='desert'){
+      // 사막의 가시는 선인장
+      const cx=X+8;px(x,'#1f4a20',cx-2,Y+3,5,13);px(x,'#3f8a3a',cx-1,Y+3,3,13);px(x,'#1f4a20',cx-6,Y+7,4,3);px(x,'#3f8a3a',cx-5,Y+6,2,3);px(x,'#1f4a20',cx+3,Y+5,4,3);px(x,'#3f8a3a',cx+4,Y+4,2,3);
+      for(let k=0;k<5;k++)px(x,'#e8f0c0',cx-2+(r()*5|0),Y+3+(r()*12|0),1,1);
     }else if(ch==='^'){
       px(x,'#4a4a56',X,Y+14,16,2);
       for(let i=0;i<4;i++){const cx=X+i*4;for(let h=0;h<6;h++){const hw=Math.floor(h/2);px(x,'#d8dce8',cx+2-hw,Y+8+h,hw+1,1);px(x,'#8a8e9a',cx+2,Y+8+h,hw,1)}}
