@@ -5,6 +5,7 @@ import {W,H,VP} from '../config.js';
 import {ITEMS,SETS,SLOTS,SLOT_NAMES,KEYS,setProgress,statLine,weaponName} from '../data/items.js';
 import {ROOMS} from '../world/rooms.js';
 import {STATE,bossDone} from '../state.js';
+import {skillOf} from './skills.js';
 import {isDown} from '../input.js';
 import {F9,F11} from '../fonts.js';
 
@@ -40,9 +41,10 @@ export const MenuMixin={
       M.arr=SLOTS.map((sl,r)=>[M.t(CX-7,RY+r*RH+2,'◀',{color:'#ffe27a'},false),M.t(CX+VIS*CW+1,RY+r*RH+2,'▶',{color:'#ffe27a'},false)]);
       M.hero=img(251,50,'hero_idle0').setScale(2);
       M.stat=M.t(206,70,'',{lineSpacing:0},false);
-      M.name=M.t(22,123,'',{color:'#ffe27a'},false);
-      M.zh=M.t(298,123,'',{color:'#8f86ab'},false).setOrigin(1,0);
-      M.desc=M.t(22,136,'',{color:'#cfc8e4',wordWrap:{width:274},lineSpacing:1},false);
+      M.name=M.t(22,122,'',{color:'#ffe27a'},false);
+      M.zh=M.t(298,122,'',{color:'#8f86ab'},false).setOrigin(1,0);
+      M.desc=M.t(22,134,'',{color:'#cfc8e4',wordWrap:{width:274},lineSpacing:0},false);
+      M.sk=M.t(22,156,'',{color:'#9ff0ff',wordWrap:{width:274},lineSpacing:0},false);
     }else{
       img(48,74,'hero_idle0').setScale(4);
       M.t(48,112,'모험가',{color:'#ffe27a'},false).setOrigin(0.5,0);
@@ -62,11 +64,11 @@ export const MenuMixin={
   drawMenu(){
     const M=this.menu,g=M.g;g.clear();
     g.fillStyle(0x05030b,0.72).fillRect(0,0,W,H);
-    g.fillStyle(0x161028,1).fillRect(14,8,292,158);g.lineStyle(1,0xc9a24a,1).strokeRect(14.5,8.5,291,157);
+    g.fillStyle(0x161028,1).fillRect(14,8,292,170);g.lineStyle(1,0xc9a24a,1).strokeRect(14.5,8.5,291,169);
     g.fillStyle(0x2c2346,1).fillRect(20+M.tab*44,11,40,16);g.lineStyle(1,0xffe27a,1).strokeRect(20.5+M.tab*44,11.5,39,15);
     g.fillStyle(0x3a2a5a,1).fillRect(18,28,284,1);
     if(M.tab!==0){g.fillStyle(0x221a3a,1).fillRect(20,32,58,96).fillRect(206,30,94,104);return}
-    g.fillStyle(0x221a3a,1).fillRect(200,30,102,88);g.fillStyle(0x0f0b1e,1).fillRect(18,120,284,43);
+    g.fillStyle(0x221a3a,1).fillRect(200,30,102,88);g.fillStyle(0x0f0b1e,1).fillRect(18,120,284,55);
     M.cells.forEach((row,r)=>{let o=M.off[r];if(r===M.r){if(M.c<o)o=M.c;if(M.c>=o+VIS)o=M.c-VIS+1}o=Math.max(0,Math.min(o,row.length-VIS));M.off[r]=o;
       M.arr[r][0].setVisible(o>0);M.arr[r][1].setVisible(o+VIS<row.length)});
     M.cells.forEach((row,r)=>row.forEach((c,ci)=>{const vc=ci-M.off[r],vis=vc>=0&&vc<VIS;c.o.setVisible(vis);c.z.setVisible(vis);if(c.z.input)c.z.input.enabled=vis;if(!vis)return;
@@ -79,13 +81,14 @@ export const MenuMixin={
     for(const k in SETS){const S=SETS[k],n=setProgress(this.equip,k);if(n)lines.push(S.name.replace(' 세트','')+' '+n+'/'+S.need+(n>=S.need?' ★':''))}
     M.stat.setText(lines.join('\n'));M.hero.setTexture('hero_idle0');
     const row=M.cells[M.r],cell=row[M.c];
-    M.zh.setText('');
+    M.zh.setText('');M.sk.setText('');
     if(!cell){M.name.setText(SLOT_NAMES[SLOTS[M.r]]);M.desc.setText('');return}
     const it=ITEMS[cell.id],own=STATE.bag.includes(cell.id),eq=this.equip[SLOTS[M.r]]===cell.id;
     if(!own){M.name.setText('???');M.desc.setText('아직 얻지 못한 장비예요. 상자나 보스에게서 찾아보세요.');return}
     M.name.setText((it.slot==='weapon'?weaponName(cell.id):it.name)+'   '+statLine(it)+(eq?'  (장착 중)':''));
     M.zh.setText(eq?(it.slot==='weapon'?'':'Z 벗기'):'Z 장착');
     M.desc.setText(it.desc+(it.set?'  ['+SETS[it.set].name+']':''));
+    if(it.slot==='weapon'){const sk=skillOf(cell.id);M.sk.setText('C 스킬 「'+sk.name+'」 MP '+sk.mp+' · '+sk.desc)}
   },
   equipCell(){
     const M=this.menu,sl=SLOTS[M.r],cell=M.cells[M.r][M.c];if(!cell||!STATE.bag.includes(cell.id))return;

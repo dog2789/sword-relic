@@ -13,6 +13,7 @@ import {Economy} from './economy.js';
 import {Gimmicks} from './gimmicks.js';
 import {MenuMixin} from './menu.js';
 import {Fx,buildFxTextures} from './fx.js';
+import {Skills} from './skills.js';
 import {bossDone,setBossDone,STATE,saveGame} from '../state.js';
 import {RS,fitCameras} from '../zoom.js';
 
@@ -90,7 +91,9 @@ export class PlayScene extends Phaser.Scene{
     this.snailEm=mk([0xc86a3a,0x8a3a1a,0xd8c08a,0xf0e8d8]);
     this.fireEm=mk([0xff7a2a,0xffd060,0xe8402a],{speed:{min:5,max:25},gravityY:-120,lifespan:{min:200,max:420}});
     this.auraEm=mk([0x9ff0ff,0xffd34a,0xffffff],{speed:{min:4,max:18},gravityY:-50,lifespan:{min:300,max:600}});
-    this.waves=[];
+    this.waves=[];this.skills=[];this.dashT=0;this.breathT=0;
+    // 위쪽 방의 바닥 모양 (아래 방에서 위로 뛰어오를 때 그 자리가 막혀 있으면 천장처럼 막음)
+    this.upInfo=ex.up&&ROOMS[ex.up.to]?{map:buildRoomMap(ex.up.to),tx:(ROOMS[ex.up.to].exits.down||{tx:ex.up.tx}).tx,cols:ROOMS[ex.up.to].cols}:null;
 
     this.spawnObjects(entry);this.spawnExtras();this.spawnGimmicks();this.pogo=false;
     (R.slimes||[]).forEach(s=>this.spawnEnemy({x:s.tx*T+8,y:s.ty*T}));
@@ -319,8 +322,15 @@ export class PlayScene extends Phaser.Scene{
     x=Phaser.Math.Clamp(x,8,this.lw-8);
     return ys.every(y=>{const c=this.tileAt(x,y);return c!=='#'&&c!=='A'&&c!=='B'&&c!=='L'&&c!=='^'})?x:null;
   }
+  upBlocked(x){
+    const U=this.upInfo;if(!U)return false;const ux=U.tx*T+8+(x-(this.R.exits.up.tx*T+8));
+    if(ux<4||ux>U.cols*T-4)return true;const c=Math.floor(ux/T);
+    return[ROWS-1,ROWS-2].some(r=>{const ch=U.map[r][c];return ch==='#'||ch==='A'||ch==='B'||ch==='L'||ch==='^'});
+  }
   checkExits(){
     const p=this.player,ex=this.R.exits;if(this.leaving||p.dead)return;
+    // 위 방 바닥이 막힌 자리로 뛰어오르면 천장에 부딪힌 것처럼 (사다리·덩굴 자리나 뚫린 곳으로만 올라감)
+    if(ex.up&&!this.climbing&&p.body.top<6&&p.body.velocity.y<0&&this.upBlocked(p.x)){p.setVelocityY(0);if(p.body.top<0)p.y-=p.body.top;return}
     if(ex.left&&p.x<-2)this.goRoom(ex.left,'right');
     else if(ex.right&&p.x>this.lw+2)this.goRoom(ex.right,'left');
     else if(ex.up&&p.y<-4)this.goRoom(ex.up.to,'bottom',Math.round(p.x-(ex.up.tx*T+8)));
@@ -498,7 +508,7 @@ export class PlayScene extends Phaser.Scene{
     if(!this.frozen){
       STATE.time=(STATE.time||0)+dt;
       if(!this.player.dead)this.updatePlayer(dt,inp,time);
-      this.updateAttack(dt);this.updateSword();this.updateWaves(dt);this.updateEnemies(dt,time);updateQuakes(this,dt);updateEShots(this,dt);
+      this.updateAttack(dt);this.updateSword();this.updateWaves(dt);this.updateSkills(dt);this.updateEnemies(dt,time);updateQuakes(this,dt);updateEShots(this,dt);
       if(!this.player.dead)this.physics.overlap(this.player,this.enemies,(pl,e)=>this.hurtPlayer(e));
       this.hearts.getChildren().slice().forEach(h=>{h.life-=dt;h.setVelocityX(h.body.velocity.x*0.95);if(h.life<3)h.setAlpha(Math.floor(time/90)%2?.3:1);if(h.life<=0)h.destroy()});
       const s=this.stats;s.mp=Math.min(s.maxMp,s.mp+3*dt);
@@ -614,22 +624,14 @@ export class PlayScene extends Phaser.Scene{
     }
     if(a.t>=a.dur){if(a.queued&&a.step<3)this.startAttack(a.step+1);else{a.active=false;this.lastAtkEnd=this.time.now;this.lastStep=a.step}}
   }
-  castSkill(){
-    const s=this.stats,p=this.player;if(this.skillCd>0||p.hurtT>0)return;
-    if(s.mp<10){this.popText(p.x,p.y-12,'NO MP',0x8ab0ff);this.skillCd=0.4;return}
-    s.mp-=10;this.skillCd=0.5;this.castT=0.18;const f=this.facing;
-    const it=ITEMS[this.equip.weapon],fx=it.fx,big=fx==='holy'||fx==='dragon'||fx==='moon';
-    const w=this.add.image(p.x+f*8,p.y+3,'wave').setFlipX(f<0).setDepth(12).setScale(big?1.7:1);if(it.wave)w.setTint(it.wave);
-    this.waves.push({s:w,vx:f*(fx==='ice'?200:230),life:big?0.7:0.55,hit:new Set(),f,tag:Math.random(),big,pierce:big});
-    this.goldEm.explode(4,p.x+f*8,p.y);
-  }
   updateWaves(dt){
     this.waves=this.waves.filter(w=>{
       w.life-=dt;w.s.x+=w.vx*dt;w.s.setAlpha(Math.min(1,w.life*5));
       const hb=w.big?new Phaser.Geom.Rectangle(w.s.x-9,w.s.y-16,18,32):new Phaser.Geom.Rectangle(w.s.x-6,w.s.y-10,12,20);
       this.enemies.getChildren().slice().forEach(e=>{if(!e.active||w.hit.has(e))return;const eb=e.body;
         if(Phaser.Geom.Intersects.RectangleToRectangle(hb,new Phaser.Geom.Rectangle(eb.x,eb.y,eb.width,eb.height))){
-          w.hit.add(e);this.hitEnemy(e,Math.round(this.atkVal()*(w.big?1.6:1.3)*(0.9+Math.random()*0.2)),false,w.f,false)}});
+          w.hit.add(e);const before=e.hp;this.hitEnemy(e,Math.round(this.atkVal()*(w.big?1.6:1.3)*(0.9+Math.random()*0.2)),false,w.f,false);
+          if(w.drain){const st=this.stats,h=Math.max(1,Math.round(Math.max(0,before-Math.max(0,e.hp))*w.drain));if(st.hp<this.mhp()){st.hp=Math.min(this.mhp(),st.hp+h);this.popNum(this.player.x,this.player.y-16,h,0xb8ffa8,false)}}}});
       this.hitWalls(hb,w.tag);this.hitSwitches(hb);this.slashShots(hb);
       if(this.tileAt(w.s.x+w.f*5,w.s.y)==='#'||this.walls.some(x=>x.hp>0&&Phaser.Geom.Intersects.RectangleToRectangle(hb,x.rect))){w.life=0;this.sparkEm.explode(6,w.s.x,w.s.y)}
       if(w.life<=0){w.s.destroy();return false}return true});
@@ -777,4 +779,4 @@ export class PlayScene extends Phaser.Scene{
   }
 }
 
-Object.assign(PlayScene.prototype,PlayUI,Economy,Gimmicks,MenuMixin,Fx);
+Object.assign(PlayScene.prototype,PlayUI,Economy,Gimmicks,MenuMixin,Fx,Skills);
