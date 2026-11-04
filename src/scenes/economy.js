@@ -4,6 +4,7 @@ import Phaser from 'phaser';
 import {W,H,HUD} from '../config.js';
 import {ITEMS,CONSUMABLES,WLV_MAX,wlvCost,wlvAtk,weaponName} from '../data/items.js';
 import {STATE} from '../state.js';
+import {sfx} from '../sfx.js';
 import {F9,F11} from '../fonts.js';
 
 const fix=(o,d=210)=>o.setScrollFactor(0).setDepth(d);
@@ -18,7 +19,7 @@ export const Economy={
       c.setVelocity((Math.random()-.5)*90,-150-Math.random()*60).setBounce(0.45).setDepth(7);c.body.setSize(6,6);c.life=14}
   },
   takeGold(v,x,y){
-    STATE.gold=(STATE.gold||0)+v;this.goldShow=1.2;
+    STATE.gold=(STATE.gold||0)+v;this.goldShow=1.2;sfx('coin');
     this.popText(x,y-6,'+'+v+'G',0xffd34a);
   },
 

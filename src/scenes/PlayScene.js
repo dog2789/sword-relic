@@ -18,6 +18,7 @@ import {bossDone,setBossDone,STATE,saveGame} from '../state.js';
 import {RS,fitCameras} from '../zoom.js';
 
 import {F9,F11} from '../fonts.js';
+import {sfx} from '../sfx.js';
 import {isDown,edges} from '../input.js';
 const CLIMB_SPEED=70;
 /* 받침 있으면 '을', 없으면 '를' */
@@ -266,7 +267,7 @@ export class PlayScene extends Phaser.Scene{
   }
   openChest(c){
     if(c.open)return;c.open=true;STATE.opened[c.def.id]=true;c.hint.setVisible(false);
-    c.spr.setTexture('chest1');this.goldEm.explode(24,c.x,c.y-10);this.shake(80,0.006);
+    c.spr.setTexture('chest1');this.goldEm.explode(24,c.x,c.y-10);sfx('chest');this.shake(80,0.006);
     if(c.def.gold){this.dropGold(c.x,c.y-12,c.def.gold);return}
     if(c.def.item&&c.def.item.startsWith('key_')){this.giveKey(c.def.item.slice(4),c.x,c.y-10);return}
     this.giveItem(c.def.item,c.x,c.y-10,false);
@@ -529,7 +530,7 @@ export class PlayScene extends Phaser.Scene{
     if(move)this.facing=move;
     // 사다리에서는 뒷모습. 오르내리는 만큼 팔다리를 번갈아 움직임
     p.anims.stop();p.setTexture(Math.floor(p.y/7)%2?'hero_climb1':'hero_climb0');p.setFlipX(false);
-    if(press.jump){this.stopClimb();p.setVelocity(move*SPEED,-JUMP*0.75);p.setFlipX(this.facing<0);return}
+    if(press.jump){this.stopClimb();p.setVelocity(move*SPEED,-JUMP*0.75);sfx('jump');p.setFlipX(this.facing<0);return}
     // 방 아래쪽 출구로 이어진 사다리는 화면 끝까지 매달린 채로 내려감
     const dn=this.R.exits.down,toBelow=dn&&b.bottom>=LH-2&&Math.abs(p.x-(dn.tx*T+8))<8;
     const onLad=this.isClimb(p.x,p.y)||this.isClimb(p.x,b.bottom-1)||toBelow;
@@ -569,16 +570,16 @@ export class PlayScene extends Phaser.Scene{
       if(Math.random()<dt*12)this.dustEm.explode(1,p.x+move*5,p.y+2)}
     else this.wallT-=dt;
     const onOne=onG&&(['-','='].includes(this.tileAt(b.center.x,b.bottom+2))||this.platGroup.getChildren().some(s=>s.isFaller&&Math.abs(s.y-3-b.bottom)<3&&Math.abs(s.x-p.x)<s.width/2));
-    if(swim&&this.jumpBuf>0){const surf=this.tileAt(p.x,p.y-9)!=='~';p.setVelocityY(surf?-290:-165);this.jumpBuf=0;this.bubbleEm.explode(3,p.x,p.y)}
-    else if(this.inSand&&!this.bonus.noSand&&this.jumpBuf>0){p.setVelocityY(-230);this.jumpBuf=0;this.dustEm.explode(4,p.x,b.bottom)}
+    if(swim&&this.jumpBuf>0){const surf=this.tileAt(p.x,p.y-9)!=='~';p.setVelocityY(surf?-290:-165);this.jumpBuf=0;sfx('jump');this.bubbleEm.explode(3,p.x,p.y)}
+    else if(this.inSand&&!this.bonus.noSand&&this.jumpBuf>0){p.setVelocityY(-230);this.jumpBuf=0;sfx('jump');this.dustEm.explode(4,p.x,b.bottom)}
     else if(this.jumpBuf>0&&held.down&&onOne){p.dropT=0.22;this.jumpBuf=0;p.setVelocityY(40)}
-    else if(this.jumpBuf>0&&this.coyote>0){p.setVelocityY(-JUMP);this.jumpBuf=0;this.coyote=0;this.dustEm.explode(4,p.x,b.bottom)}
+    else if(this.jumpBuf>0&&this.coyote>0){p.setVelocityY(-JUMP);this.jumpBuf=0;this.coyote=0;sfx('jump');this.dustEm.explode(4,p.x,b.bottom)}
     else if(this.jumpBuf>0&&!onG&&this.wallT>0){
       this.jumpBuf=0;this.wallT=0;this.wallLock=0.2;this.facing=-this.wallDir;
-      p.setVelocity(-this.wallDir*SPEED*1.35,-JUMP*0.95);this.dustEm.explode(5,p.x+this.wallDir*5,p.y);
+      p.setVelocity(-this.wallDir*SPEED*1.35,-JUMP*0.95);sfx('jump',{kind:'wall'});this.dustEm.explode(5,p.x+this.wallDir*5,p.y);
     }
     else if(press.jump&&!onG&&this.coyote<=0&&this.airJumps<this.maxAirJumps()){
-      this.airJumps++;this.jumpBuf=0;p.setVelocityY(-JUMP*0.9);
+      this.airJumps++;this.jumpBuf=0;p.setVelocityY(-JUMP*0.9);sfx('jump',{kind:'double'});
       this.auraEm.explode(8,p.x,b.bottom);this.dustEm.explode(4,p.x,b.bottom);
     }
     this.bounceT-=dt;
@@ -604,7 +605,7 @@ export class PlayScene extends Phaser.Scene{
     Object.assign(a,{active:true,step,t:0,queued:false,hit:new Set(),f:this.facing,dur:step===3?0.34:0.24,on:step===3?[0.05,0.2]:[0.03,0.14],tag:Math.random()});
     if(this.slash)this.slash.destroy();
     const f=a.f,s=this.add.image(p.x+f*4,p.y+3,(step===3?'slashC_':'slashA_')+w).setOrigin(f>0?0:1,0.5).setFlipX(f<0).setFlipY(step===2).setDepth(12).setAlpha(0);
-    this.slash=s;this.fxSwing(s,step,f);
+    this.slash=s;this.fxSwing(s,step,f);sfx('slash',{heavy:step===3});
     this.tweens.add({targets:s,alpha:{from:1,to:0},delay:a.on[0]*1000,duration:(a.dur-a.on[0])*1000,ease:'Quad.easeIn'});
     if(p.body.blocked.down)p.setVelocityX(f*(step===3?130:60));
   }
@@ -662,6 +663,7 @@ export class PlayScene extends Phaser.Scene{
     e.setTintFill(0xffffff);this.time.delayedCall(70,()=>{if(e.active){e.clearTint();if(e.slow>0)e.setTint(0x9fd8ff);else if(e.baseTint)e.setTint(e.baseTint)}});
     this.popNum(e.x+(Math.random()*8-4),e.body.y-2,d,crit?0xffd34a:0xffffff,crit);
     this.fxHit(e.x-dir*4,e.body.center.y,dir,crit,heavy,src==='splash'?(this.wfx()==='dragon'?'dragon':'slime'):null);
+    if(src!=='burn')sfx('hit',{crit,heavy});
     this.combo++;this.comboT=1.5;
     if(this.combo>=2){this.comboTxt.setText(this.combo+' HIT').setVisible(true).setAlpha(1);this.tweens.add({targets:this.comboTxt,scale:{from:1.4,to:1},duration:120})}
     this.targetT=3.5;
@@ -736,7 +738,7 @@ export class PlayScene extends Phaser.Scene{
     const p=this.player,s=this.stats;if(p.inv>0||p.dead)return;
     // 방어력은 비율로 피해를 줄임 (방어 40이면 절반) — 방어구를 많이 껴도 아예 안 아프진 않게
     const d=Math.max(1,Math.round(raw*40/(40+this.defVal())));s.hp=Math.max(0,s.hp-d);
-    this.popNum(p.x,p.y-12,d,0xff5a5a,false);p.inv=1.1;p.hurtT=0.28;
+    this.popNum(p.x,p.y-12,d,0xff5a5a,false);p.inv=1.1;p.hurtT=0.28;sfx('hurt');
     if(this.climbing)this.stopClimb();
     let kx=(Math.sign(p.x-fromX)||1)*150;if((p.x<28&&kx<0)||(p.x>this.lw-28&&kx>0))kx=0;   // 맞고 밀려서 방 밖으로 나가지 않게
     p.setVelocity(kx,kind==='spike'?-260:-170);

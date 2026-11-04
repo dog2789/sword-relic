@@ -4,6 +4,7 @@ import Phaser from 'phaser';
 import {T,LH,ROWS} from '../config.js';
 import {KEYS} from '../data/items.js';
 import {STATE,bossDone} from '../state.js';
+import {sfx} from '../sfx.js';
 import {cv,px} from '../gfx/pixel.js';
 
 export const Gimmicks={
@@ -81,7 +82,7 @@ export const Gimmicks={
     this.time.delayedCall(1100,()=>this.tweens.add({targets:icon,x:this.player.x,y:this.player.y,alpha:0,duration:300,onComplete:()=>icon.destroy()}));
     this.banner('KEY!',0xffd34a);this.toast(K.name+'를 얻었다! 같은 색 문을 열 수 있어요',3200);
   },
-  setGate(o,open,instant){if(o.open===open)return;o.open=open;o.zones.forEach(z=>z.body.enable=!open);
+  setGate(o,open,instant){if(o.open===open)return;o.open=open;if(!instant)sfx('gate');o.zones.forEach(z=>z.body.enable=!open);
     o.imgs.forEach((im,j)=>{const y0=(o.def.ty+j)*T+8;this.tweens.killTweensOf(im);
       if(instant){im.y=open?y0-12:y0;im.setAlpha(open?0:1);return}
       this.tweens.add({targets:im,y:open?y0-12:y0,alpha:open?0:1,duration:220})});
@@ -142,7 +143,7 @@ export const Gimmicks={
     this.doors=this.doors.filter(o=>{
       const near=pb.right>o.rect.x-3&&pb.left<o.rect.right+3&&pb.bottom>o.rect.y-3&&pb.top<o.rect.bottom+3;if(!near)return true;
       const c=o.def.color;
-      if(STATE.keys[c]){STATE.opened[o.def.id]=true;o.zones.forEach(z=>z.destroy());this.shake(80,0.006);
+      if(STATE.keys[c]){STATE.opened[o.def.id]=true;o.zones.forEach(z=>z.destroy());this.shake(80,0.006);sfx('door');
         o.imgs.forEach((im,i)=>this.tweens.add({targets:im,alpha:0,y:im.y-10,delay:i*40,duration:300,onComplete:()=>im.destroy()}));
         this.goldEm.explode(12,o.rect.centerX,o.rect.centerY);this.toast(KEYS[c].name+'로 문을 열었다!',2000);return false}
       if(this.doorMsgT<=0){this.toast(KEYS[c].name+'가 있어야 열 수 있는 문이에요',2000);this.doorMsgT=3}
