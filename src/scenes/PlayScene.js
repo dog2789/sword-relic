@@ -43,8 +43,11 @@ export class PlayScene extends Phaser.Scene{
     const edgeY=tx=>{const f=floorTopY(this.map,tx);return(f>=LH?surfaceY(this.map,tx):f)-9};
     if(entry==='left'){sx=8;sy=edgeY(0)}
     else if(entry==='right'){sx=this.lw-8;sy=edgeY(this.cols-1)}
-    else if(entry==='top'&&ex.up){sx=ex.up.tx*T+8;sy=8;climb=this.isClimb(sx,8)}
-    else if(entry==='bottom'&&ex.down){sx=ex.down.tx*T+8;sy=LH-10;climb=this.isClimb(sx,LH-8)}
+    else if(entry==='top'&&ex.up){sx=ex.up.tx*T+8;sy=8;
+      // 위 방에서 사다리가 아닌 곳으로 떨어졌으면 같은 위치로 들어옴 (천장이 막혀 있으면 사다리 자리)
+      const fx=this.freeCol(sx+(data.dx||0),[8,24]);if(data.dx&&fx!=null)sx=fx;climb=this.isClimb(sx,8)}
+    else if(entry==='bottom'&&ex.down){sx=ex.down.tx*T+8;sy=LH-10;
+      const fx=this.freeCol(sx+(data.dx||0),[LH-8,LH-24]);if(data.dx&&fx!=null)sx=fx;climb=this.isClimb(sx,LH-8)}
     else if(entry==='warp'&&R.warp){sx=R.warp.tx*T+8;sy=surfaceY(this.map,R.warp.tx)-9}
     else{const tx=(entry==='save'&&R.save)?R.save.tx:(R.start?R.start.tx:(R.save?R.save.tx:2));sx=tx*T+8;sy=surfaceY(this.map,tx)-9}
     const p=this.player=this.physics.add.sprite(sx,sy,'hero_idle0');
@@ -307,19 +310,25 @@ export class PlayScene extends Phaser.Scene{
   }
 
   /* ----- 방 이동 ----- */
-  goRoom(id,entry){
+  goRoom(id,entry,dx){
     if(this.leaving)return;this.leaving=true;STATE.visited[id]=true;
-    this.fadeCams(true,180,()=>this.scene.restart({room:id,entry}));
+    this.fadeCams(true,180,()=>this.scene.restart({room:id,entry,dx:dx||0}));
+  }
+  /* 그 x 위치가 비어 있으면(막힌 블록이 없으면) 방 안쪽으로 맞춘 x, 아니면 null */
+  freeCol(x,ys){
+    x=Phaser.Math.Clamp(x,8,this.lw-8);
+    return ys.every(y=>{const c=this.tileAt(x,y);return c!=='#'&&c!=='A'&&c!=='B'&&c!=='L'&&c!=='^'})?x:null;
   }
   checkExits(){
     const p=this.player,ex=this.R.exits;if(this.leaving||p.dead)return;
     if(ex.left&&p.x<-2)this.goRoom(ex.left,'right');
     else if(ex.right&&p.x>this.lw+2)this.goRoom(ex.right,'left');
-    else if(ex.up&&p.y<-4)this.goRoom(ex.up.to,'bottom');
+    else if(ex.up&&p.y<-4)this.goRoom(ex.up.to,'bottom',Math.round(p.x-(ex.up.tx*T+8)));
     else if(ex.down&&p.y>LH+6){
-      // 아래 출구 구멍으로 떨어졌을 때만 다음 방으로, 다른 곳(용암·가시 구덩이)으로 빠지면 다치고 마지막 안전한 곳으로
-      if(Math.abs(p.x-(ex.down.tx*T+8))<=28)this.goRoom(ex.down.to,'top');
-      else this.fallPit();
+      // 위아래로 이어진 방: 어디로 떨어지든 아래 방의 같은 자리로. 용암·가시·모래 구덩이에 빠졌을 때만 다치고 안전한 곳으로
+      const c=this.tileAt(p.x,LH-8),dx=Math.round(p.x-(ex.down.tx*T+8));
+      if((c==='L'||c==='^'||c==='S')&&Math.abs(dx)>20)this.fallPit();
+      else this.goRoom(ex.down.to,'top',dx);
     }
   }
   fallPit(){
@@ -598,7 +607,7 @@ export class PlayScene extends Phaser.Scene{
       this.enemies.getChildren().slice().forEach(e=>{
         if(!e.active||a.hit.has(e))return;const eb=e.body;
         if(Phaser.Geom.Intersects.RectangleToRectangle(hb,new Phaser.Geom.Rectangle(eb.x,eb.y,eb.width,eb.height))){
-          a.hit.add(e);const crit=Math.random()<(this.wfx()==='holy'?0.25:0.12),mult=[1,1,1.15,1.7][a.step];
+          a.hit.add(e);const crit=Math.random()<({holy:0.25,blood:0.24,moon:0.16}[this.wfx()]||0.12),mult=[1,1,1.15,1.7][a.step];
           this.hitEnemy(e,Math.round(this.atkVal()*mult*(0.85+Math.random()*0.3)*(crit?2:1)),crit,a.f,a.step===3)}});
       this.chests.forEach(c=>{if(!c.open&&Phaser.Geom.Intersects.RectangleToRectangle(hb,new Phaser.Geom.Rectangle(c.x-7,c.y-11,14,11)))this.openChest(c)});
       this.hitWalls(hb,a.tag);this.hitSwitches(hb);this.slashShots(hb);
@@ -609,7 +618,7 @@ export class PlayScene extends Phaser.Scene{
     const s=this.stats,p=this.player;if(this.skillCd>0||p.hurtT>0)return;
     if(s.mp<10){this.popText(p.x,p.y-12,'NO MP',0x8ab0ff);this.skillCd=0.4;return}
     s.mp-=10;this.skillCd=0.5;this.castT=0.18;const f=this.facing;
-    const it=ITEMS[this.equip.weapon],fx=it.fx,big=fx==='holy';
+    const it=ITEMS[this.equip.weapon],fx=it.fx,big=fx==='holy'||fx==='dragon'||fx==='moon';
     const w=this.add.image(p.x+f*8,p.y+3,'wave').setFlipX(f<0).setDepth(12).setScale(big?1.7:1);if(it.wave)w.setTint(it.wave);
     this.waves.push({s:w,vx:f*(fx==='ice'?200:230),life:big?0.7:0.55,hit:new Set(),f,tag:Math.random(),big,pierce:big});
     this.goldEm.explode(4,p.x+f*8,p.y);
@@ -636,6 +645,11 @@ export class PlayScene extends Phaser.Scene{
     if(fx==='fire'){const bb=ITEMS[this.equip.weapon].burnBoost;e.burn={t:bb?3:1.7,tick:0.4,dmg:Math.max(1,Math.round(d*(bb?0.3:0.22)))}}
     if(fx==='poison'){e.burn={t:3.2,tick:0.5,dmg:Math.max(1,Math.round(d*0.18)),poison:true}}
     if(fx==='ice'){e.slow=2.4}
+    if(fx==='blood'){e.burn={t:2.6,tick:0.4,dmg:Math.max(1,Math.round(d*0.2)),bleed:true}}
+    if(fx==='dragon'){e.burn={t:3,tick:0.4,dmg:Math.max(1,Math.round(d*0.3))};
+      if(heavy){const ex=e.x,ey=e.y;this.fireEm.explode(26,ex,ey);this.fxEmitter('dragon').explode(18,ex,ey);this.shake(110,0.01);
+        this.time.delayedCall(30,()=>this.enemies.getChildren().slice().forEach(o=>{if(o!==e&&o.active&&Math.hypot(o.x-ex,o.y-ey)<44)this.hitEnemy(o,Math.round(d*0.6),false,Math.sign(o.x-ex)||1,false,'splash')}))}}
+    if(fx==='moon'&&!this.player.dead){const s=this.stats,h=Math.max(1,Math.round(d*0.08));if(s.hp<this.mhp()){s.hp=Math.min(this.mhp(),s.hp+h);this.popNum(this.player.x,this.player.y-14,h,0xb8ffa8,false)}}
     if(fx==='slime'&&heavy){const ex=e.x,ey=e.y;this.slimeEm.explode(22,ex,ey);this.shake(90,0.008);
       this.time.delayedCall(30,()=>this.enemies.getChildren().slice().forEach(o=>{if(o!==e&&o.active&&Math.hypot(o.x-ex,o.y-ey)<36)this.hitEnemy(o,Math.round(d*0.55),false,Math.sign(o.x-ex)||1,false,'splash')}))}
     // 적 방어력, 녹슨 수문장은 앞에서 친 약한 공격을 방패로 막음
@@ -645,7 +659,7 @@ export class PlayScene extends Phaser.Scene{
     const kb=e.kb==null?1:e.kb;e.setVelocity(dir*(heavy?1.6:1)*(e.king?40:110)*kb,e.king?-40:(heavy?-170:-110)*kb);
     e.setTintFill(0xffffff);this.time.delayedCall(70,()=>{if(e.active){e.clearTint();if(e.slow>0)e.setTint(0x9fd8ff);else if(e.baseTint)e.setTint(e.baseTint)}});
     this.popNum(e.x+(Math.random()*8-4),e.body.y-2,d,crit?0xffd34a:0xffffff,crit);
-    this.fxHit(e.x-dir*4,e.body.center.y,dir,crit,heavy,src==='splash'?'slime':null);
+    this.fxHit(e.x-dir*4,e.body.center.y,dir,crit,heavy,src==='splash'?(this.wfx()==='dragon'?'dragon':'slime'):null);
     this.combo++;this.comboT=1.5;
     if(this.combo>=2){this.comboTxt.setText(this.combo+' HIT').setVisible(true).setAlpha(1);this.tweens.add({targets:this.comboTxt,scale:{from:1.4,to:1},duration:120})}
     this.targetT=3.5;
@@ -689,8 +703,8 @@ export class PlayScene extends Phaser.Scene{
     const p=this.player;
     this.enemies.getChildren().slice().forEach(e=>{
       if(e.y>LH+40){e.destroy();return}
-      if(e.burn){const b=e.burn;b.t-=dt;b.tick-=dt;if(Math.random()<dt*14)(b.poison?this.fxEmitter('poison'):this.fireEm).explode(1,e.x+(Math.random()-.5)*8,e.body.top+4);
-        if(b.tick<=0){b.tick=0.4;e.hp-=b.dmg;this.popNum(e.x,e.body.y-2,b.dmg,b.poison?0xc080ff:0xff9a3a,false);if(e.hp<=0){this.killEnemy(e);return}}
+      if(e.burn){const b=e.burn;b.t-=dt;b.tick-=dt;if(Math.random()<dt*14)(b.poison?this.fxEmitter('poison'):b.bleed?this.fxEmitter('blood'):this.fireEm).explode(1,e.x+(Math.random()-.5)*8,e.body.top+4);
+        if(b.tick<=0){b.tick=0.4;e.hp-=b.dmg;this.popNum(e.x,e.body.y-2,b.dmg,b.poison?0xc080ff:b.bleed?0xff5a6a:0xff9a3a,false);if(e.hp<=0){this.killEnemy(e);return}}
         if(b.t<=0)e.burn=null}
       if(e.slow>0){e.slow-=dt;e.body.velocity.x*=0.55;if(e.body.allowGravity===false)e.body.velocity.y*=0.55;if(e.slow<=0){e.clearTint();if(e.baseTint)e.setTint(e.baseTint)}else if(!e.isTinted)e.setTint(0x9fd8ff)}
       if(e.mob){updateMob(this,e,dt,now);return}

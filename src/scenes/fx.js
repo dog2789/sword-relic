@@ -10,7 +10,10 @@ const FX={
   fire:{main:0xff8a2a,cols:[0xffd060,0xff7a2a,0xe8402a,0xffffff],grav:-160,speed:[20,80],life:[300,650],hit:'flame'},
   ice:{main:0x9ff0ff,cols:[0xffffff,0xbfeeff,0x6fc8ff],grav:60,speed:[30,110],life:[350,700],hit:'shard'},
   poison:{main:0xb06aff,cols:[0xd8a0ff,0x7a2ac0,0x9fff8a],grav:-60,speed:[20,90],life:[300,650],hit:'drop'},
-  holy:{main:0x9fc0ff,cols:[0xffffff,0xbcd4ff,0xffe27a],grav:-40,speed:[20,100],life:[300,600],hit:'cross'}
+  holy:{main:0x9fc0ff,cols:[0xffffff,0xbcd4ff,0xffe27a],grav:-40,speed:[20,100],life:[300,600],hit:'cross'},
+  moon:{main:0xb8a8ff,cols:[0xffffff,0xd8d0ff,0x9a7aff,0x6a4ad8],grav:-30,speed:[30,100],life:[300,620],hit:'cross'},
+  blood:{main:0xff3a4a,cols:[0xffb0b0,0xff4a5a,0xc0101a,0xffffff],grav:340,speed:[40,140],life:[260,520],hit:'drop'},
+  dragon:{main:0xffa02a,cols:[0xfff0a0,0xffa02a,0xe0401a,0xffffff],grav:-200,speed:[30,120],life:[320,720],hit:'flame'}
 };
 
 export function buildFxTextures(sc){

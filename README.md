@@ -78,11 +78,13 @@ src/
 - **장치**: 방 데이터 `doors`, `turrets`, `switches`(`timer` 초), `icicles`, `crates`, `plates`(`gate` id, `latch`), `gates`, `torches`(`gate` id), `chests:[{gold}|{item:'key_red'}]`, 맵 글자 `~`(물) `A`/`B`(스위치 블록) `S`(모래 늪) `L`(용암), `geysers`(화염 분출구), `gates`의 `boss`(보스를 쓰러뜨리면 열림)
 - **몬스터·보스 수치**: `src/scenes/monsters.js`의 `MOBS`, 지역별 강화 배율은 `TIER` (함정 피해도 같은 배율)
 - **방어 공식**: 받는 피해 = 원래 피해 × 40 / (40 + 방어), 적은 × 30 / (30 + 적 방어)
+- **장비 세트**: `src/data/items.js`의 `SETS` (철 기사, 흑철, 청기사, 흑월, 적월, 용기사). 투구 모양 `look.helm`: full | great | crown | horned | moon | bloodmoon | dragon, 갑옷 `look.armor`: plate | heavy | spike | moon | dragon
 - **보스 배치**: 방 데이터의 `boss:{id, tx, ty, drop, title(영문 배너), intro(등장 문구)}` (id: king | batlord | rust)
 - **소모품**: `src/data/items.js`의 `CONSUMABLES`
 - **방 추가**: `ROOMS`에 항목을 추가하고 이웃 방의 `exits`에 연결 (미니맵은 `grid` 좌표로 자동 표시)
   - 위아래 연결: `exits.up/down = {to, tx}` 출구가 있는 열에 사다리(H)나 덩굴(V)을 둠
-  - 아래 출구가 있는 방에서 `tx` 열(±1.5칸) 말고 다른 곳으로 떨어지면 다음 방으로 가지 않고, 피해를 입고 마지막으로 딛고 섰던 곳에 돌아옴 (`fallPit`)
+  - 위아래로 이어진 방은 사다리가 아닌 곳으로 떨어지거나 뛰어올라도 옆 방의 같은 자리로 이어짐 (그 자리가 막혀 있으면 사다리 자리). 용암·가시·모래 구덩이 바닥으로 빠졌을 때만 피해를 입고 마지막으로 딛고 섰던 곳에 돌아옴 (`fallPit`)
+  - 누름판으로 연 철문은 한 번 열리면 계속 열려 있고, 누름판 반대편(안쪽)에서 다가가도 열림
   - 지역마다 13곳 이상: 초원(마을 뒷산·초원·고목) 13, 동굴 13, 고성 13, 얼음 13, 사막 13, 용암 13
   - 지형 기믹: movers(움직이는 발판), fallers(떨어지는 발판), mushrooms(점프 버섯), breaks(부서지는 벽), 맵 글자 '^'(가시)
 

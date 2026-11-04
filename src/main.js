@@ -7,6 +7,7 @@ import {TitleScene} from './scenes/TitleScene.js';
 import {IntroScene} from './scenes/IntroScene.js';
 import {CustomizeScene} from './scenes/CustomizeScene.js';
 import {STATE,newGame} from './state.js';
+import {ITEMS} from './data/items.js';
 import {loadFonts} from './fonts.js';
 
 let game;
@@ -43,4 +44,4 @@ ng.addEventListener('click',()=>{
 });
 
 /* 디버그용: 브라우저 콘솔에서 SR.scene 으로 현재 장면 접근 */
-window.SR={get game(){return game},get scene(){return game&&game.scene.keys.play},get state(){return STATE}};
+window.SR={get game(){return game},get scene(){return game&&game.scene.keys.play},get state(){return STATE},items:ITEMS};

@@ -19,9 +19,14 @@ const HELM_ICON={
   full:["....kkkk....","..kkaaiikk..",".kaaaaaaiik.",".kaaaaaaaik.","kmmmmmmmmmmk","kvvvvavvvvAk","kaaaaaaaaaAk","kavavavavaAk",".kaaaaaaaAk.","..kkkkkkkk.."],
   great:["......oo....","....kkkkoo..","..kkaaiikk..",".kaaaamaaik.",".kaaaamaaak.",".kvvvvvvvvk.",".kaaaavaaak.",".kaaaavaaak.",".kMaaavaaMk.","..kkkkkkkk.."],
   crown:["..y..y..y...","..ykkykkyk..",".kyryyyyryk.","..kaaiiaak..",".kaaaaaaaik.",".kvvvvvvvvk.",".kaaaaaaaak.",".kavavavaak.","..kaaaaaak..","...kkkkkk..."],
+  moon:["..k......k..","..kYk..kYk..","...kYYYYk...","..kkkkkkkk..",".kiaaamaaak.",".kvvvvvvvvk.",".kiaaavaaak.",".kiaaavaaak.",".kMaaavaaMk.","..kkkkkkkk.."],
+  bloodmoon:["k..k....k..k","kOkYk..kYkOk",".kOkYYYYkOk.","..kkkkkkkk..",".kiaaamaaak.",".kvvvvvvvvk.",".kiaaavaaak.",".kiaaavaaak.",".kMaaavaaMk.","..kkkkkkkk.."],
+  dragon:["k....kk....k","kWk..kk..kWk","kWwkkkkkkwWk",".kWaaaiiaWk.",".kaaaamaaak.",".kvvvvvvvvk.",".kaaaavaaak.",".kaaaavaaak.",".kMaaavaaMk.","..kkkkkkkk.."],
   horned:["k..........k","kOk......kOk","kOOkkkkkkOOk",".kOkaaiikOk.","..kaaaaaaik.","..kvvvvvvvk.","..kaaavaaak.","..kaaavaaak.","...kaaaaak..","....kkkkk..."]};
 const ARMOR_ICON={
   heavy:[".kkkk..kkkk.","kiaaAkkiaaAk","kaAAAaaaAAAk",".kkkannnakk.","...kannnak..","...kannnak..","...kAnnnAk..","....kkkkk..."],
+  moon:[".kkkk..kkkk.","kiaaAkkiaaAk","kYYYyaayYYYk",".kkkannnakk.","...kannnak..","...kannnak..","...kAnnnAk..","....kkkkk..."],
+  dragon:["kOk......kOk",".kOk....kOk.","kaiaAkkaiaAk","kWaWannaWaWk",".kkkannnakk.","...kanWnak..","...kannnak..","...kAnnnAk..","....kkkkk..."],
   spike:["k..........k","kk........kk","kak......kak","kaakkkkkkaak","kaAAannaAAak",".kkaannaakk.","..kaannaak..","..kAannaAk..","...kkkkkk..."]};
 const BOOT_ICON=["............","..kkk...kkk.","..kck...kck.","..kfk...kfk.","..kffk..kffk",".kfffk.kfffk",".kkkkk.kkkkk"];
 /* 무기마다 다른 검 모양: 손에 든 모습(가로) / 아이콘(대각선) */
@@ -32,8 +37,14 @@ const SWORDS={
   blue_sword:[".mm............","..mkkkkkkkkkk..","jjmLLLLLLLLLLLk","..mkkkkkkkkkk..",".mm............"]};
 SWORDS.scimitar=["..k.........k.","..mkkkkkkkkLk.","jjmLLLLLLLLLk.","..mkkkkkkLLk..","..k.....kk...."];
 SWORDS.magma_blade=["..k..k.k.k.k..","..mkkLkLkLkLk.","jjmLLLLLLLLLLk","..mkkkkkkkkkk.","..k..........."];
+SWORDS.moon_sword=[".m.............","m.mkkkkkkkkkk..","jjmLLLLLLLLLLLk","m.mkkkkkkkkkk..",".m............."];
+SWORDS.blood_sword=["..k.k.k.k.k....","..mkLkLkLkLkk..","jjmLLLLLLLLLLLk","..mkkkkkkkkkk..","..k............"];
+SWORDS.dragon_sword=[".O..............","mmmkkkkkkkkkkk..","jjmLLLLLLLLLLLLk","jjmLLLLLLLLLLLLk","mmmkkkkkkkkkkk..",".O.............."];
 SWORDS.relic_sword=["mm..............",".mmkkkkkkkkkkk..","jjmLLLLLLLLLLLLk",".mmkkkkkkkkkkk..","mm.............."];
 const SWORD_ICONS={
+  moon_sword:["..........kk",".........kLk","........kLlk",".......kLlk.","......kLlk..",".....kLlk...","m...kLlk....",".m.mkLk.....","..mmmk......","..kjmm......",".kjk.m......","kkk........."],
+  blood_sword:["........k.kk",".......kLkLk","......k.kLlk",".....kLkLlk.","....k.kLlk..",".....kLlk...","..k.kLlk....","..kmkLk.....","...kmk......","..kjkmk.....",".kjk.kk.....","kkk........."],
+  dragon_sword:["........kkkk",".......kLLLk","......kLLllk",".....kLLllk.","....kLLllk..","...kLLllk...","O.kLLllk....","OmmLLlk.....",".mmmkk......","..kjmmm.....",".kjk..mO....","kkk.....O..."],
   scimitar:["......kkkk..",".....kLLLk..","....kLllk...","....kLlk....","....kLlk....","....kLlk....","..k.kLk.....","..kmkLk.....","...kmk......","..kjkmk.....",".kjk.kk.....","kkk........."],
   magma_blade:["......k.k.kk",".......kLkLk","....k.kLLLlk",".....kLLllk.","...k.kLlLk..",".....kLlk...","..k.kLlk....","..kmkLk.....","...kmk......","..kjkmk.....",".kjk.kk.....","kkk........."],
   relic_sword:["..........kk",".........kLk","........kLlk",".......kLlk.","......kLlk..",".....kLlk...","..mmkLlk....",".mmmmLk.....","..mmmk......","..kjmmm.....",".kjk.mmm....","kkk........."],

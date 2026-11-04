@@ -77,8 +77,13 @@ const mir=h=>h+[...h].reverse().join('');
 export const HORNS=["",...["kk........","kOk.......","kOok......",".kOok.....","..kOok....","...kOk...."].map(mir)];
 export const CROWN=["......k..k..k.......",".....kYkkYkkYk......",".....kYYYYYYYk......",".....kyryyyryk......"];
 export const PAULDRON={
+ moon:[...Array(11).fill(''),...["..kkkk....",".kiaaAk...","kiaaaAAk..","kYYYYYyk..",".kkkkkk..."].map(mir)],
+ dragon:[...Array(9).fill(''),...["..k.......",".kOk......",".kOkkk....","kaiaaAk...","kaiaAAAk..","kWaWaWk...",".kkkkk...."].map(mir)],
  heavy:[...Array(12).fill(''),...["..kkkk....",".kiaaAk...",".kaaAAk...","..kkkk...."].map(mir)],
  spike:[...Array(10).fill(''),...["...k......","..kak.....",".kaiak....",".kaaAk....","..kAk....."].map(mir)]};
+/* 초승달 장식 (흑월·적월), 용 날개 장식 (용기사): 20칸 폭, 투구보다 먼저 그려서 투구가 아랫부분을 덮음 */
+export const MOON_CREST=["",".....kk...",".....kYk..",".....kYYkk","......kYYY"].map(mir);   // 투구 위에 덧그림
+export const DRAGON_WINGS=["kk.......k","kWk.....kO","kWwk....kO",".kWwk.....",".kWwk.....","..kWk.....","...k......"].map(mir);
 export const HELM_CREST=["","ooo",".oooo","..ooo"];   // 투구 위 깃털 (원본 방향)
 export const HELM_CAP=["","","....kkkkkk.....","...kaiiaaaak...","..kaiaaaaaaak..",".kaaaaaaaaaaaak",".kmmmmmmmmmmmmk"];
 export const SHIELD=["kkkkkkk","kqqxqQk","kxxxxxk","kqqxqQk","kqqxqQk",".kqxQk.","..kQk..","...k..."];
@@ -154,8 +159,8 @@ export function drawHero(ctx,frame,look,equip,ox=0,oy=0){
   paintRows(ctx,arms,ap?{...pal,u:ap.G,t:ap.a}:pal,X2,Y);
   if(cp)paintRows(ctx,CAPE_BACK,cp,X2,Y);
   if(pd)paintRows(ctx,pd,ap,X2-2,Y);
-  if(full){if(shape==='horned')paintRows(ctx,HORNS,hp,X2-2,Y);
-   paintRows(ctx,HELM_BACK,hp,X2,Y);if(shape==='crown')paintRows(ctx,CROWN,hp,X2-2,Y);
+  if(full){if(shape==='horned'||shape==='bloodmoon')paintRows(ctx,HORNS,hp,X2-2,Y);if(shape==='dragon')paintRows(ctx,DRAGON_WINGS,hp,X2-2,Y);
+   paintRows(ctx,HELM_BACK,hp,X2,Y);if(shape==='moon'||shape==='bloodmoon')paintRows(ctx,MOON_CREST,hp,X2-2,Y);if(shape==='crown')paintRows(ctx,CROWN,hp,X2-2,Y);
    if(EL.helm.crest)paintRows(ctx,["","","......oooo"],{...hp,o:EL.helm.crest},X2,Y);return}
   paintRows(ctx,HEAD_BACK,pal,X2,Y);
   if(bs.top)paintRows(ctx,bs.top,pal,X2,Y);
@@ -172,8 +177,10 @@ export function drawHero(ctx,frame,look,equip,ox=0,oy=0){
  if(ap){if(F.atk)paintRows(ctx,ARMOR_ATK,ap,X,Y);else paintRows(m,ARMOR,ap,X,Y);if(pd)paintRows(m,pd,ap,X-2,Y)}
  if(!full)paintRows(m,st.front,pal,X,Y);
  if(full){
-  if(shape==='horned')paintRows(m,HORNS,hp,X-2,Y);
-  paintRows(m,shape==='great'?HELM_GREAT:HELM_FULL,hp,X,Y);
+  if(shape==='horned'||shape==='bloodmoon')paintRows(m,HORNS,hp,X-2,Y);
+  if(shape==='dragon')paintRows(m,DRAGON_WINGS,hp,X-2,Y);
+  paintRows(m,shape==='great'||shape==='moon'||shape==='bloodmoon'||shape==='dragon'?HELM_GREAT:HELM_FULL,hp,X,Y);
+  if(shape==='moon'||shape==='bloodmoon')paintRows(m,MOON_CREST,hp,X-2,Y);
   if(shape==='crown')paintRows(m,CROWN,hp,X-2,Y);
   if(EL.helm.crest)paintRows(m,HELM_CREST,{o:EL.helm.crest},X+8,Y)}
  else if(EL.helm)paintRows(m,HELM_CAP,hp,X,Y);

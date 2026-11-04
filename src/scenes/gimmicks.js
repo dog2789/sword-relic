@@ -127,8 +127,15 @@ export const Gimmicks={
       if(on!==pl.on){pl.on=on;pl.s.setTexture(on?'plate1':'plate0')}});
     this.gates.forEach(g=>{if(g.perm)return;const ps=this.plates.filter(pl=>pl.def.gate===g.def.id);if(!ps.length)return;
       const open=ps.every(pl=>pl.on);
-      if(open&&ps.some(pl=>pl.def.latch)){g.perm=true;STATE.opened[g.def.id]=true}
+      // 한 번 열리면 계속 열려 있음 (방을 나갔다 오면 상자가 제자리로 돌아가서 갇히지 않게)
+      if(open&&!ps.some(pl=>pl.def.latch===false)){g.perm=true;STATE.opened[g.def.id]=true}
       this.setGate(g,open)});
+    // 철문 안쪽(누름판·횃불 반대편)에서 다가가면 빗장을 풀고 열 수 있음
+    this.gates.forEach(g=>{if(g.perm||g.def.boss)return;
+      const xs=[...this.plates.filter(pl=>pl.def.gate===g.def.id).map(pl=>pl.x),...this.torches.filter(t=>t.gate===g.def.id).map(t=>t.x)];if(!xs.length)return;
+      const gx=g.def.tx*T+8,side=Math.sign(xs.reduce((a,b)=>a+b,0)/xs.length-gx),ps=Math.sign(p.x-gx);
+      const top=g.def.ty*T,bot=(g.def.ty+(g.def.h||3))*T;
+      if(ps!==side&&Math.abs(p.x-gx)<17&&pb.bottom>top+2&&pb.top<bot-2){g.perm=true;STATE.opened[g.def.id]=true;this.setGate(g,true);this.toast('안쪽에서 빗장을 풀었다',1600)}});
     // 상자가 가시·구덩이에 빠지면 제자리로
     this.crates.getChildren().forEach(c=>{if(c.y>LH+20||c.x<-12||c.x>this.lw+12||this.tileAt(c.x,c.y)==='L'||this.tileAt(c.x,c.body.bottom-2)==='^'){c.setPosition(c.home.x,c.home.y);c.setVelocity(0,0);this.dustEm.explode(6,c.x,c.y)}});
     // 문

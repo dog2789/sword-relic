@@ -54,8 +54,6 @@ export const ITEMS={
     sword:{l:'#e8d8a0',L:'#fffbe0',m:'#7a3aa0',j:'#3a1a10'},slashA:['#ffffff','#e0b0ff','#9a4ad8'],slashC:['#ffffff','#d8a0ff','#7a2ac0'],big:23},
   magma_blade:{slot:'weapon',name:'용암검',desc:'화염 골렘의 심장으로 만든 검. 화상이 훨씬 오래간다',atk:26,fx:'fire',wave:0xff4a1a,burnBoost:true,
     sword:{l:'#ff6a1a',L:'#ffd060',m:'#2a1418',j:'#1a0a08'},slashA:['#fff0a0','#ff8a2a','#c0301a'],slashC:['#ffffff','#ffb040','#c0201a'],big:24},
-  relic_sword:{slot:'weapon',name:'전설의 검',desc:'할아버지가 찾아 헤매던 전설의 검. 빛의 검기가 모든 것을 꿰뚫는다',atk:34,fx:'holy',wave:0xfff0a0,
-    sword:{l:'#fff4c0',L:'#ffffff',m:'#f0c040',j:'#6a3a8a'},slashA:['#ffffff','#fff0a0','#f0c040'],slashC:['#ffffff','#fff4c0','#ffd060'],big:26},
   sand_boots:{slot:'boots',name:'모래 장화',desc:'바닥이 넓은 장화. 모래 늪에 빠지지 않고 위를 걸을 수 있다',def:3,effects:{noSand:true},
     look:{base:{f:'#c89a60'},cuff:'#f0d090'}},
   mirage_ring:{slot:'acc',name:'신기루 반지',desc:'피라미드 꼭대기에 잠들어 있던 반지',atk:4,effects:{speed:10},gem:['#ffb04a','#c06a1a']},
@@ -65,6 +63,35 @@ export const ITEMS={
   echo_ring:{slot:'acc',name:'메아리 반지',desc:'종유석 굴 깊은 곳에서 울리던 반지',atk:3,def:2,gem:['#c0a0ff','#6a4ab0']},
   scarab_ring:{slot:'acc',name:'풍뎅이 반지',desc:'사막의 감옥에 갇혀 있던 왕의 반지',atk:5,def:3,gem:['#4ad8c0','#1a7a6a']},
   phoenix_ring:{slot:'acc',name:'불사조 반지',desc:'불의 시련을 이겨낸 자의 반지',hp:40,def:2,gem:['#ff8a2a','#c0301a']},
+  /* 흑월 세트 (고성 끝 ~ 얼음): 은빛 초승달, 검은 판금, 보라 망토. 흑월검은 벤 만큼 HP를 흡수 */
+  moon_sword:{slot:'weapon',name:'흑월검',desc:'달 없는 밤에 벼린 검은 검. 벤 피해의 일부를 HP로 빨아들인다',atk:18,set:'moon',fx:'moon',wave:0xb8a8ff,
+    sword:{l:'#3a3450',L:'#d8d0ff',m:'#8a7ad8',j:'#1a1428'},slashA:['#ffffff','#d8d0ff','#7a5ad8'],slashC:['#ffffff','#c8b8ff','#5a3ab0'],big:24},
+  moon_helm:{slot:'helm',name:'흑월 투구',desc:'이마에 은빛 초승달이 솟은 검은 대투구',def:4,hp:10,set:'moon',
+    look:{helm:'moon',pal:{a:'#4a4660',A:'#2a2638',i:'#8a84a8',m:'#5a5674',M:'#34304a',v:'#b8a8ff',Y:'#e8e4ff',y:'#a89ad8'}}},
+  moon_armor:{slot:'armor',name:'흑월 갑옷',desc:'초승달 어깨받이와 밤하늘빛 망토가 달린 검은 판금 갑옷',def:7,hp:25,set:'moon',
+    look:{armor:'moon',cape:true,capePal:{c:'#3a2a6a',C:'#22164a'},pal:{a:'#4a4660',A:'#2a2638',i:'#8a84a8',M:'#34304a',G:'#34304a',n:'#7a5ad8',N:'#4a3290',p:'#2a2638',Y:'#e8e4ff',y:'#a89ad8'}}},
+  moon_boots:{slot:'boots',name:'흑월 장화',desc:'소리 없이 걷는 검은 강철 장화',def:3,set:'moon',effects:{speed:5},
+    look:{base:{f:'#3a3650'},cuff:'#a89ad8'}},
+  /* 적월 세트 (사막): 붉은 달, 진홍 판금, 금 테두리. 적월검은 출혈과 높은 치명타 */
+  blood_sword:{slot:'weapon',name:'적월검',desc:'붉은 달빛을 머금은 검. 치명타가 잘 나고 베인 적이 피를 흘린다',atk:24,set:'blood',fx:'blood',wave:0xff3a4a,
+    sword:{l:'#c0202a',L:'#ffb0b0',m:'#f0c040',j:'#2a0a10'},slashA:['#ffffff','#ffb0b0','#e0202a'],slashC:['#ffffff','#ff8a8a','#b0101a'],big:25},
+  blood_helm:{slot:'helm',name:'적월 투구',desc:'붉은 초승달과 금 테가 둘린 진홍 대투구',def:5,hp:15,set:'blood',
+    look:{helm:'bloodmoon',pal:{a:'#a02030',A:'#601018',i:'#ff8a8a',m:'#c03040',M:'#701820',v:'#ffd34a',Y:'#ffd34a',y:'#c08a1c',O:'#4a1a22',o:'#2a0a10'}}},
+  blood_armor:{slot:'armor',name:'적월 갑옷',desc:'금 테를 두른 진홍 판금과 검붉은 망토',def:9,hp:35,set:'blood',
+    look:{armor:'moon',cape:true,capePal:{c:'#5a0a14',C:'#30040a'},pal:{a:'#a02030',A:'#601018',i:'#ff8a8a',M:'#701820',G:'#701820',n:'#f0c040',N:'#a07a1a',p:'#601018',Y:'#ffd34a',y:'#c08a1c'}}},
+  blood_boots:{slot:'boots',name:'적월 장화',desc:'금 징이 박힌 진홍 장화',def:4,set:'blood',effects:{speed:5},
+    look:{base:{f:'#801828'},cuff:'#f0c040'}},
+  /* 용기사 세트 (용암): 용 날개 투구, 비늘 갑옷, 용의 발톱 장화. 용기사의 검은 화상 + 3단 베기에 화염 폭발 */
+  dragon_sword:{slot:'weapon',name:'용기사의 검',desc:'용의 송곳니로 만든 대검. 불태우고, 3단 베기에 화염이 터진다',atk:30,set:'dragon',fx:'dragon',wave:0xffa02a,
+    sword:{l:'#f0e0b0',L:'#ffffff',m:'#c0301a',j:'#3a1408',O:'#fff4d8'},slashA:['#ffffff','#ffe090','#ff6a1a'],slashC:['#ffffff','#ffd060','#e0401a'],big:27},
+  dragon_helm:{slot:'helm',name:'용기사 투구',desc:'양옆으로 용의 날개가 펼쳐진 금빛 투구',def:7,hp:25,set:'dragon',
+    look:{helm:'dragon',pal:{a:'#d8a83a',A:'#8a5a1a',i:'#fff0a0',m:'#f0c860',M:'#a0701a',v:'#ff4a1a',W:'#c0301a',w:'#ff7a3a',O:'#fff4d8'}}},
+  dragon_armor:{slot:'armor',name:'용기사 갑옷',desc:'붉은 용 비늘을 엮은 금빛 갑옷과 날개 같은 망토',def:12,hp:50,set:'dragon',effects:{fireRes:true},
+    look:{armor:'dragon',cape:true,capePal:{c:'#c0301a',C:'#7a1408'},pal:{a:'#d8a83a',A:'#8a5a1a',i:'#fff0a0',M:'#a0701a',G:'#a0701a',n:'#c0301a',N:'#7a1408',p:'#8a5a1a',O:'#fff4d8',W:'#c0301a'}}},
+  dragon_boots:{slot:'boots',name:'용기사 장화',desc:'용의 발톱이 달린 금빛 장화',def:5,set:'dragon',effects:{speed:10},
+    look:{base:{f:'#a0701a'},cuff:'#c0301a'}},
+  relic_sword:{slot:'weapon',name:'전설의 검',desc:'할아버지가 찾아 헤매던 전설의 검. 빛의 검기가 모든 것을 꿰뚫는다',atk:34,fx:'holy',wave:0xfff0a0,
+    sword:{l:'#fff4c0',L:'#ffffff',m:'#f0c040',j:'#6a3a8a'},slashA:['#ffffff','#fff0a0','#f0c040'],slashC:['#ffffff','#fff4c0','#ffd060'],big:26},
   // NPC·몬스터 전용 (획득 불가)
   mummy_look:{slot:'armor',hidden:true,name:'',desc:'',look:{armor:'plate',pal:{a:'#e8dcc0',A:'#b8a888',i:'#ffffff',M:'#a89878',G:'#c8b898',n:'#c8b898',N:'#a89878',p:'#b8a888'}}},
   mummy_helm:{slot:'helm',hidden:true,name:'',desc:'',look:{helm:'full',pal:{a:'#e8dcc0',A:'#b8a888',i:'#ffffff',m:'#d8c8a8',M:'#a89878',v:'#ff4a3a'}}},
@@ -86,7 +113,10 @@ export const CONSUMABLES={
 export const SETS={
   iron:{name:'철 기사 세트',need:3,bonus:{atk:3,def:2,hp:20},desc:'공격 +3, 방어 +2, 최대 HP +20'},
   dark:{name:'흑철 세트',need:2,bonus:{atk:5,def:2,hp:10},desc:'공격 +5, 방어 +2, 최대 HP +10'},
-  blue:{name:'청기사 세트',need:4,bonus:{atk:6,def:4,hp:40},desc:'공격 +6, 방어 +4, 최대 HP +40'}
+  blue:{name:'청기사 세트',need:4,bonus:{atk:6,def:4,hp:40},desc:'공격 +6, 방어 +4, 최대 HP +40'},
+  moon:{name:'흑월 세트',need:4,bonus:{atk:9,def:5,hp:60},desc:'공격 +9, 방어 +5, 최대 HP +60'},
+  blood:{name:'적월 세트',need:4,bonus:{atk:12,def:7,hp:80},desc:'공격 +12, 방어 +7, 최대 HP +80'},
+  dragon:{name:'용기사 세트',need:4,bonus:{atk:16,def:10,hp:120},desc:'공격 +16, 방어 +10, 최대 HP +120'}
 };
 
 /* 무기 강화 (대장간): +1 ~ +8, 한 단계마다 공격 +3 */
