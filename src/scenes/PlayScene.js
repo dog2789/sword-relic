@@ -181,7 +181,7 @@ export class PlayScene extends Phaser.Scene{
     (R.movers||[]).forEach(d=>{
       const s=this.platGroup.create(d.tx*T+d.w*T/2,d.ty*T+3,this.platKey(d.w));
       s.body.checkCollision.down=s.body.checkCollision.left=s.body.checkCollision.right=false;
-      Object.assign(s,{mv:d,x0:s.x,y0:s.y,range:d.range*T,spd:d.speed});
+      Object.assign(s,{mv:d,x0:s.x,y0:s.y,range:d.range*T,spd:d.speed});s.body.friction.set(0,0);
       if(d.axis==='x')s.setVelocityX(d.speed);else s.setVelocityY(d.speed);s.setDepth(3);
     });
     (R.fallers||[]).forEach(d=>{
@@ -217,7 +217,12 @@ export class PlayScene extends Phaser.Scene{
     // 움직이는 발판
     this.platGroup.getChildren().forEach(s=>{
       if(s.mv){const d=s.mv;if(d.axis==='x'){if(s.x>=s.x0+s.range)s.setVelocityX(-s.spd);else if(s.x<=s.x0)s.setVelocityX(s.spd)}
-        else{if(s.y>=s.y0+s.range)s.setVelocityY(-s.spd);else if(s.y<=s.y0)s.setVelocityY(s.spd)}}
+        else{if(s.y>=s.y0+s.range)s.setVelocityY(-s.spd);else if(s.y<=s.y0)s.setVelocityY(s.spd)}
+        // 발판 위에 서 있으면 발판이 움직인 만큼 같이 이동 (가만히 있어도 따라감)
+        const bx=s.body.x,by=s.body.y,dx=s.lbx==null?0:bx-s.lbx,dy=s.lby==null?0:by-s.lby;s.lbx=bx;s.lby=by;
+        const pb=p.body;
+        if((dx||dy)&&!this.climbing&&p.dropT<=0&&pb.velocity.y>=-1&&Math.abs(pb.bottom-s.body.top)<=3&&pb.right>s.body.left&&pb.left<s.body.right){p.x+=dx;if(dy>0)p.y+=dy}
+      }
       if(s.isFaller){
         if(s.touched&&!s.falling){s.t+=dt;s.x=s.x0+(Math.floor(s.t*30)%2?1:-1);
           if(s.t>0.45){s.falling=true;s.x=s.x0;s.body.checkCollision.up=false;s.setVelocityY(170);this.tweens.add({targets:s,alpha:0,duration:700});
