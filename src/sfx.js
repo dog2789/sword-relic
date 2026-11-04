@@ -9,7 +9,9 @@ try{muted=localStorage.getItem('sr_mute')==='1'}catch(_){}
 function init(){
   if(ctx)return ctx;
   const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;
-  ctx=new AC();master=ctx.createGain();master.gain.value=muted?0:0.35;// 마지막에 리미터: 효과음과 음악이 한꺼번에 겹쳐도 소리가 찢어지지(뿌직) 않게 눌러 줌
+  // 'interactive'(기본값)는 버퍼가 아주 작아서 컴퓨터가 잠깐만 바빠도 소리가 비고 지지직거림 → 조금 넉넉한 'balanced'
+  try{ctx=new AC({latencyHint:'balanced'})}catch(_){ctx=new AC()}
+  master=ctx.createGain();master.gain.value=muted?0:0.35;// 마지막에 리미터: 효과음과 음악이 한꺼번에 겹쳐도 소리가 찢어지지(뿌직) 않게 눌러 줌
   const lim=ctx.createDynamicsCompressor();lim.threshold.value=-8;lim.knee.value=4;lim.ratio.value=16;lim.attack.value=0.002;lim.release.value=0.12;lim.connect(ctx.destination);
   master.connect(lim);
   musicBus=ctx.createGain();musicBus.gain.value=muted?0:1;musicBus.connect(lim);
@@ -18,11 +20,14 @@ function init(){
   const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
   return ctx;
 }
-function unlock(){const c=init();if(c&&c.state==='suspended')c.resume()}
+let unlocked=false;
+function unlock(){const c=init();unlocked=true;if(c&&c.state!=='running'&&c.state!=='closed')c.resume().catch(()=>{})}
+/* 감시: 소리 장치가 바뀌거나 창을 오가는 등으로 오디오가 멈춰 있으면 1초마다 다시 켬 (다른 탭에 있을 땐 그대로 둠) */
+setInterval(()=>{if(ctx&&unlocked&&!document.hidden&&ctx.state!=='running'&&ctx.state!=='closed')ctx.resume().catch(()=>{})},1000);
 /* 배경음악(bgm.js)이 같은 AudioContext를 쓰도록 꺼내 줌 */
 export function audio(){return init()?{ctx,musicBus,noiseBuf}:null}
 /* 다른 탭으로 가면 소리를 멈추고, 돌아오면 다시 켬 */
-document.addEventListener('visibilitychange',()=>{if(!ctx)return;if(document.hidden)ctx.suspend();else ctx.resume()});
+document.addEventListener('visibilitychange',()=>{if(!ctx)return;if(document.hidden)ctx.suspend().catch(()=>{});else if(unlocked)ctx.resume().catch(()=>{})});
 ['pointerdown','touchstart','keydown','mousedown'].forEach(t=>window.addEventListener(t,unlock,{capture:true,passive:true}));
 
 /* 기본 재료: 사각·삼각·톱니파 한 음 (주파수가 f0 → f1로 미끄러짐) */
@@ -31,7 +36,7 @@ function tone({type='square',f0,f1=f0,t=0,dur=0.1,vol=0.3,att=0.004,slide='exp'}
   o.type=type;o.frequency.setValueAtTime(f0,now);
   if(f1!==f0){if(slide==='exp')o.frequency.exponentialRampToValueAtTime(Math.max(1,f1),now+dur);else o.frequency.linearRampToValueAtTime(f1,now+dur)}
   g.gain.setValueAtTime(0.0001,now);g.gain.exponentialRampToValueAtTime(vol,now+att);g.gain.exponentialRampToValueAtTime(0.0001,now+dur);
-  o.connect(g).connect(master);o.start(now);o.stop(now+dur+0.02);
+  o.connect(g).connect(master);o.start(now);o.stop(now+dur+0.02);live++;o.onended=()=>live--;
 }
 /* 잡음 한 번 (필터로 높낮이 조절, 필터 주파수도 미끄러지게 할 수 있음) */
 function noise({t=0,dur=0.1,vol=0.3,ftype='bandpass',f0=2000,f1=f0,q=1,att=0.003}){
@@ -39,7 +44,7 @@ function noise({t=0,dur=0.1,vol=0.3,ftype='bandpass',f0=2000,f1=f0,q=1,att=0.003
   s.buffer=noiseBuf;fl.type=ftype;fl.Q.value=q;fl.frequency.setValueAtTime(f0,now);
   if(f1!==f0)fl.frequency.exponentialRampToValueAtTime(Math.max(20,f1),now+dur);
   g.gain.setValueAtTime(0.0001,now);g.gain.exponentialRampToValueAtTime(vol,now+att);g.gain.exponentialRampToValueAtTime(0.0001,now+dur);
-  s.connect(fl).connect(g).connect(master);s.start(now,Math.random()*0.5);s.stop(now+dur+0.02);
+  s.connect(fl).connect(g).connect(master);s.start(now,Math.random()*0.5);s.stop(now+dur+0.02);live++;s.onended=()=>live--;
 }
 
 const SOUNDS={
@@ -77,10 +82,12 @@ const SOUNDS={
 };
 const GAP={slash:40,hit:30,jump:40,coin:45,hurt:80,chest:100,door:150,gate:150};
 
-let coinStep=0,coinT=0;
+let coinStep=0,coinT=0,live=0;
+const MAX_LIVE=28;
 export function sfx(name,opt){
   if(muted)return;
   const c=init();if(!c||c.state!=='running')return;
+  if(live>MAX_LIVE&&name!=='hurt')return;
   const now=performance.now();if(now-(last[name]||0)<(GAP[name]||30))return;last[name]=now;
   if(name==='coin'){coinStep=now-coinT<400?coinStep+1:0;coinT=now;opt={step:coinStep}}
   try{SOUNDS[name]&&SOUNDS[name](opt)}catch(_){}

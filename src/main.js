@@ -15,7 +15,7 @@ let game;
 function boot(){
   const sc=calcScale();RS.S=sc.S;
   game=new Phaser.Game({type:Phaser.AUTO,parent:'game',width:W*sc.S,height:H*sc.S,zoom:sc.css/sc.S,pixelArt:true,roundPixels:true,backgroundColor:'#0d0a1a',
-    physics:{default:'arcade',arcade:{gravity:{y:GRAV},debug:false}},input:{activePointers:4},scene:[TitleScene,CustomizeScene,IntroScene,PlayScene]});
+    physics:{default:'arcade',arcade:{gravity:{y:GRAV},debug:false}},input:{activePointers:4},audio:{noAudio:true},scene:[TitleScene,CustomizeScene,IntroScene,PlayScene]});
 }
 /* 창 크기가 바뀌면 렌더 배율(S)과 표시 배율을 다시 계산 */
 let rzT=0;

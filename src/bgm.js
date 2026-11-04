@@ -130,13 +130,16 @@ const cache={},pending={};
 const VOL=0.11;
 function get(name){
   if(cache[name])return Promise.resolve(cache[name]);
-  if(!pending[name])pending[name]=render(name).then(d=>{cache[name]=d;delete pending[name];return d});
+  // 만들다 실패하면 기록을 지워서 다음에 다시 시도할 수 있게
+  if(!pending[name])pending[name]=render(name).then(d=>{cache[name]=d;delete pending[name];return d},e=>{delete pending[name];throw e});
   return pending[name];
 }
 function start(name,data){
   const c=A.ctx,t=c.currentTime;
   if(!data.buf){data.buf=c.createBuffer(1,data.length,SR);data.buf.getChannelData(0).set(data)}const buf=data.buf;
   const s=c.createBufferSource(),g=c.createGain();s.buffer=buf;s.loop=true;
+  // 반복 재생이 어떤 이유로 끝나 버리면(멈추라고 한 게 아니면) 바로 다시 틈
+  s.onended=()=>{if(playing&&playing.s===s){playing=null;cur=null;if(want)bgm(want)}};
   g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(VOL,t+0.6);
   s.connect(g).connect(A.musicBus);s.start(t);
   fadeOut();playing={s,g,name};cur=name;
@@ -149,8 +152,10 @@ function fadeOut(){
 /* 나머지 곡도 틈틈이 미리 만들어 둬서, 처음 가는 지역도 바로 나오게 */
 let warmed=false;
 function warmAll(){if(warmed)return;warmed=true;const list=Object.keys(SONGS);let i=0;
-  const next=()=>{while(i<list.length&&cache[list[i]])i++;if(i>=list.length)return;get(list[i++]).then(()=>setTimeout(next,300),()=>setTimeout(next,300))};
+  const next=()=>{while(i<list.length&&cache[list[i]])i++;if(i>=list.length)return;get(list[i++]).then(()=>setTimeout(next,1200),()=>setTimeout(next,1200))};
   setTimeout(next,1500)}
+/* 감시: 틀어야 할 곡이 있는데 안 나오고 있으면(만들기 실패 등) 2초마다 다시 시도 */
+setInterval(()=>{if(want&&!playing&&A&&!pending[want])bgm(want)},2000);
 
 /* 곡 틀기: 같은 곡이 이미 나오고 있으면 그대로 둠 */
 export function bgm(name){
