@@ -19,6 +19,7 @@ const label=k=>k==='style'?(HAIR_STYLES[LOOK.style]||HAIR_STYLES[0]).name:LOOK_O
 export class CustomizeScene extends Phaser.Scene{
   constructor(){super('custom')}
   create(){
+    bgm('title');
     this.add.image(0,0,'title_far').setOrigin(0);
     this.add.image(0,22,'title_mid').setOrigin(0);
     this.add.image(0,H-34,'title_ground').setOrigin(0);

@@ -19,6 +19,7 @@ import {RS,fitCameras} from '../zoom.js';
 
 import {F9,F11} from '../fonts.js';
 import {sfx} from '../sfx.js';
+import {bgm,bgmStop} from '../bgm.js';
 import {isDown,edges} from '../input.js';
 const CLIMB_SPEED=70;
 /* 받침 있으면 '을', 없으면 '를' */
@@ -33,7 +34,7 @@ export class PlayScene extends Phaser.Scene{
     Object.assign(this,{slash:null,sword:null,chests:[],statue:null,crystal:null,tInfo:null,menu:null,pickups:[],walls:[],fallers:[],mushrooms:[],climbing:false,bounceT:0,safe:null,autoUp:false,warpObj:null,npcObjs:[],bubble:null,listm:null,dlg:null,mapv:null,warpm:null,quickUI:[],quakes:[],eshots:[],geysers:[],inSand:false,wallT:0,wallLock:0,wallDir:0});
     const id=data.room&&ROOMS[data.room]?data.room:(ROOMS[STATE.room]?STATE.room:'r1');
     STATE.room=id;STATE.visited[id]=true;
-    this.roomId=id;this.R=ROOMS[id];this.map=buildRoomMap(id);this.cols=this.R.cols;this.lw=this.cols*T;
+    this.roomId=id;this.R=ROOMS[id];bgm(this.roomSong());this.map=buildRoomMap(id);this.cols=this.R.cols;this.lw=this.cols*T;
     this.drawWorld();this.makeAnims();makeMobAnims(this);
     this.solids=[];this.oneways=[];this.buildCollision();
     this.stats=STATE.stats;this.equip=STATE.equip;this.bonus=equipBonus(this.equip);this.redrawHero();
@@ -638,6 +639,8 @@ export class PlayScene extends Phaser.Scene{
       if(w.life<=0){w.s.destroy();return false}return true});
   }
 
+  /* 방에 맞는 배경음악: 안 잡은 보스가 있으면 보스 곡, 고향 마을은 마을 곡, 나머지는 지역 테마 곡 */
+  roomSong(){const R=this.R;if(R.boss&&!bossDone(R.boss.id||'king'))return 'boss';if(this.roomId==='v1')return 'village';return R.theme||'meadow'}
   /* ----- combat ----- */
   wfx(){const it=ITEMS[this.equip.weapon];return it&&it.fx}
   hitEnemy(e,d,crit,dir,heavy,src){
@@ -688,7 +691,7 @@ export class PlayScene extends Phaser.Scene{
       if(e.boss)this.enemies.getChildren().filter(o=>o.def&&o.def.summon).forEach(o=>{this.batEm.explode(6,o.x,o.y);o.destroy()});
       const drop=B.drop;if(drop)this.time.delayedCall(600,()=>this.spawnPickup(drop,ex,Math.min(ey,floorTopY(this.map,Math.floor(ex/T))-14),'drop_'+this.roomId));
       if(e.king)this.time.delayedCall(1500,()=>this.grantDoubleJump());
-      this.openBossGates(id);
+      this.openBossGates(id);sfx('fanfare');bgmStop();this.time.delayedCall(2600,()=>{if(!this.leaving)bgm(this.roomSong())});
       if(B.after)this.time.delayedCall(2800,()=>{if(!this.leaving&&!this.overlayOpen())this.openDialog('',B.after)})}
     else if(!d.summon)this.time.delayedCall(6000,()=>{if(!this.leaving){if(d.t)spawnMob(this,d);else this.spawnEnemy(d)}});
   }

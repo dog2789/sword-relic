@@ -1,7 +1,7 @@
 /* 레트로 효과음: 파일 없이 Web Audio로 그 자리에서 합성
    - 브라우저(특히 모바일)는 사용자가 처음 누르거나 터치한 뒤에야 소리를 낼 수 있어서, 첫 입력 때 AudioContext를 깨움
    - 같은 소리가 한 프레임에 여러 번 겹치면 시끄러워서 소리마다 최소 간격(gap)을 둠 */
-let ctx=null,master=null,noiseBuf=null;
+let ctx=null,master=null,noiseBuf=null,musicBus=null;
 const last={};
 let muted=false;
 try{muted=localStorage.getItem('sr_mute')==='1'}catch(_){}
@@ -9,13 +9,20 @@ try{muted=localStorage.getItem('sr_mute')==='1'}catch(_){}
 function init(){
   if(ctx)return ctx;
   const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;
-  ctx=new AC();master=ctx.createGain();master.gain.value=muted?0:0.35;master.connect(ctx.destination);
+  ctx=new AC();master=ctx.createGain();master.gain.value=muted?0:0.35;// 마지막에 리미터: 효과음과 음악이 한꺼번에 겹쳐도 소리가 찢어지지(뿌직) 않게 눌러 줌
+  const lim=ctx.createDynamicsCompressor();lim.threshold.value=-8;lim.knee.value=4;lim.ratio.value=16;lim.attack.value=0.002;lim.release.value=0.12;lim.connect(ctx.destination);
+  master.connect(lim);
+  musicBus=ctx.createGain();musicBus.gain.value=muted?0:1;musicBus.connect(lim);
   // 하얀 잡음 1초짜리를 한 번 만들어 두고 계속 재사용
   noiseBuf=ctx.createBuffer(1,ctx.sampleRate,ctx.sampleRate);
   const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
   return ctx;
 }
 function unlock(){const c=init();if(c&&c.state==='suspended')c.resume()}
+/* 배경음악(bgm.js)이 같은 AudioContext를 쓰도록 꺼내 줌 */
+export function audio(){return init()?{ctx,musicBus,noiseBuf}:null}
+/* 다른 탭으로 가면 소리를 멈추고, 돌아오면 다시 켬 */
+document.addEventListener('visibilitychange',()=>{if(!ctx)return;if(document.hidden)ctx.suspend();else ctx.resume()});
 ['pointerdown','touchstart','keydown','mousedown'].forEach(t=>window.addEventListener(t,unlock,{capture:true,passive:true}));
 
 /* 기본 재료: 사각·삼각·톱니파 한 음 (주파수가 f0 → f1로 미끄러짐) */
@@ -61,6 +68,9 @@ const SOUNDS={
   // 열쇠 문: 철컥 + 끼이익 열리는 소리
   door:()=>{noise({dur:0.04,vol:0.3,f0:3500,q:3});tone({f0:900,f1:700,dur:0.04,vol:0.12});
     tone({type:'sawtooth',f0:110,f1:180,t:0.07,dur:0.35,vol:0.09,slide:'lin'});noise({t:0.07,dur:0.35,vol:0.08,ftype:'lowpass',f0:600,f1:900})},
+  // 보스 쓰러뜨림: 짧은 승리 팡파르
+  fanfare:()=>{[[523,0],[659,0.1],[784,0.2],[1047,0.3]].forEach(([f,t])=>tone({f0:f,t,dur:0.1,vol:0.12}));
+    tone({f0:1047,t:0.42,dur:0.5,vol:0.13});tone({f0:784,t:0.42,dur:0.5,vol:0.08});tone({type:'triangle',f0:131,t:0.42,dur:0.5,vol:0.2})},
   // 철문(누름판·횃불·보스 문): 무거운 쇠가 드르륵 올라감
   gate:()=>{tone({type:'square',f0:70,f1:95,dur:0.3,vol:0.12,slide:'lin'});noise({dur:0.3,vol:0.14,ftype:'lowpass',f0:400,f1:900});
     noise({t:0.28,dur:0.06,vol:0.2,f0:2000,q:2})},
@@ -76,5 +86,5 @@ export function sfx(name,opt){
   try{SOUNDS[name]&&SOUNDS[name](opt)}catch(_){}
 }
 /* 소리 켜고 끄기 (나중에 설정 메뉴에서 쓰기용) */
-export function setMuted(v){muted=!!v;try{localStorage.setItem('sr_mute',muted?'1':'0')}catch(_){};if(master)master.gain.value=muted?0:0.35}
+export function setMuted(v){muted=!!v;try{localStorage.setItem('sr_mute',muted?'1':'0')}catch(_){};if(master)master.gain.value=muted?0:0.35;if(musicBus)musicBus.gain.value=muted?0:1}
 export function isMuted(){return muted}

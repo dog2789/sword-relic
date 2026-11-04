@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import {bgm} from '../bgm.js';
 import {W,H,VP} from '../config.js';
 import {buildTextures} from '../gfx/sprites.js';
 import {buildFonts} from '../gfx/fonts.js';
@@ -19,6 +20,7 @@ export function paintHeroFrames(scene){
 export class TitleScene extends Phaser.Scene{
   constructor(){super('title')}
   create(){
+    bgm('title');
     buildTextures(this);buildFonts(this);
     if(!this.textures.exists('title_far'))this.textures.addCanvas('title_far',drawFar(W));
     if(!this.textures.exists('title_mid'))this.textures.addCanvas('title_mid',drawMid(W));

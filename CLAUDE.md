@@ -27,6 +27,8 @@ npm run build:single  # dist-single/index.html 한 파일 빌드 (Phaser는 CDN)
 - `src/gfx/hero.js`: 주인공 도트(문자열 한 글자 = 픽셀 하나, 글자 = 색 슬롯). 투구 모양 full | great | crown | horned | moon | bloodmoon | dragon, 갑옷 plate | heavy | spike | moon | dragon.
 - `src/gfx/sprites.js`: 아이템 아이콘, 검 모양, 몬스터 텍스처.
 - `src/state.js`: 진행 상황 저장 (localStorage `sr_save2`).
+- `src/sfx.js`: 효과음을 Web Audio로 합성 (`sfx('slash'|'hit'|'jump'|'coin'|'hurt'|'chest'|'door'|'gate'|'fanfare')`). 첫 입력 때 소리를 켜고, 출력 앞에 리미터. 소리 끄기는 `setMuted` (localStorage `sr_mute`).
+- `src/bgm.js`: 배경음악. 곡은 코드·멜로디 글자로 적고, OfflineAudioContext로 한 바퀴를 미리 만들어 반복 재생 (실시간 예약은 끊겨서 안 씀). 방 곡은 `PlayScene.roomSong()`: 안 잡은 보스 → boss, 고향 마을(v1) → village, 나머지는 지역 테마.
 
 ## 규칙과 공식
 
@@ -47,5 +49,4 @@ npm run build:single  # dist-single/index.html 한 파일 빌드 (Phaser는 CDN)
 
 ## 다음에 할 만한 것
 
-- 사운드: 효과음(코드로 만드는 레트로 효과음 또는 파일)과 배경음악. 모바일은 첫 터치 뒤에 소리를 켜야 함.
 - 모바일: 터치 패드는 `index.html`의 `.pad`에 있음. 실제 폰에서 버튼 크기·가로 고정·PWA 다듬기, 앱 출시는 Capacitor.

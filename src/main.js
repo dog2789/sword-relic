@@ -9,6 +9,7 @@ import {CustomizeScene} from './scenes/CustomizeScene.js';
 import {STATE,newGame} from './state.js';
 import {ITEMS} from './data/items.js';
 import {loadFonts} from './fonts.js';
+import {setMuted,isMuted} from './sfx.js';
 
 let game;
 function boot(){
@@ -34,6 +35,11 @@ document.querySelectorAll('.pbtn').forEach(b=>{
   ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,()=>on(false)));
   b.addEventListener('contextmenu',e=>e.preventDefault());
 });
+
+/* 소리 켜기/끄기 (효과음 + 배경음악, 브라우저에 기억됨) */
+const muteBtn=document.getElementById('mute');
+const muteLabel=()=>{muteBtn.textContent=isMuted()?'소리 켜기':'소리 끄기'};muteLabel();
+muteBtn.addEventListener('click',e=>{setMuted(!isMuted());muteLabel();e.currentTarget.blur();window.focus()});
 
 /* 처음부터: 두 번 눌러야 실행 (실수 방지) */
 const ng=document.getElementById('newgame');let ngArm=0;

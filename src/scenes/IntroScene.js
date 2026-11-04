@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import {bgm} from '../bgm.js';
 import {W,H,VP} from '../config.js';
 import {rng,cv,px} from '../gfx/pixel.js';
 import {LOOK,drawHero} from '../gfx/hero.js';
@@ -56,6 +57,7 @@ const PANELS=[
 export class IntroScene extends Phaser.Scene{
   constructor(){super('intro')}
   create(){
+    bgm('title');
     PANELS.forEach((fn,i)=>{const k='story'+i;if(this.textures.exists(k))this.textures.remove(k);const[c,x]=cv(PW,PH);fn(x);this.textures.addCanvas(k,c)});
     this.cameras.main.setBackgroundColor('#0a0812');
     this.frame=this.add.graphics();
