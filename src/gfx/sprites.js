@@ -14,6 +14,27 @@ const ICONS={
   boots:["............","..kkk...kkk.","..kfk...kfk.","..kfk...kfk.","..kffk..kffk",".kfffk.kfffk",".kkkkk.kkkkk"],
   acc:["....kkkk....","...kgwGGk...","...kGGGGk...","....kkkk....","...kyyyyk...","..kyk..kyk..","..kyk..kyk..","..kYk..kYk..","...kYYYYk...","....kkkk...."]
 };
+/* 모양별 아이콘 (투구: full/great/crown/horned, 갑옷: plate/heavy/spike) */
+const HELM_ICON={
+  full:["....kkkk....","..kkaaiikk..",".kaaaaaaiik.",".kaaaaaaaik.","kmmmmmmmmmmk","kvvvvavvvvAk","kaaaaaaaaaAk","kavavavavaAk",".kaaaaaaaAk.","..kkkkkkkk.."],
+  great:["......oo....","....kkkkoo..","..kkaaiikk..",".kaaaamaaik.",".kaaaamaaak.",".kvvvvvvvvk.",".kaaaavaaak.",".kaaaavaaak.",".kMaaavaaMk.","..kkkkkkkk.."],
+  crown:["..y..y..y...","..ykkykkyk..",".kyryyyyryk.","..kaaiiaak..",".kaaaaaaaik.",".kvvvvvvvvk.",".kaaaaaaaak.",".kavavavaak.","..kaaaaaak..","...kkkkkk..."],
+  horned:["k..........k","kOk......kOk","kOOkkkkkkOOk",".kOkaaiikOk.","..kaaaaaaik.","..kvvvvvvvk.","..kaaavaaak.","..kaaavaaak.","...kaaaaak..","....kkkkk..."]};
+const ARMOR_ICON={
+  heavy:[".kkkk..kkkk.","kiaaAkkiaaAk","kaAAAaaaAAAk",".kkkannnakk.","...kannnak..","...kannnak..","...kAnnnAk..","....kkkkk..."],
+  spike:["k..........k","kk........kk","kak......kak","kaakkkkkkaak","kaAAannaAAak",".kkaannaakk.","..kaannaak..","..kAannaAk..","...kkkkkk..."]};
+const BOOT_ICON=["............","..kkk...kkk.","..kck...kck.","..kfk...kfk.","..kffk..kffk",".kfffk.kfffk",".kkkkk.kkkkk"];
+/* 무기마다 다른 검 모양: 손에 든 모습(가로) / 아이콘(대각선) */
+const SWORDS={
+  slime_blade:["..k...kk.....","..mkkkLLkkk..","jjmLLLLLLLLk.","..mkkLLkkkLLk","..k..kk...kk."],
+  flame_sword:["..k...k...k..","..mkkkLkkkLk.","jjmLLLLLLLLLk","..mkkLkkkLkk.","..k..k...k..."],
+  frost_blade:["..k.....kk....","..mkkkkkLLkk..","jjmLLLLLLLLLLk","..mkkkkkLLkk..","..k.....kk...."],
+  blue_sword:[".mm............","..mkkkkkkkkkk..","jjmLLLLLLLLLLLk","..mkkkkkkkkkk..",".mm............"]};
+const SWORD_ICONS={
+  slime_blade:[".........kkk","........kLLk",".......kLLlk","......kLlLk.",".....kLlLk..","....kLLlk...","..k.kLlk....","..kmkLk.....","...kmk......","..kjkmk.....",".kjk.kk.....","kkk........."],
+  flame_sword:["........k.kk",".......kLkLk","........kLlk",".....k.kLlk.","....kLkLlk..",".....kLlk...","..k.kLlk....","..kmkLk.....","...kmk......","..kjkmk.....",".kjk.kk.....","kkk........."],
+  frost_blade:["........kkkk",".......kLLLk","......kLLllk",".....kLLllk.","....kLLllk..","....kLllk...","..k.kLlk....","..kmkLk.....","...kmk......","..kjkmk.....",".kjk.kk.....","kkk........."],
+  blue_sword:["..........kk",".........kLk","........kLlk",".......kLlk.","......kLlk..",".....kLlk...","...kkLlk....","..kmmLk.....","..mmmk......","..kjmmk.....",".kjk.mm.....","kkk........."]};
 const CAPE_ICON=["...kkkkkk...","..kyccccyk..","..kccccccK..",".kccccccccK.",".kcccCcccCK.","kccCccccCcCK","kcCcccCccCCK","kCcCcCcCcCCK","kkkkkkkkkkkk"];
 const POTION=["..kkk...","..kck...",".kwwwk..","krrrrrk.","krwrrrk.","krrrrRk.",".kRRRk..","..kkk..."];
 function iconPal(it){
@@ -21,6 +42,8 @@ function iconPal(it){
   if(p.a&&!p.A)p.A=hexMix(p.a,'#000000',0.35);if(p.a&&!p.i)p.i='#ffffff';if(p.a&&!p.m)p.m=hexMix(p.a,'#ffffff',0.3);if(p.a&&!p.M)p.M=hexMix(p.a,'#000000',0.2);
   if(it.gem){p.g=it.gem[0];p.G=it.gem[1];p.y='#ffd34a';p.Y='#c08a1c';p.w='#ffffff'}
   if(it.look&&it.look.capePal){p.c=it.look.capePal.c;p.C=it.look.capePal.C;p.K=hexMix(p.C,'#000000',0.4);p.y='#ffd34a'}
+  const lk=it.look||{};if(lk.base&&lk.base.f)p.f=lk.base.f;p.c=lk.cuff||p.c||hexMix(p.f||'#8a96b0','#ffffff',0.3);
+  if(lk.crest)p.o=lk.crest;if(!p.O)p.O='#efe4c8';if(!p.o)p.o='#a8946a';if(!p.y)p.y='#f0c040';if(!p.r)p.r='#e83a4a';if(!p.v)p.v='#141020';if(!p.n)p.n='#b8323e';
   if(!p.g)p.g='#d23a4a';if(!p.f)p.f='#8a96b0';return p;
 }
 function paintPix(x,rows,pal,ox,oy){rows.forEach((r,y)=>{for(let i=0;i<r.length;i++){const c=pal[r[i]];if(c){x.fillStyle=c;x.fillRect(ox+i,oy+y,1,1)}}})}
@@ -30,13 +53,14 @@ export function buildTextures(sc){
   for(const id in ITEMS){
     const it=ITEMS[id];if(it.hidden)continue;
     if(it.slot==='weapon'){
-      add('sword_'+id,fromRows(SWORD,{k:'#1a1222',...it.sword}));
+      add('sword_'+id,fromRows(SWORDS[id]||SWORD,{k:'#1a1222',...it.sword}));
       add('slashA_'+id,arcTex(16,6,-85,85,it.slashA));
       add('slashC_'+id,arcTex(it.big,it.big>22?10:8,-90,90,it.slashC));
       // 휘두를 때 겹치는 빛 (조금 크고 두꺼운 호)
       add('glowA_'+id,arcTex(19,9,-88,88,[it.slashA[1],it.slashA[2],it.slashA[2]]));add('glowC_'+id,arcTex(it.big+4,it.big>22?14:12,-92,92,[it.slashC[1],it.slashC[2],it.slashC[2]]));
     }
-    add('icon_'+id,fromRows(it.look&&it.look.cape&&it.slot==='acc'?CAPE_ICON:ICONS[it.slot],iconPal(it)));
+    const lk=it.look||{},rows=it.slot==='weapon'&&SWORD_ICONS[id]?SWORD_ICONS[id]:it.slot==='acc'&&lk.cape?CAPE_ICON:it.slot==='helm'&&HELM_ICON[lk.helm]?HELM_ICON[lk.helm]:it.slot==='armor'&&ARMOR_ICON[lk.armor]?ARMOR_ICON[lk.armor]:it.slot==='boots'?BOOT_ICON:ICONS[it.slot];
+    add('icon_'+id,fromRows(rows,iconPal(it)));
   }
   for(const f in HERO_FRAMES)if(!sc.textures.exists('hero_'+f))sc.textures.createCanvas('hero_'+f,HERO_W,HERO_H);
   add('slime0',fromRows(SL0,SPAL));add('slime1',fromRows(SL1,SPAL));
@@ -94,11 +118,11 @@ export function buildTextures(sc){
   const SW_UP=SWORD[0].split('').map((_,c)=>SWORD.map(r=>r[r.length-1-c]).join('')); // 날이 위로 선 검 (5x11)
   const knight=(id,look,equip,swPal)=>{
     const fr={idle0:'idle0',idle1:'idle1',run0:'run0',run1:'run1',wind:'idle0',atk:'atk0'};
-    for(const k in fr){const key='kn_'+id+'_'+k;if(sc.textures.exists(key))continue;const[c,x]=cv(34,20);
-      if(k==='wind')paintPix(x,SW_UP,swPal,6,1);
-      drawHero(x,fr[k],look,equip,8,2);
-      if(k==='atk')paintPix(x,SWORD,swPal,23,12);
-      else if(k!=='wind')paintPix(x,SW_UP,swPal,19,7+(k==='idle1'||k==='run1'?1:0));
+    for(const k in fr){const key='kn_'+id+'_'+k;if(sc.textures.exists(key))continue;const[c,x]=cv(34,23);
+      if(k==='wind')paintPix(x,SW_UP,swPal,6,4);
+      drawHero(x,fr[k],look,equip,6,2);
+      if(k==='atk')paintPix(x,SWORD,swPal,23,15);
+      else if(k!=='wind')paintPix(x,SW_UP,swPal,19,10+(k==='idle1'||k==='run1'?1:0));
       sc.textures.addCanvas(key,c)}};
   knight('haunt',{style:0,hair:1,skin:4,top:6,bottom:3,shoes:0},{helm:'haunt_helm',armor:'haunt_armor'},{k:'#141020',l:'#8a88a0',L:'#c8b0ff',m:'#5a2a7a',j:'#2a1a3a'});
   knight('rust',{style:0,hair:1,skin:3,top:6,bottom:3,shoes:0},{helm:'rust_helm',armor:'rust_armor',boots:'rust_boots'},{k:'#1a0a08',l:'#b08a68',L:'#ffd0a0',m:'#8a2a2a',j:'#3a1a10'});

@@ -26,7 +26,7 @@ export class CustomizeScene extends Phaser.Scene{
     if(!this.textures.exists('cust_hero'))this.textures.createCanvas('cust_hero',HERO_W,HERO_H);
     this.heroTex=this.textures.get('cust_hero');this.frame=0;
     this.add.ellipse(64,H-34,46,6,0x000000,0.25);
-    this.hero=this.add.image(64,H-34,'cust_hero').setOrigin(0.5,1).setScale(4);
+    this.hero=this.add.image(64,H-34,'cust_hero').setOrigin(0.5,(HERO_H-3)/HERO_H).setScale(4);
     this.time.addEvent({delay:420,loop:true,callback:()=>{this.frame^=1;this.paint()}});
     this.add.text(64,22,'모험가의 모습',{fontFamily:F11,fontSize:'12px',color:'#ffffff',stroke:'#1a1230',strokeThickness:3}).setOrigin(0.5);
 

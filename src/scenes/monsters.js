@@ -7,11 +7,11 @@ import {T,LH} from '../config.js';
 export const MOBS={
   bat:{hp:22,dmg:7,exp:8,nm:'박쥐',kb:0.8,size:[10,6],off:[2,1],fly:true},
   snail:{hp:40,dmg:8,exp:10,nm:'가시 달팽이',kb:0.25,size:[14,9],off:[1,2]},
-  haunt:{hp:70,dmg:11,exp:22,nm:'망령 갑옷',kb:0.35,size:[9,14],off:[12,3],tex:'kn_haunt_idle0'},
+  haunt:{hp:70,dmg:11,exp:22,nm:'망령 갑옷',kb:0.35,size:[9,14],off:[12,6],tex:'kn_haunt_idle0'},
   batlord:{hp:360,dmg:14,exp:120,nm:'박쥐 군주',kb:0.05,size:[10,8],off:[2,4],fly:true,scale:2.4,boss:true,tex:'batlord0'},
   fish:{hp:28,dmg:8,exp:9,nm:'가시 물고기',kb:0.6,size:[12,6],off:[1,1],fly:true},
   turtle:{hp:640,dmg:16,exp:260,nm:'서리 거북',kb:0.03,size:[20,8],off:[0,1],scale:2.4,boss:true,tex:'turtle0'},
-  rust:{hp:520,dmg:16,exp:200,nm:'녹슨 수문장',kb:0.05,size:[9,14],off:[12,3],scale:2,boss:true,tex:'kn_rust_idle0'}
+  rust:{hp:520,dmg:16,exp:200,nm:'녹슨 수문장',kb:0.05,size:[9,14],off:[12,6],scale:2,boss:true,tex:'kn_rust_idle0'}
 };
 
 export function makeMobAnims(scene){

@@ -5,6 +5,7 @@ import {W,H,T,HUD,VP} from '../config.js';
 import {ROOMS,surfaceY,roomChests} from '../world/rooms.js';
 import {STATE,bossDone} from '../state.js';
 import {CONSUMABLES} from '../data/items.js';
+import {HERO_H,MY} from '../gfx/hero.js';
 import {F9,F11} from '../fonts.js';
 import {isDown} from '../input.js';
 
@@ -71,7 +72,7 @@ export const PlayUI={
     }
     // NPC: 한 방에 여러 명 (npcs 배열, 예전 npc 하나도 지원)
     this.npcObjs=[...(R.npcs||[]),...(R.npc?[R.npc]:[])].filter(n=>!n.flag||STATE.flags[n.flag]).map(n=>{
-      const x=n.tx*T+8,g=surfaceY(m,n.tx),spr=this.add.sprite(x,g,n.tex).setOrigin(0.5,1).setDepth(6);
+      const x=n.tx*T+8,g=surfaceY(m,n.tx),spr=this.add.sprite(x,g,n.tex).setOrigin(0.5,(HERO_H-MY)/HERO_H).setDepth(6);
       if(n.ghost){spr.setAlpha(0.7).setTint(0xcfe8ff);this.tweens.add({targets:spr,y:g-3,duration:1100,yoyo:true,repeat:-1,ease:'Sine.easeInOut'})}
       if(n.face)spr.setFlipX(n.face<0);
       return{def:n,x,y:g,spr,t:Math.random()}});
@@ -135,28 +136,39 @@ export const PlayUI={
     D.body.setText(full.slice(0,Math.floor(D.shown)));D.arrow.setVisible(D.shown>=full.length);
   },
 
-  /* ---------- 워프 ---------- */
+  /* ---------- 워프: 지도에서 고르기 ---------- */
   openWarp(){
     if(this.overlayOpen())return;
     const list=Object.keys(ROOMS).filter(r=>ROOMS[r].warp&&STATE.warps[ROOMS[r].warp.id]);
     if(list.length<2){this.toast('다른 워프 포인트를 찾아 등록하면 순간이동할 수 있어요',2600);return}
     this.pauseWorld();
-    const M=this.warpm={list,sel:Math.max(0,list.indexOf(this.roomId)),objs:[],rows:[]};
-    const h=34+list.length*16,y0=Math.round((H-HUD-h)/2);
-    const g=fix(this.add.graphics());M.objs.push(g);M.g=g;M.y0=y0;M.h=h;
-    M.objs.push(fix(this.add.text(W/2,y0+6,'워프할 곳을 고르세요',{fontFamily:F9,fontSize:'10px',color:'#8fe3ff'}).setOrigin(0.5,0)));
-    list.forEach((r,i)=>{const t=fix(this.add.text(W/2,y0+24+i*16,ROOMS[r].name+(r===this.roomId?'  (여기)':''),{fontFamily:F9,fontSize:'10px',color:'#ece7f7'}).setOrigin(0.5,0).setInteractive());
-      t.on('pointerdown',()=>{M.sel=i;this.doWarp()});M.rows.push(t);M.objs.push(t)});
-    this.navReset();this.drawWarp();
+    const M=this.warpm={list,sel:Math.max(0,list.indexOf(this.roomId)),objs:[]};
+    M.g=fix(this.add.graphics());M.objs.push(M.g);
+    const t=(x,y,s,o={})=>{const o2=fix(this.add.text(x,y,s,Object.assign({fontFamily:F9,fontSize:'10px',color:'#ece7f7'},o)));M.objs.push(o2);return o2};
+    t(18,12,'워프',{fontFamily:F11,fontSize:'12px',color:'#8fe3ff'});
+    t(302,13,'방향키 고르기   Z 이동   M 닫기',{color:'#8f86ab'}).setOrigin(1,0);
+    t(18,30,'등록한 워프 '+list.length+'곳',{color:'#cfc8e4'});
+    M.name=t(W/2,136,'',{fontFamily:F11,fontSize:'12px',color:'#ffe27a'}).setOrigin(0.5,0);
+    M.hint=t(W/2,152,'',{color:'#8f86ab'}).setOrigin(0.5,0);
+    // 터치: 워프 방을 누르면 고르고, 한 번 더 누르면 이동
+    const L=this.mapLayout();
+    list.forEach((r,i)=>{const[x,y]=L.pos(r),z=fix(this.add.zone(x-2,y-2,L.cw+4,L.ch+4).setOrigin(0).setInteractive());
+      z.on('pointerdown',()=>{if(M.sel===i)this.doWarp();else{M.sel=i}});M.objs.push(z)});
+    this.navReset();this.drawWarp(0);
   },
-  drawWarp(){const M=this.warpm,g=M.g;g.clear();
-    g.fillStyle(0x05030b,0.6).fillRect(0,0,W,H);g.fillStyle(0x0f0b1e,0.96).fillRect(80,M.y0,160,M.h);g.lineStyle(1,0x8fe3ff,1).strokeRect(80.5,M.y0+0.5,159,M.h-1);
-    g.fillStyle(0x2c2346,1).fillRect(88,M.y0+22+M.sel*16,144,14);
-    M.rows.forEach((t,i)=>t.setColor(i===M.sel?'#ffe27a':'#ece7f7'))},
-  updateWarp(){const M=this.warpm,n=this.navPress();
-    if(n.up){M.sel=(M.sel+M.list.length-1)%M.list.length;this.drawWarp()}
-    if(n.down){M.sel=(M.sel+1)%M.list.length;this.drawWarp()}
-    if(n.ok)this.doWarp();else if(n.back)this.closeWarp()},
+  drawWarp(time){const M=this.warpm,g=M.g,r=M.list[M.sel];g.clear();
+    this.paintMap(g,time,{warps:M.list,sel:r});
+    M.name.setText('▶ '+ROOMS[r].name+(r===this.roomId?'  (여기)':''));
+    M.hint.setText(r===this.roomId?'지금 있는 곳이에요':'Z를 누르면 이곳으로 순간이동해요')},
+  /* 누른 방향에 있는 가장 가까운 워프로 커서 이동 */
+  warpStep(dx,dy){const M=this.warpm,G=i=>ROOMS[i].grid,c=G(M.list[M.sel]);let best=-1,bd=1e9;
+    M.list.forEach((r,i)=>{if(i===M.sel)return;const ex=G(r)[0]-c[0],ey=G(r)[1]-c[1];
+      if(dx&&Math.sign(ex)!==dx)return;if(dy&&Math.sign(ey)!==dy)return;
+      const d=dx?Math.abs(ex)+Math.abs(ey)*2:Math.abs(ey)+Math.abs(ex)*2;if(d<bd){bd=d;best=i}});
+    if(best<0){const n=M.list.length;best=(M.sel+(dx||dy)+n)%n}M.sel=best},
+  updateWarp(time){const M=this.warpm,n=this.navPress();
+    if(n.left)this.warpStep(-1,0);if(n.right)this.warpStep(1,0);if(n.up)this.warpStep(0,-1);if(n.down)this.warpStep(0,1);
+    if(n.ok){this.doWarp();return}if(n.back){this.closeWarp();return}this.drawWarp(time)},
   closeWarp(){const M=this.warpm;if(!M)return;M.objs.forEach(o=>o.destroy());this.warpm=null;this.resumeWorld();this.prev=this.heldNow()},
   doWarp(){const M=this.warpm,r=M.list[M.sel];this.closeWarp();if(r===this.roomId)return;
     this.auraEm.explode(24,this.player.x,this.player.y);this.goRoom(r,'warp')},
@@ -184,30 +196,40 @@ export const PlayUI={
     const zone=fix(this.add.zone(0,0,W,H).setOrigin(0).setInteractive());zone.on('pointerdown',()=>this.closeMap());M.objs.push(zone);
     this.navReset();
   },
-  drawMap(time){
-    const M=this.mapv,g=M.g;g.clear();
-    g.fillStyle(0x05030b,0.8).fillRect(0,0,W,H);g.fillStyle(0x0f0b1e,0.97).fillRect(8,6,304,160);g.lineStyle(1,0xc9a24a,1).strokeRect(8.5,6.5,303,159);
+  /* 지도 칸 배치: 방이 늘어나도 창 안에 들어가도록 칸 크기를 맞춤 */
+  mapLayout(){
     const ids=Object.keys(ROOMS),G=i=>ROOMS[i].grid;
     const minX=Math.min(...ids.map(i=>G(i)[0])),maxX=Math.max(...ids.map(i=>G(i)[0])),minY=Math.min(...ids.map(i=>G(i)[1])),maxY=Math.max(...ids.map(i=>G(i)[1]));
-    // 방이 늘어나도 지도 창 안에 들어가도록 칸 크기를 맞춤
     const nx=maxX-minX+1,ny=maxY-minY+1,gap=nx>7?6:8,cw=Math.min(30,Math.floor((292-gap*(nx-1))/nx)),ch=Math.min(17,Math.floor((92-gap*(ny-1))/ny));
-    const mw=(maxX-minX+1)*cw+(maxX-minX)*gap,mh=(maxY-minY+1)*ch+(maxY-minY)*gap,x0=Math.round((W-mw)/2),y0=Math.round(46+(84-mh)/2);
-    const pos=i=>[x0+(G(i)[0]-minX)*(cw+gap),y0+(G(i)[1]-minY)*(ch+gap)];
+    const mw=nx*cw+(nx-1)*gap,mh=ny*ch+(ny-1)*gap,x0=Math.round((W-mw)/2),y0=Math.round(44+(88-mh)/2);
+    return{ids,cw,ch,gap,pos:i=>[x0+(G(i)[0]-minX)*(cw+gap),y0+(G(i)[1]-minY)*(ch+gap)]};
+  },
+  paintMap(g,time,warp){
+    g.fillStyle(0x05030b,0.8).fillRect(0,0,W,H);g.fillStyle(0x0f0b1e,0.97).fillRect(8,6,304,160);g.lineStyle(1,warp?0x8fe3ff:0xc9a24a,1).strokeRect(8.5,6.5,303,159);
+    const{ids,cw,ch,gap,pos}=this.mapLayout(),blink=Math.floor(time/300)%2;
     const nb=j=>{const e=ROOMS[j].exits;return[e.left,e.right,e.up&&e.up.to,e.down&&e.down.to].filter(Boolean)};
     const known=i=>STATE.visited[i]||ids.some(j=>STATE.visited[j]&&nb(j).includes(i));
     ids.forEach(i=>{if(!STATE.visited[i])return;const[x,y]=pos(i),e=ROOMS[i].exits;g.fillStyle(0x7a6a9a,1);
-      if(e.right&&known(e.right))g.fillRect(x+cw,y+8,gap,2);
+      if(e.right&&known(e.right))g.fillRect(x+cw,y+Math.floor(ch/2)-1,gap,2);
       if(e.down&&known(e.down.to)){const[dx]=pos(e.down.to);g.fillRect(Math.round((x+dx)/2)+cw/2-1,y+ch,2,gap)}});
     ids.forEach(i=>{if(!known(i))return;const[x,y]=pos(i),R=ROOMS[i];
       if(!STATE.visited[i]){g.lineStyle(1,0x5a4f7a,1).strokeRect(x+0.5,y+0.5,cw-1,ch-1);return}
-      const cur=i===this.roomId,blink=Math.floor(time/350)%2;
+      const cur=i===this.roomId,isW=warp&&warp.warps.includes(i);
       const base={cave:0x4a4468,treetop:0x5a7a32,castle:0x3a5aa0,ice:0x5aa0d0}[R.theme]||0x3f7a3a;
-      g.fillStyle(cur?(blink?0xffe27a:0xc9a24a):base,1).fillRect(x,y,cw,ch);g.fillStyle(0xffffff,cur?0.6:0.2).fillRect(x,y,cw,1);
-      if(R.save)g.fillStyle(0x8fe3ff,1).fillRect(x+3,y+3,4,4);
-      if(R.warp&&STATE.warps[R.warp.id]){g.fillStyle(0x6fe0ff,1).fillTriangle(x+cw-8,y+6,x+cw-5,y+3,x+cw-2,y+6).fillTriangle(x+cw-8,y+6,x+cw-5,y+9,x+cw-2,y+6)}
-      if(roomChests(R).some(c=>!STATE.opened[c.id]))g.fillStyle(0xffd34a,1).fillRect(x+3,y+ch-7,4,4);
-      if(R.boss&&!bossDone(R.boss.id||'king'))g.fillStyle(0xff4a5a,1).fillRect(x+cw/2-2,y+ch/2-2,5,5);
+      g.fillStyle(warp?(isW?base:0x2a2440):(cur?(blink?0xffe27a:0xc9a24a):base),1).fillRect(x,y,cw,ch);g.fillStyle(0xffffff,cur&&!warp?0.6:0.2).fillRect(x,y,cw,1);
+      if(warp){
+        if(isW){g.fillStyle(0x6fe0ff,1).fillTriangle(x+cw/2-3,y+ch/2,x+cw/2,y+ch/2-3,x+cw/2+3,y+ch/2).fillTriangle(x+cw/2-3,y+ch/2,x+cw/2,y+ch/2+3,x+cw/2+3,y+ch/2)}
+        if(cur){g.fillStyle(0xffe27a,1).fillRect(x+1,y+ch-3,cw-2,2)}
+        if(i===warp.sel){g.lineStyle(2,blink?0xffe27a:0xffffff,1).strokeRect(x-2,y-2,cw+4,ch+4)}
+        return}
+      if(R.save)g.fillStyle(0x8fe3ff,1).fillRect(x+2,y+2,3,3);
+      if(R.warp&&STATE.warps[R.warp.id]){g.fillStyle(0x6fe0ff,1).fillTriangle(x+cw-7,y+4,x+cw-5,y+2,x+cw-3,y+4).fillTriangle(x+cw-7,y+4,x+cw-5,y+6,x+cw-3,y+4)}
+      if(roomChests(R).some(c=>!STATE.opened[c.id]))g.fillStyle(0xffd34a,1).fillRect(x+2,y+ch-5,3,3);
+      if(R.boss&&!bossDone(R.boss.id||'king'))g.fillStyle(0xff4a5a,1).fillRect(x+cw/2-2,y+ch/2-2,4,4);
     });
+  },
+  drawMap(time){
+    const M=this.mapv,g=M.g;g.clear();this.paintMap(g,time,null);
     M.legend.forEach(([c],i)=>{g.fillStyle(c,1).fillRect(22+i*56,151,5,5)});
   },
   updateMap(time){const n=this.navPress();if(n.back||n.ok){this.closeMap();return}this.drawMap(time)},

@@ -3,7 +3,7 @@ import {W,H,T,HUD,ROWS,LH,SPEED,JUMP,VP} from '../config.js';
 import {buildTextures} from '../gfx/sprites.js';
 import {buildFonts} from '../gfx/fonts.js';
 import {cv,px} from '../gfx/pixel.js';
-import {HERO_W,HERO_H,HERO_FRAMES,LOOK,drawHero} from '../gfx/hero.js';
+import {HERO_W,HERO_H,HERO_FRAMES,LOOK,drawHero,MY} from '../gfx/hero.js';
 import {ITEMS,SETS,SLOTS,SLOT_NAMES,equipBonus,setProgress,statLine,wlvAtk,weaponName} from '../data/items.js';
 import {ROOMS,buildRoomMap,floorTopY,surfaceY,roomChests} from '../world/rooms.js';
 import {drawFar,drawMid,drawLevel,drawCaveFar,drawCaveMid,drawTreetopMid,drawCastleFar,drawCastleMid,drawIceFar,drawIceMid} from '../world/meadow.js';
@@ -48,7 +48,7 @@ export class PlayScene extends Phaser.Scene{
     else if(entry==='warp'&&R.warp){sx=R.warp.tx*T+8;sy=surfaceY(this.map,R.warp.tx)-9}
     else{const tx=(entry==='save'&&R.save)?R.save.tx:(R.start?R.start.tx:(R.save?R.save.tx:2));sx=tx*T+8;sy=surfaceY(this.map,tx)-9}
     const p=this.player=this.physics.add.sprite(sx,sy,'hero_idle0');
-    p.body.setSize(9,14).setOffset(4,3);
+    p.body.setSize(9,14).setOffset(6,6);
     this.sword=this.add.image(0,0,'sword_'+this.equip.weapon).setDepth(11).setVisible(false);p.setDepth(10).setCollideWorldBounds(true);
     Object.assign(p,{inv:entry==='save'?1.5:(entry==='start'?0:0.9),hurtT:0,dropT:0,dead:false});   // 방에 들어오자마자 맞고 밀려 나가지 않게 잠깐 무적
     this.facing=entry==='right'?-1:1;this.coyote=0;this.jumpBuf=0;this.wasOnG=false;this.prevVy=0;this.skillCd=0;this.castT=0;this.airJumps=0;
@@ -466,7 +466,7 @@ export class PlayScene extends Phaser.Scene{
     const dt=Math.min(delta,50)/1000,inp=this.readInput();
     if(this.dlg){this.updateDialog(dt);this.drawHud(0,time);return}
     if(this.listm){this.updateList();this.drawHud(0,time);return}
-    if(this.warpm){this.updateWarp();this.drawHud(0,time);return}
+    if(this.warpm){this.updateWarp(time);this.drawHud(0,time);return}
     if(this.mapv){this.updateMap(time);this.drawHud(0,time);return}
     if(inp.press.menu)this.toggleMenu();
     if(this.menu){this.updateMenu();this.drawHud(0,time);return}
