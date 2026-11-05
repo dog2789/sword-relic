@@ -4,6 +4,7 @@ import Phaser from 'phaser';
 import {W,H,VP} from '../config.js';
 import {HERO_W,HERO_H,HAIR_STYLES,LOOK_OPTS,LOOK,drawHero,saveLook} from '../gfx/hero.js';
 import {STATE} from '../state.js';
+import {bgm} from '../bgm.js';
 import {fitCameras} from '../zoom.js';
 import {isDown,edges} from '../input.js';
 import {F9,F11} from '../fonts.js';
