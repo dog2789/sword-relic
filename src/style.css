@@ -63,10 +63,6 @@ body.mobile .pad{display:block;touch-action:none}
 .pbtn small{font-family:var(--kr);font-size:10px;color:var(--muted);line-height:1}
 .pbtn.on{background:#3a2f5c;transform:translate(2px,2px);box-shadow:1px 1px 0 #000}
 .pbtn.a{border-color:var(--red)} .pbtn.j{border-color:var(--cyan)} .pbtn.s{border-color:var(--gold)}
-.act{display:grid;grid-template-columns:var(--ab) var(--ab);grid-template-rows:var(--ab) var(--ab);gap:10px}
-.act .pbtn{width:var(--ab);height:var(--ab)}
-.act .s{grid-column:2;grid-row:1}.act .a{grid-column:1;grid-row:2}.act .j{grid-column:2;grid-row:2;transform:none}
-.act .j.on{transform:translate(2px,2px)}
 .sys{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
 .turn{margin:0;font-size:12px;color:var(--muted);text-align:center}
 
@@ -78,17 +74,22 @@ body.mobile .pad{display:block;touch-action:none}
     grid-template-columns:1fr auto;grid-template-rows:auto 1fr auto;align-items:center;gap:8px 12px;
     padding:12px max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-bottom,0px))}
   body.mobile .sys{grid-column:1/3;grid-row:1}
-  body.mobile .stick{grid-column:1;grid-row:2;justify-self:start}
+  body.mobile .stickzone{grid-column:1;grid-row:2;align-self:stretch;position:relative;min-height:var(--dp)}
+  body.mobile .stick{position:absolute;left:0;top:50%;margin-top:calc(var(--dp)/-2)}
   body.mobile .act{grid-column:2;grid-row:2}
   body.mobile .turn{grid-column:1/3;grid-row:3}
 }
 /* 가로: 게임이 화면 가득, 조작 버튼은 반투명하게 위에 겹침 (아래 HP 줄은 가리지 않게 조금 띄움) */
 @media (orientation:landscape){
   body.mobile #stage{position:fixed;inset:0;align-items:center}
-  body.mobile .pad{--dp:min(40vh,160px);--ab:min(17vh,66px);position:fixed;inset:0;pointer-events:none;z-index:5}
+  body.mobile .pad{--dp:min(40vh,160px);--ab:min(14vh,54px);position:fixed;inset:0;pointer-events:none;z-index:5}
   body.mobile .pad>*{pointer-events:auto}
-  body.mobile .stick{position:absolute;left:max(12px,env(safe-area-inset-left,0px));bottom:14vh;opacity:.75}
-  body.mobile .act{position:absolute;right:max(12px,env(safe-area-inset-right,0px));bottom:16vh;opacity:.7}
+  /* 화면 왼쪽 아래 넓은 영역 어디든 엄지를 대면 스틱이 생김. 평소엔 흐린 표시만 */
+  body.mobile .stickzone{position:absolute;left:0;bottom:0;width:42vw;height:72vh}
+  body.mobile .stick{position:absolute;left:max(14px,env(safe-area-inset-left,0px));bottom:12vh;opacity:.28;transition:opacity .15s}
+  body.mobile .stick.on{opacity:.75;transition:none}
+  body.mobile.ovl .stickzone{pointer-events:none}body.mobile.ovl .stick{pointer-events:auto}
+  body.mobile .act{position:absolute;right:max(12px,env(safe-area-inset-right,0px));bottom:17vh}
   body.mobile .sys{position:absolute;top:8px;left:max(12px,env(safe-area-inset-left,0px));justify-content:flex-start;opacity:.85;max-width:60vw}
   body.mobile .slot{--sl:40px}
   body.mobile .turn{display:none}
@@ -121,3 +122,15 @@ body.mobile .pad{display:block;touch-action:none}
 .pbtn.slot.tool span{font-size:9px;line-height:1;color:var(--gold);pointer-events:none}
 .pbtn.slot.off span{color:#8f86ab}
 .pbtn.slot.on{transform:translateY(2px);background:linear-gradient(#3a2f5c,#2a2046);box-shadow:inset 0 0 0 1px var(--gold)}
+
+/* 공격·점프·스킬: 반투명 원 + 도트 아이콘 (공격은 지금 든 검), 누를 때만 진하게 */
+.act{display:grid;grid-template-columns:var(--ab) var(--ab);grid-template-rows:var(--ab) var(--ab);gap:8px 10px}
+.act .pbtn{position:relative;width:var(--ab);height:var(--ab);border-radius:50%;padding:0;color:#fff;
+  background:radial-gradient(circle at 40% 32%,rgba(74,61,120,.55),rgba(13,9,24,.55) 70%);border:2px solid var(--ring);
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.35),0 2px 0 rgba(0,0,0,.5);transition:transform .05s,background .05s}
+.act .pbtn img{width:56%;height:56%;image-rendering:pixelated;pointer-events:none;filter:drop-shadow(1px 1px 0 rgba(0,0,0,.6))}
+.act .pbtn em{position:absolute;right:16%;bottom:12%;font-style:normal;font-family:var(--pix);font-size:7px;color:var(--ring);opacity:.9;pointer-events:none}
+.act .pbtn.on{transform:scale(.92);background:radial-gradient(circle at 40% 32%,rgba(120,100,190,.9),rgba(30,22,52,.9) 70%);box-shadow:0 0 10px var(--ring)}
+.act .s{--ring:#e8c04a;grid-column:2;grid-row:1}.act .a{--ring:#ff6070;grid-column:1;grid-row:2}.act .j{--ring:#8fe3ff;grid-column:2;grid-row:2}
+.act .s{transform:scale(.86)}.act .s.on{transform:scale(.8)}
+@media (orientation:landscape){body.mobile .act{opacity:.8}}

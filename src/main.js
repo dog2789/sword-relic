@@ -53,7 +53,7 @@ document.querySelectorAll('.pbtn[data-k]').forEach(b=>{
 });
 
 /* 아날로그 스틱: 가운데에서 손가락까지의 방향·거리로 ←→↑↓를 정함 (대각선은 두 방향 함께) */
-const stick=document.getElementById('stick'),knob=stick.querySelector('.knob');
+const zone=document.getElementById('stickzone'),stick=document.getElementById('stick'),knob=stick.querySelector('.knob');
 const setD=(k,v)=>{VP[k]=v};
 const stickAt=e=>{const r=stick.getBoundingClientRect(),R=r.width/2,lim=R*0.55;
   let dx=e.clientX-(r.left+R),dy=e.clientY-(r.top+R);const d=Math.hypot(dx,dy);if(d>lim){dx*=lim/d;dy*=lim/d}
@@ -62,9 +62,15 @@ const stickAt=e=>{const r=stick.getBoundingClientRect(),R=r.width/2,lim=R*0.55;
   const h=Math.abs(nx)>0.35&&Math.abs(nx)>Math.abs(ny)*0.4,v=Math.abs(ny)>0.5;   // 45° 근처는 둘 다 → 대각선
   setD('left',h&&nx<0);setD('right',h&&nx>0);setD('up',v&&ny<0);setD('down',v&&ny>0)};
 let stId=null;
-stick.addEventListener('pointerdown',e=>{e.preventDefault();stId=e.pointerId;try{stick.setPointerCapture(e.pointerId)}catch(_){};stick.classList.add('on');stickAt(e);if(!startBtn.hidden)startBtn.hidden=true});
-stick.addEventListener('pointermove',e=>{if(e.pointerId===stId)stickAt(e)});
-['pointerup','pointercancel','lostpointercapture'].forEach(ev=>stick.addEventListener(ev,e=>{if(e.pointerId!==stId)return;stId=null;stick.classList.remove('on');knob.style.transform='';['left','right','up','down'].forEach(k=>setD(k,false))}));
+// 엄지를 댄 자리로 스틱을 옮김 (영역 밖으로 삐져나가지 않게)
+const placeStick=e=>{const z=zone.getBoundingClientRect(),w=stick.offsetWidth,h=w/2;
+  const x=Math.max(h,Math.min(z.width-h,e.clientX-z.left)),y=Math.max(h,Math.min(z.height-h,e.clientY-z.top));
+  stick.style.left=(x-h)+'px';stick.style.top=(y-h)+'px';stick.style.bottom='auto';stick.style.right='auto'};
+zone.addEventListener('pointerdown',e=>{e.preventDefault();if(stId!==null)return;stId=e.pointerId;try{zone.setPointerCapture(e.pointerId)}catch(_){};
+  if(e.target===zone)placeStick(e);stick.classList.add('on');stickAt(e);if(!startBtn.hidden)startBtn.hidden=true});
+zone.addEventListener('pointermove',e=>{if(e.pointerId===stId)stickAt(e)});
+['pointerup','pointercancel','lostpointercapture'].forEach(ev=>zone.addEventListener(ev,e=>{if(e.pointerId!==stId)return;stId=null;stick.classList.remove('on');knob.style.transform='';
+  stick.style.left=stick.style.top=stick.style.bottom=stick.style.right='';['left','right','up','down'].forEach(k=>setD(k,false))}));
 
 /* 위쪽 버튼 줄: 게임 HUD처럼 실제 아이템 아이콘과 개수를 보여 줌 */
 const pixSvg=(rows,pal)=>{let r='';rows.forEach((row,y)=>[...row].forEach((c,x)=>{if(pal[c])r+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+pal[c]+'"/>'}));
@@ -73,17 +79,19 @@ const MAP_IC=pixSvg(['..kkkkkkkk..','.kppppppppk.','kpprrpppbppk','kpprpppppppk'
 const SND_ON=pixSvg(['......kk...','.....kyk...','....kyyk..w','.kkkyyyk.w.','.kyyyyyk.ww','.kyyyyyk...','.kkkyyyk.ww','....kyyk.w.','.....kyk..w','......kk...'],{k:'#2a1a12',y:'#e8c04a',w:'#8fe3ff'});
 const SND_OFF=pixSvg(['......kk...','.....kyk...','....kyyk...','.kkkyyyk.r.r','.kyyyyyk..r.','.kyyyyyk..r.','.kkkyyyk.r.r','....kyyk...','.....kyk...','......kk...'],{k:'#2a1a12',y:'#8a7a5a',r:'#e0404f'});
 document.getElementById('ic-map').src=MAP_IC;
+document.getElementById('ic-jump').src=pixSvg(['....kk....','...kwwk...','..kwwwwk..','.kwwkkwwk.','kwwk..kwwk','kkk.kk.kkk','...kwwk...','..kwwwwk..','.kwwkkwwk.','kwwk..kwwk','kkk....kkk'],{k:'#0b1a2a',w:'#8fe3ff'});
+document.getElementById('ic-skill').src=pixSvg(['....kk....','....ky....','...kyyk...','kkkyyyykkk','kyyyyyyyyk','.kyyyyyyk.','..kyyyyk..','.kyyk.kyk.','.kyk...kyk','kk.......k'],{k:'#2a1a12',y:'#ffe27a'});
 /* 가로 화면: 장비창·지도·대화 같은 창이 열리면 위쪽 버튼 줄이 창(탭)을 가리지 않게 숨김 */
 setInterval(()=>{if(!MOBILE||!game)return;const sc=game.scene.keys.play,on=!!(sc&&sc.sys.isActive()&&sc.overlayOpen&&sc.overlayOpen());
-  document.body.classList.toggle('ovl',on)},150);
+  document.body.classList.toggle('ovl',on||!(sc&&sc.sys.isActive()))},150);   // 타이틀·인트로에서도 화면 누르기를 막지 않게
 const icons={},iconOf=id=>{if(!game||!id)return'';const k='icon_'+id;if(icons[k])return icons[k];if(!game.textures.exists(k))return'';return icons[k]=game.textures.getBase64(k)};
-const slotEls=[...document.querySelectorAll('.slots .slot')],eqImg=document.getElementById('ic-equip');
+const slotEls=[...document.querySelectorAll('.slots .slot')],eqImg=document.getElementById('ic-equip'),atkImg=document.getElementById('ic-atk');
 let lastHud='';
 setInterval(()=>{if(!MOBILE||!game)return;
   const key=JSON.stringify([STATE.quick,STATE.items,STATE.equip&&STATE.equip.weapon]);if(key===lastHud)return;lastHud=key;
   slotEls.forEach((b,i)=>{const id=STATE.quick&&STATE.quick[i],n=id?(STATE.items[id]||0):0,img=b.querySelector('img'),src=iconOf(id);
     img.hidden=!src;if(src&&img.src!==src)img.src=src;b.querySelector('b').textContent=id?n:'';b.classList.toggle('empty',!id||n<=0)});
-  const w=iconOf(STATE.equip&&STATE.equip.weapon)||iconOf('traveler_sword');if(w&&eqImg.src!==w)eqImg.src=w},400);
+  const w=iconOf(STATE.equip&&STATE.equip.weapon)||iconOf('traveler_sword');if(w&&eqImg.src!==w){eqImg.src=w;atkImg.src=w}},400);
 /* 폰에서 길게 누르기·두 번 눌러 확대 막기 */
 if(MOBILE){['contextmenu','selectstart','dblclick'].forEach(t=>document.addEventListener(t,e=>e.preventDefault()));
   document.addEventListener('touchmove',e=>{if(e.touches.length>1||e.target.closest('#stage,.pad'))e.preventDefault()},{passive:false})}

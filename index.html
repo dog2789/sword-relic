@@ -38,7 +38,8 @@
 
   <div class="pad" aria-label="터치 조작">
     <!-- 아날로그 스틱: 손가락을 미끄러뜨린 방향으로 (대각선 쉽게) -->
-    <div class="stick" id="stick" role="group" aria-label="이동 스틱"><div class="knob"></div></div>
+    <!-- 스틱 영역: 이 안 아무 데나 엄지를 대면 그 자리에 스틱이 생김 (평소엔 흐리게) -->
+    <div class="stickzone" id="stickzone"><div class="stick" id="stick" role="group" aria-label="이동 스틱"><div class="knob"></div></div></div>
     <div class="sys">
       <div class="slots">
         <button class="pbtn slot" data-k="q0" aria-label="퀵슬롯 1"><i>1</i><img alt=""><b></b></button>
@@ -53,9 +54,9 @@
       </div>
     </div>
     <div class="act">
-      <button class="pbtn s" data-k="skill" aria-label="스킬">C<small>스킬</small></button>
-      <button class="pbtn a" data-k="attack" aria-label="공격">Z<small>공격</small></button>
-      <button class="pbtn j" data-k="jump" aria-label="점프">X<small>점프</small></button>
+      <button class="pbtn s" data-k="skill" aria-label="스킬"><img id="ic-skill" alt=""><em>C</em></button>
+      <button class="pbtn a" data-k="attack" aria-label="공격"><img id="ic-atk" alt=""><em>Z</em></button>
+      <button class="pbtn j" data-k="jump" aria-label="점프"><img id="ic-jump" alt=""><em>X</em></button>
     </div>
     <p class="turn">가로로 돌리면 화면이 더 커져요</p>
   </div>
