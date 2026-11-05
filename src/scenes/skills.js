@@ -4,6 +4,7 @@
 import Phaser from 'phaser';
 import {T,LH} from '../config.js';
 import {ITEMS} from '../data/items.js';
+import {sfx} from '../sfx.js';
 
 export const SKILLS={
   traveler_sword:{name:'검기',desc:'앞으로 날아가는 검기',mp:10,kind:'wave'},
@@ -43,6 +44,7 @@ export const Skills={
     if(k==='dash')this.skDash(f);
     if(k==='breath'){this.breathT=0.7;this.breathTick=0;this.castT=0.7}
     this.goldEm.explode(4,p.x+f*8,p.y);
+    sfx('skill',{k,big:sk.big,dark:!!sk.drain&&sk.drain<0.3});
   },
   /* 맞히기: 사각형에 닿은 적마다 한 번씩 (set으로 중복 막음) */
   skHit(rect,set,mul,dir,opt={}){
@@ -81,7 +83,7 @@ export const Skills={
       if(fx==='ice')for(let j=0;j<3;j++){const sh=this.add.image(x+(j-1)*5,gy,'iceshard').setOrigin(0.5,1).setDepth(12).setScale(1,0.2);
         this.tweens.add({targets:sh,scaleY:1.4+j%2*0.6,duration:90,yoyo:true,hold:260,onComplete:()=>sh.destroy()})}
       const em=fx==='ice'||fx==='storm'?this.fxEmitter(fx):fx==='holy'?this.auraEm:this.fireEm;em.explode(fx==='holy'?14:10,x,gy-6);
-      this.dustEm.explode(4,x,gy);this.shake(50,0.004);
+      this.dustEm.explode(4,x,gy);this.shake(50,0.004);sfx('pillar',{fx});
       this.skHit(R(x-9,gy-h,18,h),set,mul,f,{tag});
     });
   },
@@ -123,7 +125,7 @@ export const Skills={
         if(this.tileAt(s.x+Math.sign(o.vx)*5,s.y)==='#')o.vx*=-0.6;
         if((c==='#'||c==='-'||c==='='||c==='A'||c==='B')&&o.vy>0){if(o.bounce>0){o.bounce--;o.vy=-o.vy*0.55;s.y-=2;this.slimeEm.explode(4,s.x,s.y+4)}else o.life=0}
         if(hitE)o.life=0;
-        if(o.life<=0){this.slimeEm.explode(26,s.x,s.y);this.fxEmitter('slime').explode(14,s.x,s.y);this.shake(90,0.008);
+        if(o.life<=0){this.slimeEm.explode(26,s.x,s.y);sfx('splat');this.fxEmitter('slime').explode(14,s.x,s.y);this.shake(90,0.008);
           const ring=this.add.circle(s.x,s.y,6).setStrokeStyle(2,0x7fe07a,1).setDepth(12);this.tweens.add({targets:ring,scale:5,alpha:0,duration:280,onComplete:()=>ring.destroy()});
           this.skHit(R(s.x-28,s.y-24,56,40),null,1.6,o.f,{heavy:true})}}
       if(o.k==='boom'){s.angle+=dt*900*o.f;

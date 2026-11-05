@@ -79,8 +79,29 @@ const SOUNDS={
   // 철문(누름판·횃불·보스 문): 무거운 쇠가 드르륵 올라감
   gate:()=>{tone({type:'square',f0:70,f1:95,dur:0.3,vol:0.12,slide:'lin'});noise({dur:0.3,vol:0.14,ftype:'lowpass',f0:400,f1:900});
     noise({t:0.28,dur:0.06,vol:0.2,f0:2000,q:2})},
+  // C 스킬 쓸 때: 무기 기술(k)마다 다른 소리
+  skill:o=>{const k=o.k,big=o.big;
+    if(k==='wave'||k==='relic'){noise({dur:big?0.3:0.2,vol:0.26,f0:big?2600:4200,f1:big?400:800,q:1.2});
+      tone({f0:big?330:520,f1:big?990:1300,dur:big?0.22:0.14,vol:0.1});if(big)tone({type:'triangle',f0:165,f1:330,dur:0.25,vol:0.12})}
+    if(k==='relic')[784,988,1175,1568].forEach((f,i)=>tone({type:'triangle',f0:f,t:0.05+i*0.05,dur:0.4,vol:0.08}));
+    if(k==='fan')[0,0.05,0.1].forEach(t=>noise({t,dur:0.18,vol:0.2,ftype:'lowpass',f0:2400,f1:300}));
+    if(k==='crescent'){const d=o.dark?0.6:1;noise({dur:0.32,vol:0.2,f0:3000*d,f1:600*d,q:2});
+      tone({type:'triangle',f0:880*d,f1:1760*d,dur:0.28,vol:0.1});tone({type:'sine',f0:1320*d,f1:660*d,t:0.08,dur:0.3,vol:0.07})}
+    if(k==='lob')tone({type:'triangle',f0:300,f1:700,dur:0.12,vol:0.16});
+    if(k==='boomerang')[0,0.13,0.26,0.39].forEach((t,i)=>noise({t,dur:0.1,vol:0.16-i*0.03,f0:2600,f1:1200,q:2}));
+    if(k==='dash'){noise({dur:0.22,vol:0.28,ftype:'highpass',f0:800,f1:5000});tone({type:'sawtooth',f0:180,f1:900,dur:0.18,vol:0.1})}
+    if(k==='breath'){noise({dur:0.75,vol:0.28,ftype:'lowpass',f0:600,f1:1800,att:0.06});noise({dur:0.75,vol:0.12,f0:300,q:0.6,att:0.04})}
+    if(k==='erupt')tone({type:'triangle',f0:200,f1:120,dur:0.1,vol:0.12})},
+  // 땅에서 솟는 기둥 하나 (얼음·용암·빛·번개)
+  pillar:o=>{const fx=o.fx;
+    if(fx==='ice'){noise({dur:0.1,vol:0.18,ftype:'highpass',f0:3000});tone({type:'triangle',f0:1760+Math.random()*400,dur:0.18,vol:0.08})}
+    else if(fx==='fire'){noise({dur:0.25,vol:0.26,ftype:'lowpass',f0:900,f1:200});tone({f0:90,f1:50,dur:0.2,vol:0.14})}
+    else if(fx==='storm'){noise({dur:0.06,vol:0.34,ftype:'highpass',f0:2000});noise({t:0.04,dur:0.35,vol:0.22,ftype:'lowpass',f0:500,f1:80})}
+    else tone({type:'triangle',f0:1047,f1:1568,dur:0.2,vol:0.1})},
+  // 슬라임 폭탄 터짐: 철퍽 + 펑
+  splat:()=>{noise({dur:0.25,vol:0.32,ftype:'lowpass',f0:1500,f1:150});tone({f0:160,f1:50,dur:0.22,vol:0.16})},
 };
-const GAP={slash:40,hit:30,jump:40,coin:45,hurt:80,chest:100,door:150,gate:150};
+const GAP={slash:40,hit:30,jump:40,coin:45,hurt:80,chest:100,door:150,gate:150,skill:80,pillar:60,splat:60};
 
 let coinStep=0,coinT=0,live=0;
 const MAX_LIVE=28;
