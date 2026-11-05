@@ -160,9 +160,11 @@ export const Gimmicks={
       this.swTxt.setVisible(true).setText(String(Math.ceil(this.swT))).setPosition(tm.x,tm.y-16);
       if(this.swT<=0){this.swOn=false;this.applySwitch();this.swTxt.setVisible(false);const pr=new Phaser.Geom.Rectangle(pb.x,pb.y,pb.width,pb.height);
         this.blocks.forEach(b=>{if(b.z.body.enable&&Phaser.Geom.Intersects.RectangleToRectangle(pr,new Phaser.Geom.Rectangle(b.z.x-8,b.z.y-8,16,16)))p.y=b.z.y-8-pb.height/2-4})}}
-    // 누름판: 주인공이나 상자가 올라가 있으면 눌림 → 연결된 철문이 열림
-    this.plates.forEach(pl=>{const on=[p,...this.crates.getChildren()].some(o=>{const b=o.body;return b.right>pl.x-7&&b.left<pl.x+7&&Math.abs(b.bottom-(pl.y-2))<5});
-      if(on!==pl.on){pl.on=on;pl.s.setTexture(on?'plate1':'plate0')}});
+    // 누름판: 상자가 올라가 있어야 눌림 (주인공은 너무 가벼움) → 연결된 철문이 열림
+    const onPlate=(o,pl)=>{const b=o.body;return b.right>pl.x-7&&b.left<pl.x+7&&Math.abs(b.bottom-(pl.y-2))<5};
+    this.plates.forEach(pl=>{const on=this.crates.getChildren().some(c=>onPlate(c,pl));
+      if(on!==pl.on){pl.on=on;pl.s.setTexture(on?'plate1':'plate0')}
+      if(!on&&pb.blocked.down&&onPlate(p,pl)&&this.doorMsgT<=0){this.toast('너무 가벼워서 눌리지 않아요. 상자를 올려 보자',2000);this.doorMsgT=3}});
     this.gates.forEach(g=>{if(g.perm)return;const ps=this.plates.filter(pl=>pl.def.gate===g.def.id);if(!ps.length)return;
       const open=ps.every(pl=>pl.on);
       // 한 번 열리면 계속 열려 있음 (방을 나갔다 오면 상자가 제자리로 돌아가서 갇히지 않게)
