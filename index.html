@@ -2,7 +2,13 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<!-- 홈 화면에 추가하면 주소창 없이 전체 화면 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="소드 레릭">
+<meta name="theme-color" content="#000000">
 <title>소드 레릭</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,19 +35,25 @@
   </div>
 
   <div class="pad" aria-label="터치 조작">
-    <div class="cluster dpad">
-      <button class="pbtn" data-k="left" aria-label="왼쪽">◀</button>
-      <button class="pbtn" data-k="up" aria-label="위">▲</button>
-      <button class="pbtn" data-k="down" aria-label="아래">▼</button>
-      <button class="pbtn" data-k="right" aria-label="오른쪽">▶</button>
+    <!-- 방향 패드: 누른 채로 손가락을 미끄러뜨리면 방향이 바뀜 (대각선 가능) -->
+    <div class="dpad" id="dpad" role="group" aria-label="방향">
+      <span data-d="up">▲</span><span data-d="left">◀</span><span data-d="right">▶</span><span data-d="down">▼</span>
     </div>
-    <div class="cluster act">
-      <button class="pbtn" data-k="menu" aria-label="장비창">I</button>
-      <button class="pbtn" data-k="map" aria-label="지도">M</button>
-      <button class="pbtn s" data-k="skill" aria-label="검기">C</button>
-      <button class="pbtn a" data-k="attack" aria-label="공격">Z</button>
-      <button class="pbtn j" data-k="jump" aria-label="점프">X</button>
+    <div class="sys">
+      <button class="pbtn mini" data-k="q0" aria-label="퀵슬롯 1">1</button>
+      <button class="pbtn mini" data-k="q1" aria-label="퀵슬롯 2">2</button>
+      <button class="pbtn mini" data-k="q2" aria-label="퀵슬롯 3">3</button>
+      <button class="pbtn mini" data-k="q3" aria-label="퀵슬롯 4">4</button>
+      <button class="pbtn mini" data-k="menu" aria-label="장비창">장비</button>
+      <button class="pbtn mini" data-k="map" aria-label="지도">지도</button>
+      <button class="pbtn mini" id="padmute" type="button" aria-label="소리">♪</button>
     </div>
+    <div class="act">
+      <button class="pbtn s" data-k="skill" aria-label="스킬">C<small>스킬</small></button>
+      <button class="pbtn a" data-k="attack" aria-label="공격">Z<small>공격</small></button>
+      <button class="pbtn j" data-k="jump" aria-label="점프">X<small>점프</small></button>
+    </div>
+    <p class="turn">가로로 돌리면 화면이 더 커져요</p>
   </div>
 
   <section class="cards">

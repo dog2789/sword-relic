@@ -4,6 +4,7 @@
    - 곡 한 바퀴를 미리 소리 데이터로 만들어 반복 재생 → 게임이 버벅여도 끊기지 않음
    - 방이 바뀌어도(scene.restart) 같은 지역이면 곡이 끊기지 않고 이어짐. 다른 곡이면 서서히 바꿈 */
 import {audio} from './sfx.js';
+import {MOBILE} from './config.js';
 
 const NOTE={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
 const midi=n=>{const m=/^([A-G])([#b]?)(-?\d)$/.exec(n);return 12*(+m[3]+1)+NOTE[m[1]]+(m[2]==='#'?1:m[2]==='b'?-1:0)};
@@ -144,7 +145,8 @@ function get(name){
 }
 function start(name,data){
   const c=A.ctx,t=c.currentTime;
-  if(!data.buf){data.buf=c.createBuffer(1,data.length,SR);data.buf.getChannelData(0).set(data)}const buf=data.buf;
+  if(!data.buf){const b=c.createBuffer(1,data.length,SR);b.getChannelData(0).set(data);data={buf:b};cache[name]=data}const buf=data.buf;
+  if(MOBILE)for(const k in cache)if(k!==name)delete cache[k];   // 폰: 지금 곡만 남김
   const s=c.createBufferSource(),g=c.createGain();s.buffer=buf;s.loop=true;
   // 반복 재생이 어떤 이유로 끝나 버리면(멈추라고 한 게 아니면) 바로 다시 틈
   s.onended=()=>{if(playing&&playing.s===s){playing=null;cur=null;if(want)bgm(want)}};
@@ -159,7 +161,7 @@ function fadeOut(){
 }
 /* 나머지 곡도 틈틈이 미리 만들어 둬서, 처음 가는 지역도 바로 나오게 */
 let warmed=false;
-function warmAll(){if(warmed)return;warmed=true;const list=Object.keys(SONGS);let i=0;
+function warmAll(){if(warmed||MOBILE)return;warmed=true;const list=Object.keys(SONGS);let i=0;
   const next=()=>{while(i<list.length&&cache[list[i]])i++;if(i>=list.length)return;get(list[i++]).then(()=>setTimeout(next,1200),()=>setTimeout(next,1200))};
   setTimeout(next,1500)}
 /* 감시: 틀어야 할 곡이 있는데 안 나오고 있으면(만들기 실패 등) 2초마다 다시 시도 */

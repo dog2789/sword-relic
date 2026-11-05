@@ -488,7 +488,7 @@ export class PlayScene extends Phaser.Scene{
     const v=VP;
     return{left:isDown('ArrowLeft','KeyA')||v.left,right:isDown('ArrowRight','KeyD')||v.right,up:isDown('ArrowUp','KeyW')||v.up,down:isDown('ArrowDown','KeyS')||v.down,
       jump:isDown('KeyX','Space','KeyK')||v.jump,atk:isDown('KeyZ','KeyJ')||v.attack,skill:isDown('KeyC','KeyL')||v.skill,menu:isDown('KeyI')||v.menu,map:isDown('KeyM')||v.map,
-      q0:isDown('Digit1','Numpad1'),q1:isDown('Digit2','Numpad2'),q2:isDown('Digit3','Numpad3'),q3:isDown('Digit4','Numpad4')};
+      q0:isDown('Digit1','Numpad1')||v.q0,q1:isDown('Digit2','Numpad2')||v.q1,q2:isDown('Digit3','Numpad3')||v.q2,q3:isDown('Digit4','Numpad4')||v.q3};
   }
   readInput(){
     const held=this.heldNow(),esc=this.ed('esc',isDown('Escape'));
