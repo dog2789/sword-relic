@@ -238,7 +238,7 @@ export const ROOMS={
       p.block(20,2,20,8);p.blockA(20,9,20,11);
       p.block(4,9,7,9);p.block(10,6,13,6);p.blockB(24,9,25,9);p.blockB(27,7,28,7);p.blockB(30,5,31,5);p.block(33,4,38,4);
       p.clear(26,12,31,12);p.spikes(26,31,12)},
-    switches:[{tx:12,ty:5},{tx:34,ty:3}],
+    switches:[{tx:12,ty:5},{tx:34,ty:3},{tx:22,ty:11}],   // 오른쪽에서 와도 벽을 끌 수 있게
     chests:[{id:'ch_i2',tx:36,ty:3,gold:160},{id:'ch_i2b',tx:5,ty:8,gold:60}],
     turrets:[{tx:41,ty:10,dir:'l',rate:2.4}],
     icicles:[{tx:16,ty:2},{tx:23,ty:2}],
@@ -389,7 +389,7 @@ export const ROOMS={
   i5:{name:'얼음 미로',theme:'ice',cols:40,grid:[8,2],exits:{left:'i4',down:{to:'i6',tx:36}},seed:251,
     build(p){p.block(0,0,39,1);p.ground(0,39,12);p.block(0,2,0,8);p.block(39,2,39,12);p.clear(36,12,36,13);p.ladder(36,12,13);
       p.block(8,2,8,8);p.blockA(8,9,8,11);p.block(16,5,16,11);p.blockB(16,2,16,4);p.block(24,2,24,8);p.blockA(24,9,24,11);
-      p.block(10,8,12,8);p.block(13,5,14,5)},
+      p.block(10,8,12,8);p.block(13,5,14,5);p.block(19,8,21,8)},
     switches:[{tx:4,ty:11},{tx:12,ty:11},{tx:20,ty:11},{tx:30,ty:11}],
     chests:[{id:'ch_i5',tx:18,ty:11,gold:140}],
     slimes:[{tx:20,ty:9},{tx:33,ty:10}],
@@ -420,14 +420,14 @@ export const ROOMS={
     deco:{}},
   i9:{name:'눈꽃 신전',theme:'ice',cols:40,grid:[5,3],exits:{right:'i8',left:'i10'},seed:271,
     build(p){p.block(0,0,39,1);p.ground(0,39,12);p.block(0,2,0,8);p.block(39,2,39,8);
-      p.block(15,3,24,3);p.block(15,4,15,8);p.block(24,4,24,11);p.block(8,8,12,8);p.block(33,7,37,7)},
+      p.block(15,3,24,3);p.block(15,4,15,8);p.block(24,4,24,11);p.block(8,8,12,8);p.block(33,7,37,7);p.block(27,4,30,4)},
     gates:[{id:'g_i9',tx:15,ty:9,h:3}],torches:[{tx:4,ty:11,gate:'g_i9'},{tx:10,ty:7,gate:'g_i9'},{tx:30,ty:11,gate:'g_i9'},{tx:35,ty:6,gate:'g_i9'}],
     chests:[{id:'ch_i9',tx:20,ty:11,item:'snow_ring'}],
     slimes:[{tx:28,ty:10}],mobs:[{t:'snowman',tx:27,ty:11},{t:'bat',tx:6,ty:4}],
     deco:{}},
   i10:{name:'얼음 감옥',theme:'ice',cols:40,grid:[4,3],exits:{right:'i9',left:'c11'},seed:277,
     build(p){p.block(0,0,39,1);p.ground(0,39,12);p.block(39,2,39,8);
-      p.block(27,3,34,3);p.block(27,4,27,8);p.block(34,4,34,11);p.block(22,11,22,11);p.block(2,11,2,11);p.block(5,8,8,8)},
+      p.block(27,3,34,3);p.block(27,4,27,8);p.block(34,4,34,11);p.block(22,11,22,11);p.block(2,11,2,11);p.block(5,8,8,8);p.block(22,7,24,7);p.block(36,8,37,8)},
     gates:[{id:'g_i10',tx:27,ty:9,h:3}],plates:[{tx:21,ty:11,gate:'g_i10'}],crates:[{tx:12,ty:11}],
     crystal:{id:'c_i10',tx:30,ty:9},
     chests:[{id:'ch_i10',tx:32,ty:11,item:'key_yellow'}],
@@ -468,7 +468,7 @@ export const ROOMS={
   d5:{name:'모래 신전',theme:'desert',cols:44,grid:[-7,0],exits:{right:'d3',left:'d6',up:{to:'d11',tx:38},down:{to:'d12',tx:4}},seed:313,
     build(p){p.block(0,0,43,0);p.ground(0,43,12);p.block(0,1,0,8);p.block(43,1,43,8);
       p.block(12,1,12,8);p.blockA(12,9,12,11);p.clear(16,12,30,13);p.sand(16,13,30,13);p.blockB(16,12,30,12);p.block(34,8,38,8);p.clear(38,0,38,0);p.ladder(38,0,7);p.clear(4,12,4,13);p.ladder(4,12,13)},
-    switches:[{tx:8,ty:11}],
+    switches:[{tx:8,ty:11},{tx:32,ty:11}],   // 오른쪽(모래 늪 건너편)에서 와도 빨간 벽을 끄고 다리를 놓을 수 있게
     turrets:[{tx:42,ty:4,dir:'l',rate:2.4}],
     chests:[{id:'ch_d5',tx:40,ty:11,item:'sand_boots'},{id:'ch_d5b',tx:36,ty:7,gold:180}],
     mobs:[{t:'mummy',tx:14,ty:10},{t:'mummy',tx:35,ty:10},{t:'bat',tx:24,ty:4}],
@@ -524,7 +524,7 @@ export const ROOMS={
     deco:{}},
   l4:{name:'용암 폭포',theme:'lava',cols:36,grid:[-4,3],exits:{up:{to:'l3',tx:30},left:'l5',right:'l10',down:{to:'l11',tx:5}},seed:349,
     build(p){p.block(0,0,35,1);p.clear(30,0,30,1);p.ladder(30,0,11);p.ground(0,35,12);p.block(0,2,0,8);
-      p.clear(8,12,24,13);p.lava(8,12,24,13);p.block(10,10,11,10);p.block(15,9,16,9);p.block(20,10,21,10);p.lava(13,2,13,7);p.lava(18,2,18,6);p.clear(5,12,5,13);p.ladder(5,12,13)},
+      p.clear(8,12,24,13);p.lava(8,12,24,13);p.block(10,10,11,10);p.block(15,9,16,9);p.block(20,10,21,10);p.lava(13,2,13,4);p.lava(18,2,18,4);p.clear(5,12,5,13);p.ladder(5,12,13)},
     chests:[{id:'ch_l4',tx:3,ty:11,gold:220}],
     crystal:{id:'c_l4',tx:15.5,ty:6},
     mobs:[{t:'bat',tx:12,ty:4},{t:'bat',tx:24,ty:4},{t:'sala',tx:28,ty:11}],

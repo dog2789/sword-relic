@@ -45,6 +45,7 @@ npm run build:single  # dist-single/index.html 한 파일 빌드 (Phaser는 CDN)
 - 원하는 방으로 바로 가기: `SR.game.scene.getScenes(true).forEach(s=>SR.game.scene.stop(s.scene.key));SR.game.scene.start('play',{room:'d5',entry:'left'})` (entry: left | right | top | bottom | start | save)
 - 모든 장비 받기: `SR.scene.giveAllForTest()`
 - 헤드리스(swiftshader)에서는 게임이 실제보다 약 3배 느리게 돎. 대기 시간을 넉넉히 줄 것.
+- 방 구조 점검: `node tools/reach.mjs . [방id,...] [--nodj]` — 실제 점프 물리로 입구마다 못 가는 출구·못 닿는 상자/스위치/횃불을 찾음. 알려진 예외: k3 벽 점프 통로(박쥐 망토), s5 위 출구(일부러 막음), s7 상승 기류(옆 칸으로 내려오면 됨).
 - 플레이어를 순간 이동할 땐 `p.setPosition` 말고 `p.body.reset(x, y)` (안 그러면 타일 충돌이 꼬임).
 
 ## 다음에 할 만한 것

@@ -65,6 +65,9 @@ export const MenuMixin={
     }
     this.drawMenu();
   },
+  /* 다른 줄로 옮길 때 화면에서 보이는 같은 칸(열)으로 감 (줄마다 넘겨 본 위치가 달라서 번호로 옮기면 엉뚱한 데로 튐) */
+  menuRow(nr){const M=this.menu,vis=M.c-(M.off[M.r]||0),n=M.cells[nr].length;
+    M.r=nr;M.c=Math.max(0,Math.min(n-1,(M.off[nr]||0)+vis))},
   drawMenu(){
     const M=this.menu,g=M.g;g.clear();
     g.fillStyle(0x05030b,0.72).fillRect(0,0,W,H);
@@ -102,12 +105,12 @@ export const MenuMixin={
   closeMenu(){const M=this.menu;if(!M)return;[...M.objs,...M.dyn].forEach(o=>o.destroy());this.menu=null;this.resumeWorld();this.prev=this.heldNow()},
   updateMenu(){
     const M=this.menu,n=this.navPress(),c=this.ed('mtab',isDown('KeyC','KeyL')||VP.skill);
-    if(c){if(MOBILE&&M.tab===0){M.r=(M.r+1)%SLOTS.length;M.c=Math.max(0,Math.min(M.c,M.cells[M.r].length-1));this.drawMenu()}else{M.tab=MOBILE?0:(M.tab+1)%2;this.buildTab()}return}
+    if(c){if(MOBILE&&M.tab===0){this.menuRow((M.r+1)%SLOTS.length);this.drawMenu()}else{M.tab=MOBILE?0:(M.tab+1)%2;this.buildTab()}return}
     if(n.back||this.ed('mesc',isDown('Escape')||VP.back)){this.closeMenu();return}
     if(M.tab!==0)return;
     const NR=SLOTS.length,len=r=>Math.max(1,M.cells[r].length);
-    if(n.up){M.r=(M.r+NR-1)%NR;M.c=Math.min(M.c,len(M.r)-1);this.drawMenu()}
-    if(n.down){M.r=(M.r+1)%NR;M.c=Math.min(M.c,len(M.r)-1);this.drawMenu()}
+    if(n.up){this.menuRow((M.r+NR-1)%NR);this.drawMenu()}
+    if(n.down){this.menuRow((M.r+1)%NR);this.drawMenu()}
     if(n.left){M.c=(M.c+len(M.r)-1)%len(M.r);this.drawMenu()}
     if(n.right){M.c=(M.c+1)%len(M.r);this.drawMenu()}
     if(n.ok)this.equipCell();
