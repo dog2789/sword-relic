@@ -1,7 +1,7 @@
 /* PlayScene 확장: 워프, NPC 대화, 전체 지도, 퀵슬롯
    Object.assign(PlayScene.prototype, PlayUI) 로 붙여서 씀 */
 import Phaser from 'phaser';
-import {W,H,T,HUD,VP} from '../config.js';
+import {W,H,T,HUD,VP,MOBILE} from '../config.js';
 import {ROOMS,surfaceY,roomChests} from '../world/rooms.js';
 import {THEME_COL} from '../world/meadow.js';
 import {STATE,bossDone} from '../state.js';
@@ -104,7 +104,7 @@ export const PlayUI={
   overlayOpen(){return !!(this.menu||this.dlg||this.mapv||this.warpm||this.listm)},
   /* 오버레이 조작: 열린 순간 이미 눌려 있던 키는 무시하고, 새로 누른 키만 반응 */
   navHeld(){const v=VP;return{up:isDown('ArrowUp','KeyW')||v.up,down:isDown('ArrowDown','KeyS')||v.down,left:isDown('ArrowLeft','KeyA')||v.left,right:isDown('ArrowRight','KeyD')||v.right,
-    ok:isDown('KeyZ','KeyX','Enter','Space','KeyJ','KeyK')||v.attack||v.jump,back:isDown('Escape','KeyM','KeyI')||v.menu||v.map}},
+    ok:isDown('KeyZ','KeyX','Enter','Space','KeyJ','KeyK')||v.attack||v.jump,back:isDown('Escape','KeyM','KeyI')||v.menu||v.map||v.back}},
   navPress(){const h=this.navHeld(),p=this.prevNav||h,r={};for(const k in h)r[k]=h[k]&&!p[k];this.prevNav=h;return r},
   navReset(){this.prevNav=this.navHeld()},
   /* ---------- 대화 ---------- */
@@ -114,12 +114,13 @@ export const PlayUI={
     const D=this.dlg={lines,i:0,shown:0,onEnd,objs:[],def:name,cut:lines.some(l=>typeof l!=='string')};
     const g=fix(this.add.graphics());D.objs.push(g);D.g=g;
     D.name=fix(this.add.text(20,96,'',{fontFamily:F9,fontSize:'10px',color:'#ffe27a'}));D.objs.push(D.name);
-    if(D.cut)D.objs.push(fix(this.add.text(306,85,'ESC 건너뛰기',{fontFamily:F9,fontSize:'10px',color:'#ffffff',stroke:'#0f0b1e',strokeThickness:3}).setOrigin(1,0)));
     this.dlgFrame();
     D.body=fix(this.add.text(18,112,'',{fontFamily:F9,fontSize:'10px',color:'#ece7f7',wordWrap:{width:286},lineSpacing:3}));D.objs.push(D.body);
     D.arrow=fix(this.add.text(302,140,'▼',{fontFamily:F9,fontSize:'10px',color:'#ffe27a'}).setOrigin(1,0));D.objs.push(D.arrow);
     this.tweens.add({targets:D.arrow,alpha:0.2,duration:400,yoyo:true,repeat:-1});
     const zone=fix(this.add.zone(0,0,W,H).setOrigin(0).setInteractive());zone.on('pointerdown',()=>this.advanceDialog());D.objs.push(zone);
+    if(D.cut){const sk=fix(this.add.text(306,84,MOBILE?'건너뛰기 ▶▶':'ESC 건너뛰기',{fontFamily:F9,fontSize:'10px',color:'#ffffff',stroke:'#0f0b1e',strokeThickness:3}).setOrigin(1,0).setPadding(6,4,2,4),201);
+      sk.setInteractive({useHandCursor:true}).on('pointerdown',(p,x,y,ev)=>{ev&&ev.stopPropagation();this.closeDialog()});D.objs.push(sk)}
     this.navReset();
   },
   dlgLine(D){const L=D.lines[D.i];return typeof L==='string'?{n:D.def,t:L}:{n:L.n||D.def,t:L.t}},
@@ -135,7 +136,7 @@ export const PlayUI={
   },
   updateDialog(dt){
     const D=this.dlg,n=this.navPress();
-    if(D.cut&&isDown('Escape')){this.closeDialog();return}
+    if(this.ed('dlgesc',isDown('Escape')||VP.back)){this.closeDialog();return}
     if(n.ok||n.up)this.advanceDialog();if(!this.dlg)return;
     const full=this.dlgLine(D).t;D.shown=Math.min(full.length,D.shown+dt*38);
     D.body.setText(full.slice(0,Math.floor(D.shown)));D.arrow.setVisible(D.shown>=full.length);

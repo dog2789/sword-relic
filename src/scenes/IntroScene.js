@@ -92,7 +92,7 @@ export class IntroScene extends Phaser.Scene{
   update(t,d){
     fitCameras(this);
     const v=VP,e=this.ed;
-    const ok=e('ok',isDown('KeyZ','KeyX','Space','Enter')||v.attack||v.jump),esc=e('esc',isDown('Escape'));
+    const ok=e('ok',isDown('KeyZ','KeyX','Space','Enter')||v.attack||v.jump),esc=e('esc',isDown('Escape')||v.back);
     if(ok)this.advance();
     if(esc)this.finish();
     if(this.typing){this.shown=Math.min(this.full.length,this.shown+d/1000*28);

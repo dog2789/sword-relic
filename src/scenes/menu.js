@@ -99,7 +99,7 @@ export const MenuMixin={
   updateMenu(){
     const M=this.menu,n=this.navPress(),c=this.ed('mtab',isDown('KeyC','KeyL')||VP.skill);
     if(c){M.tab=(M.tab+1)%2;this.buildTab();return}
-    if(n.back||this.ed('mesc',isDown('Escape'))){this.closeMenu();return}
+    if(n.back||this.ed('mesc',isDown('Escape')||VP.back)){this.closeMenu();return}
     if(M.tab!==0)return;
     const NR=SLOTS.length,len=r=>Math.max(1,M.cells[r].length);
     if(n.up){M.r=(M.r+NR-1)%NR;M.c=Math.min(M.c,len(M.r)-1);this.drawMenu()}

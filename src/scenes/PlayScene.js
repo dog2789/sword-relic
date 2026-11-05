@@ -491,7 +491,7 @@ export class PlayScene extends Phaser.Scene{
       q0:isDown('Digit1','Numpad1')||v.q0,q1:isDown('Digit2','Numpad2')||v.q1,q2:isDown('Digit3','Numpad3')||v.q2,q3:isDown('Digit4','Numpad4')||v.q3};
   }
   readInput(){
-    const held=this.heldNow(),esc=this.ed('esc',isDown('Escape'));
+    const held=this.heldNow(),esc=this.ed('esc',isDown('Escape')||VP.back);
     const pr=this.prev,press={};['jump','atk','skill','menu','map','up','q0','q1','q2','q3'].forEach(k=>press[k]=held[k]&&!pr[k]);
     if(esc&&this.menu)press.menu=true;
     this.prev=held;

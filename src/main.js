@@ -45,9 +45,10 @@ const hideStart=e=>{e.preventDefault();e.stopPropagation();startBtn.hidden=true;
 const playScene=()=>{const sc=game&&game.scene.keys.play;return sc&&sc.sys.isActive()&&sc.player?sc:null};
 document.getElementById('testgear').addEventListener('click',e=>{const sc=playScene();if(sc)sc.giveAllForTest();e.currentTarget.blur();window.focus()});
 document.querySelectorAll('.pbtn[data-k]').forEach(b=>{
-  const k=b.dataset.k,on=v=>{VP[k]=v;b.classList.toggle('on',v)};
-  b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){};on(true);const s=document.getElementById('start');if(!s.hidden)s.hidden=true});
-  ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,()=>on(false)));
+  const k=b.dataset.k,on=v=>{VP[k]=v;b.classList.toggle('on',v)};let downAt=0,offT=0;
+  b.addEventListener('pointerdown',e=>{e.preventDefault();clearTimeout(offT);downAt=performance.now();try{b.setPointerCapture(e.pointerId)}catch(_){};on(true);const s=document.getElementById('start');if(!s.hidden)s.hidden=true});
+  // 아주 짧게 톡 쳐도 게임이 한 번은 보도록 최소 80ms는 눌린 채로
+  ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,()=>{clearTimeout(offT);offT=setTimeout(()=>on(false),Math.max(0,80-(performance.now()-downAt)))}));
   b.addEventListener('contextmenu',e=>e.preventDefault());
 });
 
@@ -72,6 +73,14 @@ const MAP_IC=pixSvg(['..kkkkkkkk..','.kppppppppk.','kpprrpppbppk','kpprpppppppk'
 const SND_ON=pixSvg(['......kk...','.....kyk...','....kyyk..w','.kkkyyyk.w.','.kyyyyyk.ww','.kyyyyyk...','.kkkyyyk.ww','....kyyk.w.','.....kyk..w','......kk...'],{k:'#2a1a12',y:'#e8c04a',w:'#8fe3ff'});
 const SND_OFF=pixSvg(['......kk...','.....kyk...','....kyyk...','.kkkyyyk.r.r','.kyyyyyk..r.','.kyyyyyk..r.','.kkkyyyk.r.r','....kyyk...','.....kyk...','......kk...'],{k:'#2a1a12',y:'#8a7a5a',r:'#e0404f'});
 document.getElementById('ic-map').src=MAP_IC;
+document.getElementById('ic-back').src=pixSvg(['kk......kk','krk....krk','.krk..krk.','..krkkrk..','...krrk...','...krrk...','..krkkrk..','.krk..krk.','krk....krk','kk......kk'],{k:'#2a1a12',r:'#ff7a8a'});
+/* 닫기·건너뛰기 버튼 (키보드 ESC 역할): 인트로, 대화, 장비창·지도·상점·워프가 열려 있을 때만 보임 */
+const backBtn=document.getElementById('padback'),backTxt=backBtn.querySelector('span');
+setInterval(()=>{if(!MOBILE||!game)return;let label='';
+  if(game.scene.isActive('intro'))label='건너뛰기';
+  else{const sc=game.scene.keys.play;if(sc&&sc.sys.isActive()&&sc.overlayOpen&&sc.overlayOpen())label=sc.dlg?(sc.dlg.cut?'건너뛰기':'닫기'):'닫기'}
+  if(!label&&!backBtn.hidden){backBtn.hidden=true;VP.back=false;backBtn.classList.remove('on')}
+  else if(label){backBtn.hidden=false;if(backTxt.textContent!==label)backTxt.textContent=label}},150);
 const icons={},iconOf=id=>{if(!game||!id)return'';const k='icon_'+id;if(icons[k])return icons[k];if(!game.textures.exists(k))return'';return icons[k]=game.textures.getBase64(k)};
 const slotEls=[...document.querySelectorAll('.slots .slot')],eqImg=document.getElementById('ic-equip');
 let lastHud='';
