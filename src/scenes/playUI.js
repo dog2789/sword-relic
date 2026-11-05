@@ -109,7 +109,7 @@ export const PlayUI={
   navPress(){const h=this.navHeld(),p=this.prevNav||h,r={};for(const k in h)r[k]=h[k]&&!p[k];this.prevNav=h;return r},
   navReset(){this.prevNav=this.navHeld()},
   /* 폰: 창 오른쪽 위에 누를 수 있는 닫기 버튼 (키보드 ESC·I·M 대신) */
-  addCloseBtn(x,y,arr,fn){const b=fix(this.add.text(x,y,'✕ 닫기',{fontFamily:F9,fontSize:'10px',color:'#ffd8de',backgroundColor:'#5a1a2a'}).setOrigin(1,0).setPadding(5,2,5,2),205);
+  addCloseBtn(x,y,arr,fn){const b=fix(this.add.text(x,y,'✕ 닫기',{fontFamily:F9,fontSize:'10px',color:'#ffd8de',backgroundColor:'#5a1a2a'}).setOrigin(1,0).setPadding(5,2,5,2),240);
     b.setInteractive({useHandCursor:true}).on('pointerdown',(p,lx,ly,ev)=>{ev&&ev.stopPropagation();fn()});arr.push(b);return b},
   /* ---------- 대화 ---------- */
   openDialog(name,lines,onEnd){

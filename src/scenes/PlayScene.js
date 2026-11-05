@@ -496,7 +496,8 @@ export class PlayScene extends Phaser.Scene{
     const pr=this.prev,press={};['jump','atk','skill','menu','map','up','q0','q1','q2','q3'].forEach(k=>press[k]=held[k]&&!pr[k]);
     if(esc&&this.menu)press.menu=true;
     // 폰: NPC·워프 받침대·순간이동 문 앞에서는 공격 버튼이 ↑ 역할 (말 걸기·이동)
-    if(MOBILE&&press.atk&&this.canTalk&&!this.overlayOpen()){press.atk=false;press.up=true}
+    // (스틱 ↑는 사다리 오르기에만 쓰고 상호작용은 안 함)
+    if(MOBILE){press.up=false;if(press.atk&&this.canTalk&&!this.overlayOpen()){press.atk=false;press.up=true}}
     this.prev=held;
     if(this.frozen){for(const kk in press)if(press[kk])this.pend[kk]=true}
     else{for(const kk in this.pend)press[kk]=press[kk]||this.pend[kk];this.pend={}}

@@ -30,7 +30,7 @@ export const Economy={
     L.g=fix(this.add.graphics());L.objs.push(L.g);
     const t=(x,y,s,o={})=>{const o2=fix(this.add.text(x,y,s,Object.assign({fontFamily:F9,fontSize:'10px',color:'#ece7f7'},o)));L.objs.push(o2);return o2};
     t(30,22,title,{fontFamily:F11,fontSize:'12px',color});
-    L.gold=t(290,24,'',{color:'#ffd34a'}).setOrigin(1,0);
+    L.gold=t(MOBILE?246:290,24,'',{color:'#ffd34a'}).setOrigin(1,0);
     for(let i=0;i<6;i++){const y=44+i*17;
       const icon=fix(this.add.image(42,y+6,'coin'));L.objs.push(icon);
       const a=t(54,y+1,''),b=t(290,y+1,'').setOrigin(1,0);
@@ -40,7 +40,7 @@ export const Economy={
     L.desc=t(30,146,'',{color:'#cfc8e4',wordWrap:{width:262},lineSpacing:2});
     if(!MOBILE)t(290,159,'Z 선택   I/M 나가기',{color:'#6f6890'}).setOrigin(1,0);
     const bz=fix(this.add.zone(0,0,W,16).setOrigin(0).setInteractive());bz.on('pointerdown',()=>this.closeList());L.objs.push(bz);
-    if(MOBILE)this.addCloseBtn(294,6,L.objs,()=>this.closeList());
+    if(MOBILE)this.addCloseBtn(291,21,L.objs,()=>this.closeList());
     this.navReset();this.drawList();
   },
   drawList(){
