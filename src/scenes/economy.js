@@ -26,7 +26,7 @@ export const Economy={
   /* ---------- 공용 목록 메뉴 (대장장이, 상점) ---------- */
   openList(title,build,pick,color='#ffe27a'){
     if(this.overlayOpen())return;this.pauseWorld();
-    const L=this.listm={sel:0,objs:[],rows:[],build,pick,title};
+    const L=this.listm={sel:0,top:0,objs:[],rows:[],build,pick,title};
     L.g=fix(this.add.graphics());L.objs.push(L.g);
     const t=(x,y,s,o={})=>{const o2=fix(this.add.text(x,y,s,Object.assign({fontFamily:F9,fontSize:'10px',color:'#ece7f7'},o)));L.objs.push(o2);return o2};
     t(30,22,title,{fontFamily:F11,fontSize:'12px',color});
@@ -35,8 +35,11 @@ export const Economy={
       const icon=fix(this.add.image(42,y+6,'coin'));L.objs.push(icon);
       const a=t(54,y+1,''),b=t(290,y+1,'').setOrigin(1,0);
       const z=fix(this.add.zone(30,y-2,262,16).setOrigin(0).setInteractive());L.objs.push(z);
-      z.on('pointerdown',()=>{if(i<L.items.length){L.sel=i;this.listPick()}});
+      z.on('pointerdown',()=>{if(L.top+i<L.items.length){L.sel=L.top+i;this.listPick()}});
       L.rows.push({icon,a,b,z})}
+    // 6줄보다 많으면 위아래로 넘겨 봄: 남은 게 있다는 표시 (누르면 한 칸씩)
+    L.up=t(160,33,'▲',{color:'#ffe27a'}).setOrigin(0.5).setInteractive().on('pointerdown',()=>{L.sel=Math.max(0,L.top-1);this.drawList()});
+    L.dn=t(160,166,'▼',{color:'#ffe27a'}).setOrigin(0.5).setInteractive().on('pointerdown',()=>{L.sel=Math.min(L.items.length-1,L.top+6);this.drawList()});
     L.desc=t(30,146,'',{color:'#cfc8e4',wordWrap:{width:262},lineSpacing:2});
     if(!MOBILE)t(290,159,'Z 선택   I/M 나가기',{color:'#6f6890'}).setOrigin(1,0);
     const bz=fix(this.add.zone(0,0,W,16).setOrigin(0).setInteractive());bz.on('pointerdown',()=>this.closeList());L.objs.push(bz);
@@ -50,9 +53,11 @@ export const Economy={
     g.fillStyle(0x161028,0.98).fillRect(22,14,276,160);g.lineStyle(1,0xc9a24a,1).strokeRect(22.5,14.5,275,159);
     g.fillStyle(0x221a3a,1).fillRect(26,140,268,18);
     L.gold.setText((STATE.gold||0)+' G');
-    L.rows.forEach((r,i)=>{const it=L.items[i],on=!!it;
+    L.top=Phaser.Math.Clamp(L.top,L.sel-5,L.sel);L.top=Math.max(0,Math.min(L.top,L.items.length-6));
+    L.up.setVisible(L.top>0);L.dn.setVisible(L.top+6<L.items.length);
+    L.rows.forEach((r,i)=>{const it=L.items[L.top+i],on=!!it;
       r.icon.setVisible(on);r.a.setVisible(on);r.b.setVisible(on);if(!on)return;
-      if(i===L.sel){g.fillStyle(0x2c2346,1).fillRect(30,42+i*17,262,16);g.lineStyle(1,0xffe27a,1).strokeRect(30.5,42.5+i*17,261,15)}
+      if(L.top+i===L.sel){g.fillStyle(0x2c2346,1).fillRect(30,42+i*17,262,16);g.lineStyle(1,0xffe27a,1).strokeRect(30.5,42.5+i*17,261,15)}
       r.icon.setTexture(it.icon);r.a.setText(it.label).setColor(it.ok===false?'#6f6890':'#ece7f7');
       r.b.setText(it.right||'').setColor(it.ok===false?'#8a5a6a':'#ffd34a')});
     const cur=L.items[L.sel];L.desc.setText(cur?cur.desc||'':'');
