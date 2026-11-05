@@ -1,7 +1,7 @@
 /* PlayScene 확장: 워프, NPC 대화, 전체 지도, 퀵슬롯
    Object.assign(PlayScene.prototype, PlayUI) 로 붙여서 씀 */
 import Phaser from 'phaser';
-import {W,H,T,HUD,VP,MOBILE} from '../config.js';
+import {W,H,T,HUD,VP,MOBILE,keyText} from '../config.js';
 import {ROOMS,surfaceY,roomChests} from '../world/rooms.js';
 import {THEME_COL} from '../world/meadow.js';
 import {STATE,bossDone} from '../state.js';
@@ -90,11 +90,12 @@ export const PlayUI={
       if(near&&!w.on){w.on=true;STATE.warps[w.def.id]=this.roomId;w.base.setTexture('warp');w.lab.setTint(0x8fe3ff);w.glow.setAlpha(0.9);
         this.auraEm.explode(18,w.x,w.y-8);this.toast('워프 포인트 등록! 받침대 위에서 ↑ 키를 누르면 이동할 수 있어요',3400)}
       if(near&&w.on&&press.up&&!this.climbing)this.openWarp();}
-    let talk=null;
+    let talk=null;this.canTalk=!!(this.warpObj&&this.warpObj.on&&Math.abs(p.x-this.warpObj.x)<12&&Math.abs(p.y-(this.warpObj.y-9))<14);
     (this.npcObjs||[]).forEach(n=>{const near=Math.abs(p.x-n.x)<20&&Math.abs(p.y-(n.y-9))<16&&!p.dead;
       if(near&&!talk)talk=n;if(Math.abs(p.x-n.x)<48&&!n.def.still)n.spr.setFlipX(p.x<n.x);
       n.t+=dt;if(this.textures.exists(n.def.tex+'_1'))n.spr.setTexture(n.def.tex+(Math.floor(n.t/0.45)%2?'_1':''))});
     if(this.bubble){this.bubble.setVisible(!!talk&&!this.climbing).setPosition(p.x+this.facing*6,p.y-10+Math.sin(this.time.now/180)*1.5)}
+    if(talk)this.canTalk=true;
     if(talk&&press.up&&!this.climbing){const t=NPC_TALK[talk.def.id](this);this.openDialog(talk.def.name,t.lines,t.end)}
   },
 
@@ -107,6 +108,9 @@ export const PlayUI={
     ok:isDown('KeyZ','KeyX','Enter','Space','KeyJ','KeyK')||v.attack||v.jump,back:isDown('Escape','KeyM','KeyI')||v.menu||v.map||v.back}},
   navPress(){const h=this.navHeld(),p=this.prevNav||h,r={};for(const k in h)r[k]=h[k]&&!p[k];this.prevNav=h;return r},
   navReset(){this.prevNav=this.navHeld()},
+  /* 폰: 창 오른쪽 위에 누를 수 있는 닫기 버튼 (키보드 ESC·I·M 대신) */
+  addCloseBtn(x,y,arr,fn){const b=fix(this.add.text(x,y,'✕ 닫기',{fontFamily:F9,fontSize:'10px',color:'#ffd8de',backgroundColor:'#5a1a2a'}).setOrigin(1,0).setPadding(5,2,5,2),205);
+    b.setInteractive({useHandCursor:true}).on('pointerdown',(p,lx,ly,ev)=>{ev&&ev.stopPropagation();fn()});arr.push(b);return b},
   /* ---------- 대화 ---------- */
   openDialog(name,lines,onEnd){
     if(this.overlayOpen())return;this.pauseWorld();
@@ -123,7 +127,7 @@ export const PlayUI={
       sk.setInteractive({useHandCursor:true}).on('pointerdown',(p,x,y,ev)=>{ev&&ev.stopPropagation();this.closeDialog()});D.objs.push(sk)}
     this.navReset();
   },
-  dlgLine(D){const L=D.lines[D.i];return typeof L==='string'?{n:D.def,t:L}:{n:L.n||D.def,t:L.t}},
+  dlgLine(D){const L=D.lines[D.i];return typeof L==='string'?{n:D.def,t:keyText(L)}:{n:L.n||D.def,t:keyText(L.t)}},
   dlgFrame(){const D=this.dlg,g=D.g,nm=this.dlgLine(D).n,w=Math.max(48,nm.length*10+12);g.clear();
     g.fillStyle(0x0f0b1e,0.94).fillRect(8,100,304,52);g.lineStyle(1,0xc9a24a,1).strokeRect(8.5,100.5,303,51);
     g.fillStyle(0x2c2346,1).fillRect(14,94,w,14);g.lineStyle(1,0xc9a24a,1).strokeRect(14.5,94.5,w-1,13);D.name.setText(nm)},
@@ -152,7 +156,7 @@ export const PlayUI={
     M.g=fix(this.add.graphics());M.objs.push(M.g);
     const t=(x,y,s,o={})=>{const o2=fix(this.add.text(x,y,s,Object.assign({fontFamily:F9,fontSize:'10px',color:'#ece7f7'},o)));M.objs.push(o2);return o2};
     t(18,12,'워프',{fontFamily:F11,fontSize:'12px',color:'#8fe3ff'});
-    t(302,13,'방향키 고르기   Z 이동   M 닫기',{color:'#8f86ab'}).setOrigin(1,0);
+    if(MOBILE)this.addCloseBtn(304,11,M.objs,()=>this.closeWarp());else t(302,13,'방향키 고르기   Z 이동   M 닫기',{color:'#8f86ab'}).setOrigin(1,0);
     t(18,30,'등록한 워프 '+list.length+'곳',{color:'#cfc8e4'});
     M.name=t(W/2,136,'',{fontFamily:F11,fontSize:'12px',color:'#ffe27a'}).setOrigin(0.5,0);
     M.hint=t(W/2,152,'',{color:'#8f86ab'}).setOrigin(0.5,0);
@@ -165,7 +169,7 @@ export const PlayUI={
   drawWarp(time){const M=this.warpm,g=M.g,r=M.list[M.sel];g.clear();
     this.paintMap(g,time,{warps:M.list,sel:r});
     M.name.setText('▶ '+ROOMS[r].name+(r===this.roomId?'  (여기)':''));
-    M.hint.setText(r===this.roomId?'지금 있는 곳이에요':'Z를 누르면 이곳으로 순간이동해요')},
+    M.hint.setText(r===this.roomId?'지금 있는 곳이에요':MOBILE?'한 번 더 누르면 이곳으로 순간이동해요':'Z를 누르면 이곳으로 순간이동해요')},
   /* 누른 방향에 있는 가장 가까운 워프로 커서 이동 */
   warpStep(dx,dy){const M=this.warpm,G=i=>ROOMS[i].grid,c=G(M.list[M.sel]);let best=-1,bd=1e9;
     M.list.forEach((r,i)=>{if(i===M.sel)return;const ex=G(r)[0]-c[0],ey=G(r)[1]-c[1];
@@ -196,7 +200,7 @@ export const PlayUI={
     t(302,13,'탐험률 '+this.explorePct()+'%',{color:'#8fe3ff'}).setOrigin(1,0);
     t(18,30,'방 '+ids.filter(i=>STATE.visited[i]).length+'/'+ids.length+'    보물 '+tr.got+'/'+tr.all+'    워프 '+wpOn.length+'/'+wp.length,{color:'#cfc8e4'});
     t(18,134,'현재 위치: '+this.R.name,{color:'#ffe27a'});
-    t(302,134,'M 닫기',{color:'#8f86ab'}).setOrigin(1,0);
+    if(MOBILE)this.addCloseBtn(304,132,M.objs,()=>this.closeMap());else t(302,134,'M 닫기',{color:'#8f86ab'}).setOrigin(1,0);
     const lg=[[0xffe27a,'현재'],[0x8fe3ff,'세이브'],[0x6fe0ff,'워프'],[0xffd34a,'보물'],[0xff4a5a,'보스']];
     M.legend=lg;lg.forEach(([c,s],i)=>t(30+i*56,148,s,{color:'#8f86ab'}));
     const zone=fix(this.add.zone(0,0,W,H).setOrigin(0).setInteractive());zone.on('pointerdown',()=>this.closeMap());M.objs.push(zone);

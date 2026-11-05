@@ -1,7 +1,7 @@
 /* 골드, 대장장이(무기 강화), 잡화점
    PlayScene에 섞어 쓰는 함수 모음 (Object.assign(PlayScene.prototype, Economy)) */
 import Phaser from 'phaser';
-import {W,H,HUD} from '../config.js';
+import {W,H,HUD,MOBILE} from '../config.js';
 import {ITEMS,CONSUMABLES,WLV_MAX,wlvCost,wlvAtk,weaponName} from '../data/items.js';
 import {STATE} from '../state.js';
 import {sfx} from '../sfx.js';
@@ -38,8 +38,9 @@ export const Economy={
       z.on('pointerdown',()=>{if(i<L.items.length){L.sel=i;this.listPick()}});
       L.rows.push({icon,a,b,z})}
     L.desc=t(30,146,'',{color:'#cfc8e4',wordWrap:{width:262},lineSpacing:2});
-    t(290,159,'Z 선택   I/M 나가기',{color:'#6f6890'}).setOrigin(1,0);
+    if(!MOBILE)t(290,159,'Z 선택   I/M 나가기',{color:'#6f6890'}).setOrigin(1,0);
     const bz=fix(this.add.zone(0,0,W,16).setOrigin(0).setInteractive());bz.on('pointerdown',()=>this.closeList());L.objs.push(bz);
+    if(MOBILE)this.addCloseBtn(294,6,L.objs,()=>this.closeList());
     this.navReset();this.drawList();
   },
   drawList(){

@@ -1,7 +1,7 @@
 /* 장비창(I): [장비] 칸마다 모든 장비를 도감처럼 나열 / [상태] 능력치, 시간, 열쇠, 능력
    C 탭 바꾸기, ←→↑↓ 고르기, Z 장착·해제, I/ESC 닫기 */
 import Phaser from 'phaser';
-import {W,H,VP} from '../config.js';
+import {W,H,VP,MOBILE} from '../config.js';
 import {ITEMS,SETS,SLOTS,SLOT_NAMES,KEYS,setProgress,statLine,weaponName} from '../data/items.js';
 import {ROOMS} from '../world/rooms.js';
 import {STATE,bossDone} from '../state.js';
@@ -22,14 +22,15 @@ export const MenuMixin={
     M.g=fix(this.add.graphics());M.objs.push(M.g);
     M.t=(x,y,s,o={},keep=true)=>{const t=fix(this.add.text(x,y,s,Object.assign({fontFamily:F9,fontSize:'10px',color:'#ece7f7'},o)));(keep?M.objs:M.dyn).push(t);return t};
     M.tabs=['장비','상태'].map((n,i)=>{const t=M.t(28+i*44,13,n,{fontFamily:F11,fontSize:'12px'});t.setInteractive().on('pointerdown',()=>{M.tab=i;this.buildTab()});return t});
-    M.t(300,15,'C 탭   I 닫기',{color:'#8f86ab'}).setOrigin(1,0);
+    if(MOBILE){M.hintC=M.t(246,15,'C 다음 칸',{color:'#8f86ab'}).setOrigin(1,0);this.addCloseBtn(302,12,M.objs,()=>this.closeMenu())}
+    else M.t(300,15,'C 탭   I 닫기',{color:'#8f86ab'}).setOrigin(1,0);
     const r=this.equip.weapon?SLOTS.indexOf('weapon'):0;M.r=r;M.c=Math.max(0,slotItems(SLOTS[r]).indexOf(this.equip[SLOTS[r]]));
     this.buildTab();this.navReset();
   },
   clearDyn(){const M=this.menu;M.dyn.forEach(o=>o.destroy());M.dyn=[]},
   buildTab(){
     const M=this.menu;this.clearDyn();
-    M.tabs.forEach((t,i)=>t.setColor(i===M.tab?'#ffe27a':'#6f6890'));
+    M.tabs.forEach((t,i)=>t.setColor(i===M.tab?'#ffe27a':'#6f6890'));if(M.hintC)M.hintC.setVisible(M.tab===0);
     const img=(x,y,k,d=201)=>{const o=fix(this.add.image(x,y,k),d);M.dyn.push(o);return o};
     if(M.tab===0){
       M.cells=SLOTS.map((sl,r)=>{M.t(22,RY+r*RH+2,SLOT_NAMES[sl],{color:'#8f86ab'},false);
@@ -39,6 +40,9 @@ export const MenuMixin={
           return{id,o,z}})});
       M.off=SLOTS.map(()=>0);
       M.arr=SLOTS.map((sl,r)=>[M.t(CX-7,RY+r*RH+2,'◀',{color:'#ffe27a'},false),M.t(CX+VIS*CW+1,RY+r*RH+2,'▶',{color:'#ffe27a'},false)]);
+      // 노란 화살표를 누르면 그 줄을 한 칸씩 넘김
+      M.arr.forEach((pair,r)=>pair.forEach((a,k)=>{a.setPadding(4,3,4,3).setInteractive({useHandCursor:true}).on('pointerdown',()=>{
+        const n=M.cells[r].length;if(!n)return;if(M.r!==r){M.r=r;M.c=k?Math.min(n-1,M.off[r]+VIS):Math.max(0,M.off[r]-1)}else M.c=Math.max(0,Math.min(n-1,M.c+(k?1:-1)));this.drawMenu()})}));
       M.hero=img(251,50,'hero_idle0').setScale(2);
       M.stat=M.t(206,70,'',{lineSpacing:0},false);
       M.name=M.t(22,122,'',{color:'#ffe27a'},false);
@@ -46,8 +50,8 @@ export const MenuMixin={
       M.desc=M.t(22,134,'',{color:'#cfc8e4',wordWrap:{width:274},lineSpacing:0},false);
       M.sk=M.t(22,156,'',{color:'#9ff0ff',wordWrap:{width:274},lineSpacing:0},false);
     }else{
-      img(48,74,'hero_idle0').setScale(4);
-      M.t(48,112,'모험가',{color:'#ffe27a'},false).setOrigin(0.5,0);
+      img(48,74,'hero_idle0').setScale(2);
+      M.t(48,96,'모험가',{color:'#ffe27a'},false).setOrigin(0.5,0);
       const s=this.stats,b=this.bonus,ex=this.explorePct?this.explorePct():0;
       M.t(90,36,['LV','HP','MP','공격','방어','EXP','골드','시간','탐험률'].join('\n'),{color:'#8f86ab',lineSpacing:1},false);
       M.t(130,36,[s.lv,Math.ceil(s.hp)+' / '+this.mhp(),Math.floor(s.mp)+' / '+s.maxMp,this.atkVal()+'  (+'+(this.atkVal()-s.atk)+')',this.defVal(),s.exp+' / '+s.next,(STATE.gold||0)+' G',hms(STATE.time),ex+'%'].join('\n'),{lineSpacing:1},false);
@@ -86,7 +90,7 @@ export const MenuMixin={
     const it=ITEMS[cell.id],own=STATE.bag.includes(cell.id),eq=this.equip[SLOTS[M.r]]===cell.id;
     if(!own){M.name.setText('???');M.desc.setText('아직 얻지 못한 장비예요. 상자나 보스에게서 찾아보세요.');return}
     M.name.setText((it.slot==='weapon'?weaponName(cell.id):it.name)+'   '+statLine(it)+(eq?'  (장착 중)':''));
-    M.zh.setText(eq?(it.slot==='weapon'?'':'Z 벗기'):'Z 장착');
+    M.zh.setText(eq?(it.slot==='weapon'?'':MOBILE?'다시 눌러 벗기':'Z 벗기'):MOBILE?'다시 눌러 장착':'Z 장착');
     M.desc.setText(it.desc+(it.set?'  ['+SETS[it.set].name+']':''));
     if(it.slot==='weapon'){const sk=skillOf(cell.id);M.sk.setText('C 스킬 「'+sk.name+'」 MP '+sk.mp+' · '+sk.desc)}
   },
@@ -98,7 +102,7 @@ export const MenuMixin={
   closeMenu(){const M=this.menu;if(!M)return;[...M.objs,...M.dyn].forEach(o=>o.destroy());this.menu=null;this.resumeWorld();this.prev=this.heldNow()},
   updateMenu(){
     const M=this.menu,n=this.navPress(),c=this.ed('mtab',isDown('KeyC','KeyL')||VP.skill);
-    if(c){M.tab=(M.tab+1)%2;this.buildTab();return}
+    if(c){if(MOBILE&&M.tab===0){M.r=(M.r+1)%SLOTS.length;M.c=Math.max(0,Math.min(M.c,M.cells[M.r].length-1));this.drawMenu()}else{M.tab=MOBILE?0:(M.tab+1)%2;this.buildTab()}return}
     if(n.back||this.ed('mesc',isDown('Escape')||VP.back)){this.closeMenu();return}
     if(M.tab!==0)return;
     const NR=SLOTS.length,len=r=>Math.max(1,M.cells[r].length);

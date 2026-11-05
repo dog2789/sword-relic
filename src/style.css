@@ -92,6 +92,7 @@ body.mobile .pad{display:block;touch-action:none}
   body.mobile .sys{position:absolute;top:8px;left:max(12px,env(safe-area-inset-left,0px));justify-content:flex-start;opacity:.85;max-width:60vw}
   body.mobile .slot{--sl:40px}
   body.mobile .turn{display:none}
+  body.mobile.ovl .sys{visibility:hidden}
   body.mobile #start{position:fixed}
 }
 .errbox{position:absolute;left:8px;right:8px;top:8px;z-index:20;padding:10px 12px;background:#3a0f18;border:2px solid var(--red);color:#ffd8de;font-size:13px;line-height:1.5;word-break:break-all}
@@ -119,5 +120,4 @@ body.mobile .pad{display:block;touch-action:none}
 .pbtn.slot.tool img{width:52%;height:52%}
 .pbtn.slot.tool span{font-size:9px;line-height:1;color:var(--gold);pointer-events:none}
 .pbtn.slot.off span{color:#8f86ab}
-.pbtn.slot.back{box-shadow:inset 0 0 0 1px #e0404f,inset 0 -3px 0 #120c20}.pbtn.slot.back span{color:#ff9aa8;font-size:8px;letter-spacing:-.5px}
 .pbtn.slot.on{transform:translateY(2px);background:linear-gradient(#3a2f5c,#2a2046);box-shadow:inset 0 0 0 1px var(--gold)}

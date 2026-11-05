@@ -100,6 +100,7 @@ export const Gimmicks={
   updatePortals(press){
     if(!this.portals.length)return;this.portCd-=1/60;const p=this.player;if(p.dead)return;
     const o=this.portals.find(o=>Math.abs(p.x-o.x)<10&&Math.abs(p.body.bottom-o.y)<6);
+    if(o)this.canTalk=true;
     if(o&&!this.portHint){this.toast('↑ 키로 순간이동 문에 들어갈 수 있어요',1800);this.portHint=true}
     if(o&&press.up&&this.portCd<=0&&!this.climbing){const t=this.portals[o.d.to];if(!t)return;
       this.batEm.explode(14,p.x,p.y);p.body.reset(t.x,t.y-9);p.setVelocity(0,0);p.inv=Math.max(p.inv,0.4);this.portCd=0.5;sfx('door');this.batEm.explode(14,t.x,t.y-9);this.safe={x:t.x,y:t.y-9}}},

@@ -4,4 +4,6 @@ export const SPEED=92,JUMP=300,GRAV=820;
 /* 터치 버튼 상태 (main.js 가 채움) */
 export const VP={left:false,right:false,up:false,down:false,jump:false,attack:false,skill:false,menu:false,map:false,q0:false,q1:false,q2:false,q3:false,back:false};   // back = ESC (닫기·건너뛰기)
 /* 폰·태블릿(손가락 터치) 화면인지. 주소 뒤에 ?mobile 을 붙이면 PC에서도 폰 화면으로 볼 수 있음 */
+/* 폰에서는 ↑ 대신 공격(Z) 버튼으로 말 걸기·워프·순간이동 → 안내 문구도 바꿔 보여 줌 */
+export const keyText=s=>MOBILE?s.replace(/↑ 키/g,'공격(Z) 버튼'):s;
 export const MOBILE=typeof matchMedia!=='undefined'&&(matchMedia('(pointer:coarse)').matches||/[?&]mobile/.test(location.search));

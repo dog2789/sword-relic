@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import {W,H,T,HUD,ROWS,LH,SPEED,JUMP,VP} from '../config.js';
+import {W,H,T,HUD,ROWS,LH,SPEED,JUMP,VP,MOBILE,keyText} from '../config.js';
 import {buildTextures} from '../gfx/sprites.js';
 import {buildFonts} from '../gfx/fonts.js';
 import {cv,px} from '../gfx/pixel.js';
@@ -426,6 +426,7 @@ export class PlayScene extends Phaser.Scene{
     if(cb)this.cameras.main.once('camerafadeoutcomplete',cb);
   }
   toast(msg,ms=2400){
+    msg=keyText(msg);
     const t=this.toastTxt;if(!t)return;this.tweens.killTweensOf(t);
     t.setText(msg).setVisible(true).setAlpha(0);
     this.tweens.add({targets:t,alpha:1,duration:160});
@@ -494,6 +495,8 @@ export class PlayScene extends Phaser.Scene{
     const held=this.heldNow(),esc=this.ed('esc',isDown('Escape')||VP.back);
     const pr=this.prev,press={};['jump','atk','skill','menu','map','up','q0','q1','q2','q3'].forEach(k=>press[k]=held[k]&&!pr[k]);
     if(esc&&this.menu)press.menu=true;
+    // 폰: NPC·워프 받침대·순간이동 문 앞에서는 공격 버튼이 ↑ 역할 (말 걸기·이동)
+    if(MOBILE&&press.atk&&this.canTalk&&!this.overlayOpen()){press.atk=false;press.up=true}
     this.prev=held;
     if(this.frozen){for(const kk in press)if(press[kk])this.pend[kk]=true}
     else{for(const kk in this.pend)press[kk]=press[kk]||this.pend[kk];this.pend={}}
