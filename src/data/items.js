@@ -90,6 +90,26 @@ export const ITEMS={
     look:{armor:'dragon',cape:true,capePal:{c:'#c0301a',C:'#7a1408'},pal:{a:'#d8a83a',A:'#8a5a1a',i:'#fff0a0',M:'#a0701a',G:'#a0701a',n:'#c0301a',N:'#7a1408',p:'#8a5a1a',O:'#fff4d8',W:'#c0301a'}}},
   dragon_boots:{slot:'boots',name:'용기사 장화',desc:'용의 발톱이 달린 금빛 장화',def:5,set:'dragon',effects:{speed:10},
     look:{base:{f:'#a0701a'},cuff:'#c0301a'}},
+  /* 천공 기사 세트 (하늘 성채): 흰 판금, 금 테, 날개 투구. 천공검은 맞힌 적 근처로 번개가 옮겨붙음 */
+  sky_sword:{slot:'weapon',name:'천공검',desc:'폭풍 그리폰의 깃털로 벼린 검. 베면 번개가 옆의 적에게 옮겨붙는다',atk:38,set:'sky',fx:'storm',wave:0xfff07a,
+    sword:{l:'#f4f8ff',L:'#ffffff',m:'#f0c040',j:'#3a5a9a'},slashA:['#ffffff','#fff4b0','#f0c040'],slashC:['#ffffff','#fff07a','#5ab0ff'],big:27},
+  sky_helm:{slot:'helm',name:'천공 기사 투구',desc:'양옆에 흰 날개가 돋은 금빛 테의 투구',def:8,hp:30,set:'sky',
+    look:{helm:'winged',pal:{a:'#eef2fa',A:'#9aa6c0',i:'#ffffff',m:'#f0c850',M:'#a07a20',v:'#1a2a5a',W:'#ffffff',w:'#c8d8f0'}}},
+  sky_armor:{slot:'armor',name:'천공 기사 갑옷',desc:'구름빛 판금에 금 테를 두르고 하늘색 망토를 걸친 갑옷',def:14,hp:60,set:'sky',
+    look:{armor:'heavy',cape:true,capePal:{c:'#6ab0f0',C:'#3a7ac0'},pal:{a:'#eef2fa',A:'#9aa6c0',i:'#ffffff',M:'#c09a3a',G:'#c09a3a',n:'#f0c040',N:'#a07a1a',p:'#9aa6c0'}}},
+  sky_boots:{slot:'boots',name:'천공 기사 장화',desc:'깃털처럼 가벼운 흰 장화',def:6,set:'sky',effects:{speed:10},
+    look:{base:{f:'#dfe6f2'},cuff:'#f0c040'}},
+  storm_ring:{slot:'acc',name:'폭풍의 반지',desc:'구름 정원에 떨어져 있던 반지. 바람이 몸을 밀어 준다',atk:6,effects:{speed:10},gem:['#fff07a','#5ab0ff']},
+  /* 마검사 세트 (마왕성): 검보라 판금, 뿔 왕관, 보라 망토. 마검은 벤 피해를 빨아들이고 3단 베기에 어둠이 터짐 */
+  abyss_sword:{slot:'weapon',name:'마검 아비스',desc:'마왕성 무덤에 잠든 검은 검. 벤 피해를 빨아들이고, 3단 베기에 어둠이 터진다',atk:44,set:'abyss',fx:'dark',wave:0x9a3aff,
+    sword:{l:'#2a1a3a',L:'#c070ff',m:'#c0202a',j:'#14081c'},slashA:['#ffffff','#d8a0ff','#7a2ac0'],slashC:['#ffffff','#c070ff','#4a0a8a'],big:28},
+  abyss_helm:{slot:'helm',name:'마검사 투구',desc:'뿔과 검은 왕관이 솟은 대투구',def:9,hp:35,set:'abyss',
+    look:{helm:'demon',pal:{a:'#3a2a4a',A:'#1e1428',i:'#7a5a9a',m:'#4a3a5a',M:'#2a1e36',v:'#ff3a5a',O:'#e8dcc8',o:'#8a7a6a',Y:'#c070ff',y:'#6a2a9a',r:'#ff3a5a'}}},
+  abyss_armor:{slot:'armor',name:'마검사 갑옷',desc:'가시 어깨받이의 검보라 판금과 핏빛 안감 망토',def:16,hp:70,set:'abyss',
+    look:{armor:'spike',cape:true,capePal:{c:'#5a1a7a',C:'#30083a'},pal:{a:'#3a2a4a',A:'#1e1428',i:'#7a5a9a',M:'#2a1e36',G:'#2a1e36',n:'#9a3aff',N:'#5a1a9a',p:'#1e1428'}}},
+  abyss_boots:{slot:'boots',name:'마검사 장화',desc:'보라 불꽃이 새겨진 검은 강철 장화',def:7,set:'abyss',effects:{speed:10},
+    look:{base:{f:'#2a1e36'},cuff:'#9a3aff'}},
+  abyss_ring:{slot:'acc',name:'심연의 반지',desc:'저주받은 예배당 제단의 반지. 검은 힘이 솟는다',atk:8,hp:30,gem:['#c070ff','#4a0a8a']},
   relic_sword:{slot:'weapon',name:'전설의 검',desc:'할아버지가 찾아 헤매던 전설의 검. 빛의 검기가 모든 것을 꿰뚫는다',atk:34,fx:'holy',wave:0xfff0a0,
     sword:{l:'#fff4c0',L:'#ffffff',m:'#f0c040',j:'#6a3a8a'},slashA:['#ffffff','#fff0a0','#f0c040'],slashC:['#ffffff','#fff4c0','#ffd060'],big:26},
   // NPC·몬스터 전용 (획득 불가)
@@ -101,7 +121,14 @@ export const ITEMS={
   haunt_armor:{slot:'armor',hidden:true,name:'',desc:'',look:{armor:'spike',pal:{a:'#6a6880',A:'#44425a',i:'#8a88a0',M:'#54526a',G:'#54526a',n:'#5a2a7a',N:'#3a1a50',p:'#44425a'}}},
   rust_helm:{slot:'helm',hidden:true,name:'',desc:'',look:{helm:'great',crest:'#c0302a',pal:{a:'#a0785a',A:'#6a4a36',i:'#d0a880',m:'#b08a68',M:'#7a5a42',v:'#ff5a2a'}}},
   rust_armor:{slot:'armor',hidden:true,name:'',desc:'',look:{armor:'spike',cape:true,capePal:{c:'#8a2a2a',C:'#5a1616'},pal:{a:'#a0785a',A:'#6a4a36',i:'#d0a880',M:'#7a5a42',G:'#7a5a42',n:'#8a2a2a',N:'#5a1616',p:'#6a4a36'}}},
-  rust_boots:{slot:'boots',hidden:true,name:'',desc:'',look:{base:{f:'#6a4a36'}}}
+  rust_boots:{slot:'boots',hidden:true,name:'',desc:'',look:{base:{f:'#6a4a36'}}},
+  shade_helm:{slot:'helm',hidden:true,name:'',desc:'',look:{helm:'great',crest:'#5a1a7a',pal:{a:'#2a2236',A:'#16101e',i:'#4a3a5a',m:'#3a2e48',M:'#1e1628',v:'#ff3a5a'}}},
+  shade_armor:{slot:'armor',hidden:true,name:'',desc:'',look:{armor:'spike',cape:true,capePal:{c:'#2a1036',C:'#16061e'},pal:{a:'#2a2236',A:'#16101e',i:'#4a3a5a',M:'#1e1628',G:'#1e1628',n:'#5a1a7a',N:'#30083a',p:'#16101e'}}},
+  skull_helm:{slot:'helm',hidden:true,name:'',desc:'',look:{helm:'full',pal:{a:'#e8e0cc',A:'#a89a80',i:'#ffffff',m:'#d8ccb4',M:'#8a7c64',v:'#c070ff'}}},
+  skull_robe:{slot:'armor',hidden:true,name:'',desc:'',look:{armor:'plate',cape:true,capePal:{c:'#4a2a6a',C:'#2a1640'},pal:{a:'#5a3a7a',A:'#3a2250',i:'#8a6aaa',M:'#3a2250',G:'#e8e0cc',n:'#c070ff',N:'#7a3ab0',p:'#3a2250'}}},
+  demon_helm:{slot:'helm',hidden:true,name:'',desc:'',look:{helm:'demon',pal:{a:'#4a1a2a',A:'#2a0a16',i:'#8a3a4a',m:'#5a2a3a',M:'#300e1a',v:'#ffd34a',O:'#2a2236',o:'#14101c',Y:'#ffd34a',y:'#a07a1a',r:'#ff3a3a'}}},
+  demon_armor:{slot:'armor',hidden:true,name:'',desc:'',look:{armor:'spike',cape:true,capePal:{c:'#8a0a1a',C:'#4a0410'},pal:{a:'#4a1a2a',A:'#2a0a16',i:'#8a3a4a',M:'#300e1a',G:'#300e1a',n:'#ffd34a',N:'#a07a1a',p:'#2a0a16'}}},
+  demon_boots:{slot:'boots',hidden:true,name:'',desc:'',look:{base:{f:'#2a0a16'}}}
 };
 
 /* 소모품 (퀵슬롯 1~4) */
@@ -116,7 +143,9 @@ export const SETS={
   blue:{name:'청기사 세트',need:4,bonus:{atk:6,def:4,hp:40},desc:'공격 +6, 방어 +4, 최대 HP +40'},
   moon:{name:'흑월 세트',need:4,bonus:{atk:9,def:5,hp:60},desc:'공격 +9, 방어 +5, 최대 HP +60'},
   blood:{name:'적월 세트',need:4,bonus:{atk:12,def:7,hp:80},desc:'공격 +12, 방어 +7, 최대 HP +80'},
-  dragon:{name:'용기사 세트',need:4,bonus:{atk:16,def:10,hp:120},desc:'공격 +16, 방어 +10, 최대 HP +120'}
+  dragon:{name:'용기사 세트',need:4,bonus:{atk:16,def:10,hp:120},desc:'공격 +16, 방어 +10, 최대 HP +120'},
+  sky:{name:'천공 기사 세트',need:4,bonus:{atk:20,def:12,hp:150},desc:'공격 +20, 방어 +12, 최대 HP +150'},
+  abyss:{name:'마검사 세트',need:4,bonus:{atk:25,def:14,hp:180},desc:'공격 +25, 방어 +14, 최대 HP +180'}
 };
 
 /* 무기 강화 (대장간): +1 ~ +8, 한 단계마다 공격 +3 */

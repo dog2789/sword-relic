@@ -16,7 +16,9 @@ export const SKILLS={
   moon_sword:{name:'초승달 베기',desc:'적을 꿰뚫는 초승달을 날림. 벤 피해의 30%를 HP로 흡수',mp:14,kind:'crescent'},
   blood_sword:{name:'핏빛 돌진',desc:'앞으로 순식간에 돌진하며 지나간 적을 모두 벰. 돌진 중엔 무적',mp:12,kind:'dash'},
   dragon_sword:{name:'용의 숨결',desc:'앞으로 불길을 내뿜어 닿는 적을 계속 태움',mp:16,kind:'breath'},
-  relic_sword:{name:'성광',desc:'거대한 빛의 검기와 함께 앞쪽에 빛의 기둥이 내리꽂힘',mp:16,kind:'relic'}
+  relic_sword:{name:'성광',desc:'거대한 빛의 검기와 함께 앞쪽에 빛의 기둥이 내리꽂힘',mp:16,kind:'relic'},
+  sky_sword:{name:'천둥',desc:'앞쪽 땅에 번개가 다섯 번 차례로 내리꽂힘',mp:16,kind:'erupt',fx:'storm',n:5},
+  abyss_sword:{name:'심연 베기',desc:'적을 꿰뚫는 커다란 검은 초승달을 날림. 벤 피해의 20%를 HP로 흡수',mp:16,kind:'crescent',tint:0x9a3aff,drain:0.2,scale:2.6}
 };
 export const skillOf=w=>SKILLS[w]||SKILLS.traveler_sword;
 
@@ -34,9 +36,9 @@ export const Skills={
     if(k==='wave'||k==='relic')this.skWave(it,f,sk.big||k==='relic');
     if(k==='relic')this.skErupt(f,'holy',3,1.3);
     if(k==='fan')[-0.32,0,0.32].forEach(a=>this.skShot(f,a,'fx_flame',{spd:210,life:0.6,dmg:0.8,spin:true,trail:this.fireEm}));
-    if(k==='crescent')this.skWave(it,f,true,{drain:0.3,scale:2,tint:0xc8b8ff,life:0.8});
+    if(k==='crescent')this.skWave(it,f,true,{drain:sk.drain||0.3,scale:sk.scale||2,tint:sk.tint||0xc8b8ff,life:0.8});
     if(k==='lob')this.skLob(f);
-    if(k==='erupt')this.skErupt(f,sk.fx,4,1.1);
+    if(k==='erupt')this.skErupt(f,sk.fx,sk.n||4,1.1);
     if(k==='boomerang')this.skBoomerang(f,w);
     if(k==='dash')this.skDash(f);
     if(k==='breath'){this.breathT=0.7;this.breathTick=0;this.castT=0.7}
@@ -73,12 +75,12 @@ export const Skills={
     for(let i=0;i<n;i++)this.time.delayedCall(90+i*110,()=>{
       if(!this.player.active)return;
       const x=p.x+f*(26+i*22),gy=this.groundBelow(x,p.y);if(gy==null)return;
-      const col={ice:0x9ff0ff,fire:0xff7a2a,holy:0xfff0a0}[fx]||0xffffff,h=fx==='holy'?70:40;
-      const st=this.add.image(x,gy,'fx_streak').setOrigin(0.5,1).setScale(fx==='holy'?3:2.4,0.1).setTint(col).setBlendMode(Phaser.BlendModes.ADD).setDepth(12);
+      const col={ice:0x9ff0ff,fire:0xff7a2a,holy:0xfff0a0,storm:0xfff07a}[fx]||0xffffff,tall=fx==='holy'||fx==='storm',h=tall?70:40;
+      const st=this.add.image(x,gy,'fx_streak').setOrigin(0.5,1).setScale(tall?3:2.4,0.1).setTint(col).setBlendMode(Phaser.BlendModes.ADD).setDepth(12);
       this.tweens.add({targets:st,scaleY:h/8,duration:90,yoyo:true,hold:120,onComplete:()=>st.destroy()});
       if(fx==='ice')for(let j=0;j<3;j++){const sh=this.add.image(x+(j-1)*5,gy,'iceshard').setOrigin(0.5,1).setDepth(12).setScale(1,0.2);
         this.tweens.add({targets:sh,scaleY:1.4+j%2*0.6,duration:90,yoyo:true,hold:260,onComplete:()=>sh.destroy()})}
-      const em=fx==='ice'?this.fxEmitter('ice'):fx==='holy'?this.auraEm:this.fireEm;em.explode(fx==='holy'?14:10,x,gy-6);
+      const em=fx==='ice'||fx==='storm'?this.fxEmitter(fx):fx==='holy'?this.auraEm:this.fireEm;em.explode(fx==='holy'?14:10,x,gy-6);
       this.dustEm.explode(4,x,gy);this.shake(50,0.004);
       this.skHit(R(x-9,gy-h,18,h),set,mul,f,{tag});
     });

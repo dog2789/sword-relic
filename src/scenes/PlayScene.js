@@ -6,7 +6,7 @@ import {cv,px} from '../gfx/pixel.js';
 import {HERO_W,HERO_H,HERO_FRAMES,LOOK,drawHero,MY} from '../gfx/hero.js';
 import {ITEMS,SETS,SLOTS,SLOT_NAMES,equipBonus,setProgress,statLine,wlvAtk,weaponName} from '../data/items.js';
 import {ROOMS,buildRoomMap,floorTopY,surfaceY,roomChests} from '../world/rooms.js';
-import {drawFar,drawMid,drawLevel,drawCaveFar,drawCaveMid,drawTreetopMid,drawCastleFar,drawCastleMid,drawIceFar,drawIceMid,drawDesertFar,drawDesertMid,drawLavaFar,drawLavaMid} from '../world/meadow.js';
+import {drawFar,drawMid,drawLevel,drawCaveFar,drawCaveMid,drawTreetopMid,drawCastleFar,drawCastleMid,drawIceFar,drawIceMid,drawDesertFar,drawDesertMid,drawLavaFar,drawLavaMid,drawSkyFar,drawSkyMid,drawDemonFar,drawDemonMid,THEME_COL} from '../world/meadow.js';
 import {spawnMob,updateMob,makeMobAnims,updateQuakes,updateEShots,tierOf} from './monsters.js';
 import {PlayUI} from './playUI.js';
 import {Economy} from './economy.js';
@@ -87,7 +87,7 @@ export class PlayScene extends Phaser.Scene{
     this.slimeEm=mk([0x5fcf5a,0x2f8a3a,0xe8ffe0]);
     this.kingEm=mk([0x5a8cff,0x2f4fb0,0xf0c040,0xe0ecff],{speed:{min:60,max:200}});
     this.goldEm=mk([0xffd34a,0xfff2a0,0xe8742a],{gravityY:-60,speed:{min:20,max:90}});
-    this.dustEm=mk(R.theme==='ice'?[0xffffff,0xcfeaff]:R.theme==='desert'?[0xf0d090,0xd8a868]:R.theme==='lava'?[0x5a4448,0xff8a2a]:R.theme==='cave'?[0x8a849e,0x6a6480]:[0xd8c8a0,0xb8a478],{speed:{min:10,max:45},angle:{min:190,max:350},gravityY:-30,lifespan:{min:200,max:380}});
+    this.dustEm=mk(R.theme==='ice'?[0xffffff,0xcfeaff]:R.theme==='desert'?[0xf0d090,0xd8a868]:R.theme==='lava'?[0x5a4448,0xff8a2a]:R.theme==='sky'?[0xffffff,0xd8e8f8]:R.theme==='demon'?[0x5a4a6a,0x9a3aff]:R.theme==='cave'?[0x8a849e,0x6a6480]:[0xd8c8a0,0xb8a478],{speed:{min:10,max:45},angle:{min:190,max:350},gravityY:-30,lifespan:{min:200,max:380}});
     this.rockEm=mk([0x5a5470,0x7a7494,0x3a3448],{speed:{min:40,max:150},gravityY:500,lifespan:{min:400,max:800},scale:{start:1.5,end:0.5}});
     this.batEm=mk([0x5a3a7a,0x8a6aaa,0xffe27a]);
     this.snailEm=mk([0xc86a3a,0x8a3a1a,0xd8c08a,0xf0e8d8]);
@@ -126,14 +126,14 @@ export class PlayScene extends Phaser.Scene{
   /* ----- world ----- */
   drawWorld(){
     const id=this.roomId,R=this.R,th=R.theme;
-    const far={cave:drawCaveFar,castle:drawCastleFar,ice:drawIceFar,desert:drawDesertFar,lava:drawLavaFar}[th]||drawFar,mid={cave:drawCaveMid,treetop:drawTreetopMid,castle:drawCastleMid,ice:drawIceMid,desert:drawDesertMid,lava:drawLavaMid}[th]||drawMid;
+    const far={cave:drawCaveFar,castle:drawCastleFar,ice:drawIceFar,desert:drawDesertFar,lava:drawLavaFar,sky:drawSkyFar,demon:drawDemonFar}[th]||drawFar,mid={cave:drawCaveMid,treetop:drawTreetopMid,castle:drawCastleMid,ice:drawIceMid,desert:drawDesertMid,lava:drawLavaMid,sky:drawSkyMid,demon:drawDemonMid}[th]||drawMid;
     if(!this.textures.exists('far_'+id))this.textures.addCanvas('far_'+id,far(this.lw));
     if(!this.textures.exists('mid_'+id))this.textures.addCanvas('mid_'+id,mid(this.lw));
     if(!this.textures.exists('lvl_'+id))this.textures.addCanvas('lvl_'+id,drawLevel(this.map,this.cols,R.seed,R.deco,th));
     /* 원경(패럴랙스): 고해상도 줌 카메라에서는 scrollFactor가 어긋나서, 화면 왼쪽 위 기준으로 직접 위치를 맞춤 */
     const par=(o,sf)=>{o.sf=sf;o.bx=o.x;o.by=o.y;return o};
     this.par=[par(this.add.image(0,0,'far_'+id).setOrigin(0).setDepth(-10),0.1)];
-    this.clouds=(th==='cave'||th==='castle'||th==='ice'||th==='lava')?[]:[0,1,2,0,1].map((k,i)=>par(this.add.image(i*90+Math.random()*60,12+Math.random()*50,'cloud'+k).setDepth(-9.5).setAlpha(0.95),0.15));
+    this.clouds=['cave','castle','ice','lava','demon'].includes(th)?[]:[0,1,2,0,1].map((k,i)=>par(this.add.image(i*90+Math.random()*60,12+Math.random()*50,'cloud'+k).setDepth(-9.5).setAlpha(0.95),0.15));
     this.par.push(...this.clouds,par(this.add.image(0,0,'mid_'+id).setOrigin(0).setDepth(-9),0.35));
     this.add.image(0,0,'lvl_'+id).setOrigin(0).setDepth(0);
     const cam=this.cameras.main,place=()=>{const v=cam.worldView;for(const o of this.par){o.x=o.bx+v.x*(1-o.sf);o.y=o.by+v.y*(1-o.sf)}};
@@ -162,6 +162,7 @@ export class PlayScene extends Phaser.Scene{
   }
   tileAt(X,Y){const tx=Math.floor(X/T),ty=Math.floor(Y/T);if(tx<0||tx>=this.cols)return'.';if(ty<0)return this.map[0][tx]==='#'?'#':this.map[0][tx];if(ty>=ROWS)return'.';return this.map[ty][tx]}
   isClimb(X,Y){const c=this.tileAt(X,Y);return c==='H'||c==='V'}
+  cloudKey(w){const k='cloudp'+w;if(!this.textures.exists(k)){const[c,x]=cv(w*T,6);px(x,'#c8dcf0',0,4,w*T,2);px(x,'#ffffff',1,0,w*T-2,4);for(let i=2;i<w*T-2;i+=5)px(x,'#ffffff',i,-0,3,1);px(x,'#e8f2fc',1,3,w*T-2,1);this.textures.addCanvas(k,c)}return k}
   platKey(w){const k='plat'+w;if(!this.textures.exists(k)){const[c,x]=cv(w*T,6);for(let i=0;i<w;i++){const X=i*T;px(x,'#2a1a12',X,0,16,6);px(x,'#c08a50',X+1,0,14,1);px(x,'#9a6236',X+1,1,14,3);px(x,'#6a3e22',X+1,4,14,1);px(x,'#e8d0a0',X+3,2);px(x,'#e8d0a0',X+12,2)}this.textures.addCanvas(k,c)}return k}
 
   /* ----- 방 오브젝트 ----- */
@@ -203,8 +204,8 @@ export class PlayScene extends Phaser.Scene{
       Object.assign(s,{mv:d,x0:s.x,y0:s.y,range:d.range*T,spd:d.speed});s.body.friction.set(0,0);
       if(d.axis==='x')s.setVelocityX(d.speed);else s.setVelocityY(d.speed);s.setDepth(3);
     });
-    (R.fallers||[]).forEach(d=>{
-      const s=this.platGroup.create(d.tx*T+d.w*T/2,d.ty*T+3,this.platKey(d.w)).setTint(0xd8c0a0);
+    [...(R.fallers||[]),...(R.clouds||[]).map(d=>({...d,cloud:true}))].forEach(d=>{
+      const s=this.platGroup.create(d.tx*T+d.w*T/2,d.ty*T+3,d.cloud?this.cloudKey(d.w):this.platKey(d.w));if(!d.cloud)s.setTint(0xd8c0a0);s.cloud=!!d.cloud;
       s.body.checkCollision.down=s.body.checkCollision.left=s.body.checkCollision.right=false;
       Object.assign(s,{isFaller:true,x0:s.x,y0:s.y,touched:false,t:0,falling:false});s.setDepth(3);this.fallers.push(s);
     });
@@ -225,7 +226,7 @@ export class PlayScene extends Phaser.Scene{
   }
   updateObjects(dt,held,press={}){
     const p=this.player,b=p.body;
-    this.updateExtras(dt,held,press);
+    this.updateExtras(dt,held,press);this.updatePortals(press);
     if(this.statue){const near=Math.abs(p.x-this.statue.x)<14&&Math.abs(p.y-this.statue.y)<22;
       if(near&&!this.atStatue&&!p.dead)this.doSave();
       if(!near&&Math.abs(p.x-this.statue.x)>26)this.atStatue=false;}
@@ -243,7 +244,7 @@ export class PlayScene extends Phaser.Scene{
       }
       if(s.isFaller){
         if(s.touched&&!s.falling){s.t+=dt;s.x=s.x0+(Math.floor(s.t*30)%2?1:-1);
-          if(s.t>0.45){s.falling=true;s.x=s.x0;s.body.checkCollision.up=false;s.setVelocityY(170);this.tweens.add({targets:s,alpha:0,duration:700});
+          if(s.t>(s.cloud?0.6:0.45)){s.falling=true;s.x=s.x0;s.body.checkCollision.up=false;if(!s.cloud)s.setVelocityY(170);else this.dustEm.explode(8,s.x,s.y);this.tweens.add({targets:s,alpha:0,duration:s.cloud?300:700});
             this.time.delayedCall(2800,()=>{if(!s.active)return;s.setVelocityY(0);s.setPosition(s.x0,s.y0);s.body.reset(s.x0,s.y0);s.setAlpha(1);s.body.checkCollision.up=true;Object.assign(s,{touched:false,t:0,falling:false})})}}
       }
     });
@@ -288,7 +289,8 @@ export class PlayScene extends Phaser.Scene{
       if(id==='relic_sword'&&!STATE.flags.ending)this.time.delayedCall(3800,()=>{STATE.flags.ending=true;this.openDialog('',[
         {n:'나',t:'이게... 할아버지가 평생 찾아 헤매던 전설의 검.'},{n:'할아버지의 목소리',t:'...잘 해냈구나. 고향을 떠나 여기까지 온 네가 자랑스럽다.'},
         {n:'할아버지의 목소리',t:'그 검은 이제 네 것이다. 네가 지키고 싶은 것을 위해 휘두르거라.'},{n:'나',t:'고마워요, 할아버지. 이제 집으로 돌아가요. 엄마가 기다리고 있을 거예요.'},
-        {n:'',t:'- 소드 레릭 1부 끝 -   (계속 탐험하며 남은 보물을 모을 수 있어요)'}])});
+        {n:'할아버지의 목소리',t:'...그런데 고성 탑 꼭대기의 봉인이 풀린 것 같구나. 하늘 위, 마왕의 성으로 가는 길이...'},
+        {n:'',t:'- 소드 레릭 1부 끝 -   (고성 탑 꼭대기에서 2부가 이어져요)'}])});
       this.toast(josa(it.name,'을','를')+' 얻었다!  '+statLine(it)+(auto?'':'  (I 키로 장착)'),3400);
       const after=equipBonus(this.equip).sets.filter(k=>!before.includes(k));
       after.forEach(k=>this.time.delayedCall(3600,()=>{this.banner('SET BONUS!',0x9ff0ff);this.toast(SETS[k].name+' 완성!  '+SETS[k].desc,3400);this.auraEm.explode(30,this.player.x,this.player.y)}));
@@ -344,10 +346,13 @@ export class PlayScene extends Phaser.Scene{
     }
   }
   fallPit(){
-    const p=this.player;if(p.dead)return;const sf=this.safe||{x:p.x,y:40};
+    const p=this.player;if(p.dead)return;const sf=this.safe||this.safeSpot();
     p.body.reset(sf.x,sf.y-2);p.inv=0;this.hurtBy(this.trap(18),sf.x,'pit');
     p.setVelocity(0,0);if(!p.dead)p.inv=Math.max(p.inv,1);
   }
+
+  /* 안전한 자리를 아직 모를 때: 왼쪽부터 처음으로 디딜 곳이 있는 칸 */
+  safeSpot(){for(let tx=0;tx<this.cols;tx++){const y=surfaceY(this.map,tx);if(y<LH)return{x:tx*T+8,y:y-9}}return{x:this.player.x,y:40}}
 
   /* ----- 장비 ----- */
   mhp(){return this.stats.maxHp+this.bonus.hp}
@@ -448,7 +453,7 @@ export class PlayScene extends Phaser.Scene{
       if(e.up&&known(e.up.to)){const[ux]=pos(e.up.to);g.fillStyle(0x7a6a9a,1).fillRect(Math.round((x+ux)/2)+cw/2,y-gap,1,gap)}});
     ids.forEach(i=>{if(!known(i))return;const[x,y]=pos(i),R=ROOMS[i];
       if(!STATE.visited[i]){g.lineStyle(1,0x5a4f7a,1).strokeRect(x+0.5,y+0.5,cw-1,ch-1);return}
-      const cur=i===this.roomId,blink=Math.floor(time/350)%2,base={cave:0x4a4468,treetop:0x5a7a32,castle:0x3a5aa0,ice:0x5aa0d0,desert:0xc09050,lava:0xa03a1a}[R.theme]||0x3f7a3a;
+      const cur=i===this.roomId,blink=Math.floor(time/350)%2,base=THEME_COL[R.theme]||0x3f7a3a;
       g.fillStyle(cur?(blink?0xffe27a:0xc9a24a):base,1).fillRect(x,y,cw,ch);
       g.fillStyle(cur?0xfff3b0:0xffffff,cur?1:0.18).fillRect(x,y,cw,1);
       if(R.save)g.fillStyle(0x8fe3ff,1).fillRect(x+2,y+3,2,2);
@@ -619,7 +624,7 @@ export class PlayScene extends Phaser.Scene{
       this.enemies.getChildren().slice().forEach(e=>{
         if(!e.active||a.hit.has(e))return;const eb=e.body;
         if(Phaser.Geom.Intersects.RectangleToRectangle(hb,new Phaser.Geom.Rectangle(eb.x,eb.y,eb.width,eb.height))){
-          a.hit.add(e);const crit=Math.random()<({holy:0.25,blood:0.24,moon:0.16}[this.wfx()]||0.12),mult=[1,1,1.15,1.7][a.step];
+          a.hit.add(e);const crit=Math.random()<({holy:0.25,blood:0.24,moon:0.16,storm:0.2,dark:0.18}[this.wfx()]||0.12),mult=[1,1,1.15,1.7][a.step];
           this.hitEnemy(e,Math.round(this.atkVal()*mult*(0.85+Math.random()*0.3)*(crit?2:1)),crit,a.f,a.step===3)}});
       this.chests.forEach(c=>{if(!c.open&&Phaser.Geom.Intersects.RectangleToRectangle(hb,new Phaser.Geom.Rectangle(c.x-7,c.y-11,14,11)))this.openChest(c)});
       this.hitWalls(hb,a.tag);this.hitSwitches(hb);this.slashShots(hb);
@@ -655,6 +660,14 @@ export class PlayScene extends Phaser.Scene{
     if(fx==='dragon'){e.burn={t:3,tick:0.4,dmg:Math.max(1,Math.round(d*0.3))};
       if(heavy){const ex=e.x,ey=e.y;this.fireEm.explode(26,ex,ey);this.fxEmitter('dragon').explode(18,ex,ey);this.shake(110,0.01);
         this.time.delayedCall(30,()=>this.enemies.getChildren().slice().forEach(o=>{if(o!==e&&o.active&&Math.hypot(o.x-ex,o.y-ey)<44)this.hitEnemy(o,Math.round(d*0.6),false,Math.sign(o.x-ex)||1,false,'splash')}))}}
+    // 번개: 가장 가까운 다른 적 하나에게 옮겨붙음 / 어둠: 벤 만큼 조금 흡수, 3단 베기에 어둠 폭발
+    if(fx==='storm'){const ex=e.x,ey=e.y,o=this.enemies.getChildren().filter(o=>o!==e&&o.active&&o.body&&o.body.enable&&Math.hypot(o.x-ex,o.y-ey)<70).sort((a,b)=>Math.hypot(a.x-ex,a.y-ey)-Math.hypot(b.x-ex,b.y-ey))[0];
+      if(o)this.time.delayedCall(60,()=>{if(!o.active)return;const g=this.add.graphics().setDepth(42).setBlendMode(Phaser.BlendModes.ADD);g.lineStyle(2,0xfff07a,1).beginPath().moveTo(ex,ey);
+        for(let i=1;i<5;i++)g.lineTo(ex+(o.x-ex)*i/5+(Math.random()-.5)*10,ey+(o.y-ey)*i/5+(Math.random()-.5)*10);g.lineTo(o.x,o.y).strokePath();this.tweens.add({targets:g,alpha:0,duration:200,onComplete:()=>g.destroy()});
+        this.hitEnemy(o,Math.round(d*0.5),false,Math.sign(o.x-ex)||1,false,'splash')})}
+    if(fx==='dark'&&!this.player.dead){const s=this.stats,h=Math.max(1,Math.round(d*0.05));if(s.hp<this.mhp()){s.hp=Math.min(this.mhp(),s.hp+h);this.popNum(this.player.x,this.player.y-14,h,0xb8ffa8,false)}
+      if(heavy){const ex=e.x,ey=e.y;this.fxEmitter('dark').explode(26,ex,ey);this.shake(110,0.01);
+        this.time.delayedCall(30,()=>this.enemies.getChildren().slice().forEach(o=>{if(o!==e&&o.active&&Math.hypot(o.x-ex,o.y-ey)<48)this.hitEnemy(o,Math.round(d*0.7),false,Math.sign(o.x-ex)||1,false,'splash')}))}}
     if(fx==='moon'&&!this.player.dead){const s=this.stats,h=Math.max(1,Math.round(d*0.08));if(s.hp<this.mhp()){s.hp=Math.min(this.mhp(),s.hp+h);this.popNum(this.player.x,this.player.y-14,h,0xb8ffa8,false)}}
     if(fx==='slime'&&heavy){const ex=e.x,ey=e.y;this.slimeEm.explode(22,ex,ey);this.shake(90,0.008);
       this.time.delayedCall(30,()=>this.enemies.getChildren().slice().forEach(o=>{if(o!==e&&o.active&&Math.hypot(o.x-ex,o.y-ey)<36)this.hitEnemy(o,Math.round(d*0.55),false,Math.sign(o.x-ex)||1,false,'splash')}))}
@@ -665,7 +678,7 @@ export class PlayScene extends Phaser.Scene{
     const kb=e.kb==null?1:e.kb;e.setVelocity(dir*(heavy?1.6:1)*(e.king?40:110)*kb,e.king?-40:(heavy?-170:-110)*kb);
     e.setTintFill(0xffffff);this.time.delayedCall(70,()=>{if(e.active){e.clearTint();if(e.slow>0)e.setTint(0x9fd8ff);else if(e.baseTint)e.setTint(e.baseTint)}});
     this.popNum(e.x+(Math.random()*8-4),e.body.y-2,d,crit?0xffd34a:0xffffff,crit);
-    this.fxHit(e.x-dir*4,e.body.center.y,dir,crit,heavy,src==='splash'?(this.wfx()==='dragon'?'dragon':'slime'):null);
+    this.fxHit(e.x-dir*4,e.body.center.y,dir,crit,heavy,src==='splash'?({dragon:'dragon',storm:'storm',dark:'dark'}[this.wfx()]||'slime'):null);
     if(src!=='burn')sfx('hit',{crit,heavy});
     this.combo++;this.comboT=1.5;
     if(this.combo>=2){this.comboTxt.setText(this.combo+' HIT').setVisible(true).setAlpha(1);this.tweens.add({targets:this.comboTxt,scale:{from:1.4,to:1},duration:120})}

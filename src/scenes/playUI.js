@@ -3,6 +3,7 @@
 import Phaser from 'phaser';
 import {W,H,T,HUD,VP} from '../config.js';
 import {ROOMS,surfaceY,roomChests} from '../world/rooms.js';
+import {THEME_COL} from '../world/meadow.js';
 import {STATE,bossDone} from '../state.js';
 import {CONSUMABLES} from '../data/items.js';
 import {HERO_H,MY} from '../gfx/hero.js';
@@ -219,7 +220,7 @@ export const PlayUI={
     ids.forEach(i=>{if(!known(i))return;const[x,y]=pos(i),R=ROOMS[i];
       if(!STATE.visited[i]){g.lineStyle(1,0x5a4f7a,1).strokeRect(x+0.5,y+0.5,cw-1,ch-1);return}
       const cur=i===this.roomId,isW=warp&&warp.warps.includes(i);
-      const base={cave:0x4a4468,treetop:0x5a7a32,castle:0x3a5aa0,ice:0x5aa0d0,desert:0xc09050,lava:0xa03a1a}[R.theme]||0x3f7a3a;
+      const base=THEME_COL[R.theme]||0x3f7a3a;
       g.fillStyle(warp?(isW?base:0x2a2440):(cur?(blink?0xffe27a:0xc9a24a):base),1).fillRect(x,y,cw,ch);g.fillStyle(0xffffff,cur&&!warp?0.6:0.2).fillRect(x,y,cw,1);
       if(warp){
         if(isW){g.fillStyle(0x6fe0ff,1).fillTriangle(x+cw/2-3,y+ch/2,x+cw/2,y+ch/2-3,x+cw/2+3,y+ch/2).fillTriangle(x+cw/2-3,y+ch/2,x+cw/2,y+ch/2+3,x+cw/2+3,y+ch/2)}

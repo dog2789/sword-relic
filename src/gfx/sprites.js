@@ -22,6 +22,8 @@ const HELM_ICON={
   moon:["..k......k..","..kYk..kYk..","...kYYYYk...","..kkkkkkkk..",".kiaaamaaak.",".kvvvvvvvvk.",".kiaaavaaak.",".kiaaavaaak.",".kMaaavaaMk.","..kkkkkkkk.."],
   bloodmoon:["k..k....k..k","kOkYk..kYkOk",".kOkYYYYkOk.","..kkkkkkkk..",".kiaaamaaak.",".kvvvvvvvvk.",".kiaaavaaak.",".kiaaavaaak.",".kMaaavaaMk.","..kkkkkkkk.."],
   dragon:["k....kk....k","kWk..kk..kWk","kWwkkkkkkwWk",".kWaaaiiaWk.",".kaaaamaaak.",".kvvvvvvvvk.",".kaaaavaaak.",".kaaaavaaak.",".kMaaavaaMk.","..kkkkkkkk.."],
+  winged:["k..........k","kWk......kWk","kWwkkkkkkwWk",".kWaaaiiaWk.",".kaaaamaaak.",".kvvvvvvvvk.",".kaaaavaaak.",".kaaaavaaak.",".kMaaavaaMk.","..kkkkkkkk.."],
+  demon:["k.Y..Y..Y..k","kOkYYYYYYkOk","kOOkkkkkkOOk",".kOkaaiikOk.",".kaaaamaaak.",".kvvvvvvvvk.",".kaaaavaaak.",".kaaaavaaak.",".kMaaavaaMk.","..kkkkkkkk.."],
   horned:["k..........k","kOk......kOk","kOOkkkkkkOOk",".kOkaaiikOk.","..kaaaaaaik.","..kvvvvvvvk.","..kaaavaaak.","..kaaavaaak.","...kaaaaak..","....kkkkk..."]};
 const ARMOR_ICON={
   heavy:[".kkkk..kkkk.","kiaaAkkiaaAk","kaAAAaaaAAAk",".kkkannnakk.","...kannnak..","...kannnak..","...kAnnnAk..","....kkkkk..."],
@@ -41,6 +43,8 @@ SWORDS.moon_sword=[".m.............","m.mkkkkkkkkkk..","jjmLLLLLLLLLLLk","m.mkkk
 SWORDS.blood_sword=["..k.k.k.k.k....","..mkLkLkLkLkk..","jjmLLLLLLLLLLLk","..mkkkkkkkkkk..","..k............"];
 SWORDS.dragon_sword=[".O..............","mmmkkkkkkkkkkk..","jjmLLLLLLLLLLLLk","jjmLLLLLLLLLLLLk","mmmkkkkkkkkkkk..",".O.............."];
 SWORDS.relic_sword=["mm..............",".mmkkkkkkkkkkk..","jjmLLLLLLLLLLLLk",".mmkkkkkkkkkkk..","mm.............."];
+SWORDS.sky_sword=["m.m.............","mmmkkkkkkkkkkkk.","jjmLLLLLLLLLLLLLk","mmmkkkkkkkkkkkk.","m.m............."];
+SWORDS.abyss_sword=["..k.k...k.......","..mkLkkkLkkkkkk..","jjmLLLLLLLLLLLLLk","..mkLkkkLkkkkkk..","..k.k...k......."];
 const SWORD_ICONS={
   moon_sword:["..........kk",".........kLk","........kLlk",".......kLlk.","......kLlk..",".....kLlk...","m...kLlk....",".m.mkLk.....","..mmmk......","..kjmm......",".kjk.m......","kkk........."],
   blood_sword:["........k.kk",".......kLkLk","......k.kLlk",".....kLkLlk.","....k.kLlk..",".....kLlk...","..k.kLlk....","..kmkLk.....","...kmk......","..kjkmk.....",".kjk.kk.....","kkk........."],
@@ -52,6 +56,7 @@ const SWORD_ICONS={
   flame_sword:["........k.kk",".......kLkLk","........kLlk",".....k.kLlk.","....kLkLlk..",".....kLlk...","..k.kLlk....","..kmkLk.....","...kmk......","..kjkmk.....",".kjk.kk.....","kkk........."],
   frost_blade:["........kkkk",".......kLLLk","......kLLllk",".....kLLllk.","....kLLllk..","....kLllk...","..k.kLlk....","..kmkLk.....","...kmk......","..kjkmk.....",".kjk.kk.....","kkk........."],
   blue_sword:["..........kk",".........kLk","........kLlk",".......kLlk.","......kLlk..",".....kLlk...","...kkLlk....","..kmmLk.....","..mmmk......","..kjmmk.....",".kjk.mm.....","kkk........."]};
+SWORD_ICONS.sky_sword=SWORD_ICONS.relic_sword;SWORD_ICONS.abyss_sword=SWORD_ICONS.dragon_sword;
 const CAPE_ICON=["...kkkkkk...","..kyccccyk..","..kccccccK..",".kccccccccK.",".kcccCcccCK.","kccCccccCcCK","kcCcccCccCCK","kCcCcCcCcCCK","kkkkkkkkkkkk"];
 const POTION=["..kkk...","..kck...",".kwwwk..","krrrrrk.","krwrrrk.","krrrrRk.",".kRRRk..","..kkk..."];
 function iconPal(it){
@@ -200,6 +205,32 @@ export function buildTextures(sc){
   add('sandball',fromRows([".kkk.","kyyYk","kyYYk",".kkk."],{k:'#7a4a1a',y:'#f0d090',Y:'#c89a60'}));
   add('magma',fromRows([".kkkk.","kryyrk","kyWyyk","kryyrk",".kkkk."],{k:'#3a1408',r:'#c0301a',y:'#ff8a2a',W:'#ffe080'}));
   {const[c,x]=cv(10,48);for(let y=0;y<48;y++){const t=y/48,w=Math.round(2+t*3);px(x,t<0.3?'#ffe080':t<0.6?'#ffb040':'#ff6a1a',5-w,y,w*2,1);if(y%5===0)px(x,'#ffffff',4,y,2,1)}add('geyser',c)}
+  // 하늘 성채 몬스터: 하피, 번개 정령, 폭풍 그리폰(보스)
+  const HP={k:'#2a0a24',f:'#c06aa0',F:'#e8a0d0',h:'#ffd34a',s:'#f0c8a0',e:'#a01a2a',t:'#8a3a7a',y:'#ffd060'};
+  add('harpy0',fromRows(["kk....hh....kk","kFk..hssh..kFk","kffkkhsehkkffk",".kfffkttkfffk.","..kffkttkffk..","...kkkttkkk...","....kyk.kyk...","....k.k.k.k..."],HP));
+  add('harpy1',fromRows(["......hh......",".....hssh.....","..kkkhsehkkk..",".kfffkttkfffk.","kffkkkttkkkffk","kFk..kttk..kFk","kk..kyk.kyk.kk","....k.k.k.k..."],HP));
+  const WP={k:'#5a4a10',Y:'#ffe060',W:'#ffffff',e:'#3a2a6a',y:'#fff4a0'};
+  add('wisp0',fromRows(["....y....","..kkkkk..",".kYYWYYk.","ykYWWWYky",".kYeWeYk.",".kYWWWYk.","..kYYYk..","...kkk...","....y...."],WP));
+  add('wisp1',fromRows(["y.......y","..kkkkk..",".kYYWYYk.",".kYWWWYk.",".kYeWeYk.",".kYWWWYk.","..kYYYk..","...kkk...","y.......y"],WP));
+  const GRP={k:'#1a1428',b:'#d8a050',B:'#a0702a',w:'#eef4ff',W:'#a8c0e0',h:'#ffffff',H:'#c8d0e0',y:'#ffd34a',e:'#c0101a'};
+  add('griffin0',fromRows(["...kkk..............","..kwwWk.............","..kwwwWk......kkkk..","...kwwwWk....khhhhk.","....kwwwWk..khhehhyk","kk...kwwWWkkhhhhkyyk","kBk.kbbbbbbbbHhhk.k.",".kBkbbbbbbbbbbHk....","..kbbbbbbbbbbbbk....","...kBbbbBkkBbbBk....","...kyk..kyk.kyk.kyk.","...kk...kk..kk..kk.."],GRP));
+  add('griffin1',fromRows(["....................","....................","..............kkkk..",".............khhhhk.","............khhehhyk","kk.........khhhhkyyk","kBk.kbbbbbbbbHhhk.k.",".kBkbwwwwwwbbbHk....","..kbkwwwwwwWkbbk....","...kBkwwwwWkkBBk....","....kkwwWk.kyk.kyk..",".......kk...kk..kk.."],GRP));
+  add('bolt',fromRows(["..kk.",".kWk.","kWyk.",".kWWk","..kyk",".kWk.","kWk..",".k..."],{k:'#5a4a10',W:'#ffffff',y:'#ffe060'}));
+  add('feather',fromRows(["...kk",".kwWk","kwwk.","kWk..","k...."],{k:'#3a4a6a',w:'#ffffff',W:'#a8c0e0'}));
+  // 마왕성 몬스터: 눈알 박쥐, 그림자 기사, 해골 마법사, 마왕(보스)
+  const EP={k:'#14040e',p:'#3a1a4a',w:'#f0e8f0',r:'#c0101a'};
+  add('eyebat0',fromRows(["k............k","kk..........kk","kpk.kkkkkk.kpk","kppkwwwwwwkppk",".kppwwrrwwppk.","..kpwwrrwwpk..","...kpwwwwpk...","....kkkkkk...."],EP));
+  add('eyebat1',fromRows(["..............","....kkkkkk....","...kwwwwwwk...","..kpwwrrwwpk..",".kppwwrrwwppk.","kpkpwwwwwwpkpk","kk.kppppppk.kk","k...kk..kk...k"],EP));
+  knight('shade',{style:0,hair:1,skin:4,top:6,bottom:3,shoes:0},{helm:'shade_helm',armor:'shade_armor'},{k:'#0a0610',l:'#3a2a4a',L:'#c070ff',m:'#5a1a7a',j:'#1a0a20'});
+  knight('skull',{style:0,hair:3,skin:0,top:4,bottom:3,shoes:0},{helm:'skull_helm',armor:'skull_robe'},null);
+  knight('demon',{style:0,hair:1,skin:4,top:6,bottom:3,shoes:0},{helm:'demon_helm',armor:'demon_armor',boots:'demon_boots'},{k:'#14040a',l:'#3a0a14',L:'#ff4a4a',m:'#ffd34a',j:'#2a0a10'});
+  add('darkorb',fromRows([".kkkk.","kpPPpk","kPWWPk","kPWWPk","kpPPpk",".kkkk."],{k:'#14041c',p:'#5a1a9a',P:'#9a3aff',W:'#f0d0ff'}));
+  // 저주 가시 (튀어나왔다 들어감)
+  {const[c,x]=cv(16,10);for(let i=0;i<4;i++){const cx=i*4;for(let h=0;h<8;h++){const hw=Math.floor(h/3);px(x,'#c070ff',cx+2-hw,h,hw+1,1);px(x,'#5a1a7a',cx+2,h,hw,1)}}px(x,'#2a1036',0,8,16,2);add('pspike',c)}
+  // 순간이동 문: 보라빛 소용돌이
+  {const[c,x]=cv(16,24);for(let y=0;y<24;y++)for(let X=0;X<16;X++){const d=Math.hypot((X-7.5)/7.5,(y-11.5)/11.5);if(d<1){const band=Math.floor(d*5+y*0.15)%2;px(x,d>0.82?'#2a1036':band?'#9a3aff':'#5ae0ff',X,y)}}px(x,'#ffffff',6,9,4,6);add('portal',c)}
+  // 어둠 속 빛 (가운데가 진하고 가장자리로 갈수록 투명)
+  {const[c,x]=cv(128,128);const g=x.createRadialGradient(64,64,4,64,64,64);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(0.55,'rgba(255,255,255,0.8)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,128,128);add('lightmask',c)}
   // 고드름 (천장에서 떨어짐)
   add('icicle',fromRows(["kkkkkkk","kWbbbBk",".kbbBk.",".kWbBk.","..kbk..","..kbk..","...k..."],{k:'#1a3a6a',W:'#ffffff',b:'#bfeeff',B:'#6fc8ff'}));
   // 퍼즐: 나무 상자, 누름판, 철문, 횃불

@@ -1,4 +1,5 @@
 /* 지형 장치: 열쇠·색깔 문, 불덩이 포탑, 스위치 블록, 물(헤엄), 얼음(미끄러짐), 고드름
+   하늘 성채: 상승 기류(updrafts), 바람(wind), 구름 발판(clouds, PlayScene) / 마왕성: 어둠(dark), 저주 가시(pspikes), 순간이동 문(portals)
    PlayScene에 섞어 씀 (Object.assign) */
 import Phaser from 'phaser';
 import {T,LH,ROWS} from '../config.js';
@@ -6,6 +7,7 @@ import {KEYS} from '../data/items.js';
 import {STATE,bossDone} from '../state.js';
 import {sfx} from '../sfx.js';
 import {cv,px} from '../gfx/pixel.js';
+import {surfaceY} from '../world/rooms.js';
 
 export const Gimmicks={
   spawnGimmicks(){
@@ -74,7 +76,42 @@ export const Gimmicks={
     this.inWater=false;this.onIce=R.theme==='ice';
     // 숨 게이지: 머리까지 물에 잠기면 줄고, 물 밖에 나오면 금방 다시 참
     this.breath=1;this.drownT=0;this.breathG=this.add.graphics().setDepth(47);
+    // 상승 기류: 그 칸 안에 있으면 위로 떠오름 {tx,w,ty0,ty1}
+    this.updrafts=(R.updrafts||[]).map(d=>{const r=new Phaser.Geom.Rectangle(d.tx*T,d.ty0*T,d.w*T,(d.ty1-d.ty0+1)*T);
+      const g=this.add.rectangle(r.centerX,r.centerY,r.width,r.height,0xcfeaff,0.12).setDepth(1);this.tweens.add({targets:g,alpha:{from:0.6,to:1},duration:700,yoyo:true,repeat:-1});return r});
+    // 바람: period초마다 on초 동안 dir 쪽으로 밀림 {dir,force,period,on}
+    this.windT=R.wind?R.wind.on:0;this.gustT=0;   // 들어오자마자 밀려 나가지 않게 잠잠한 때부터
+   this.gustDir=0;this.gustF=0;
+    // 저주 가시: period초마다 잠깐 튀어나옴 {tx0,tx1,ty,period,offset}
+    this.pspikes=(R.pspikes||[]).map(d=>({d,t:d.offset||0,up:false,imgs:Array.from({length:d.tx1-d.tx0+1},(_,i)=>this.add.image((d.tx0+i)*T+8,(d.ty+1)*T,'pspike').setOrigin(0.5,1).setDepth(3))}));
+    // 순간이동 문: 짝(to)인 문으로 이동 {tx, ty(서 있는 줄, 없으면 바닥), to}
+    this.portals=(R.portals||[]).map(d=>{const x=d.tx*T+8,y=d.ty!=null?(d.ty+1)*T:surfaceY(m,d.tx),s=this.add.image(x,y,'portal').setOrigin(0.5,1).setDepth(2).setAlpha(0.9);
+      this.tweens.add({targets:s,scaleX:{from:1,to:0.8},duration:600,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});return{d,x,y,s}});
+    this.portCd=0;
+    // 어둠: 주인공과 켜진 횃불 주변만 보임
+    this.darkRT=null;if(R.dark){this.darkRT=this.add.renderTexture(0,0,this.cols*T,LH).setOrigin(0).setDepth(30);this.lightImg=this.make.image({key:'lightmask',add:false})}
   },
+  /* 돌풍 (그리폰 날갯짓 등): dur초 동안 dir 쪽으로 force(px/s)만큼 밀림 */
+  gust(dir,force,dur){this.gustDir=dir;this.gustF=force;this.gustT=dur},
+  windStreak(dir){const v=this.cameras.main.worldView,x=dir>0?v.x+Math.random()*v.width*0.6:v.right-Math.random()*v.width*0.6,y=v.y+Math.random()*v.height;
+    const s=this.add.image(x,y,'fx_streak').setAngle(90).setScale(0.4,2.2+Math.random()*2).setAlpha(0.5).setDepth(14).setBlendMode(Phaser.BlendModes.ADD);
+    this.tweens.add({targets:s,x:x+dir*90,alpha:0,duration:420,onComplete:()=>s.destroy()})},
+  /* 순간이동 문: 문 앞에서 ↑ */
+  updatePortals(press){
+    if(!this.portals.length)return;this.portCd-=1/60;const p=this.player;if(p.dead)return;
+    const o=this.portals.find(o=>Math.abs(p.x-o.x)<10&&Math.abs(p.body.bottom-o.y)<6);
+    if(o&&!this.portHint){this.toast('↑ 키로 순간이동 문에 들어갈 수 있어요',1800);this.portHint=true}
+    if(o&&press.up&&this.portCd<=0&&!this.climbing){const t=this.portals[o.d.to];if(!t)return;
+      this.batEm.explode(14,p.x,p.y);p.body.reset(t.x,t.y-9);p.setVelocity(0,0);p.inv=Math.max(p.inv,0.4);this.portCd=0.5;sfx('door');this.batEm.explode(14,t.x,t.y-9);this.safe={x:t.x,y:t.y-9}}},
+  /* 어둠 덮개를 매 프레임 다시 그림 */
+  drawDark(){
+    const rt=this.darkRT;if(!rt)return;const p=this.player,L=this.lightImg;rt.clear();rt.fill(0x05020a,0.9);
+    const hole=(x,y,s)=>{L.setScale(s);rt.erase(L,x,y)};
+    hole(p.x,p.y,p.dead?0.8:1.25+Math.sin(this.time.now/300)*0.04);
+    this.torches.forEach(t=>{if(t.lit)hole(t.x,t.y-8,1.5)});
+    this.portals.forEach(o=>hole(o.x,o.y-12,0.5));
+    if(this.statue)hole(this.statue.x,this.statue.y-10,1);
+    this.enemies.getChildren().forEach(e=>{if(e.boss)hole(e.x,e.y,0.9)})},
   giveKey(color,x,y){
     STATE.keys[color]=true;const K=KEYS[color];
     const icon=this.add.image(x,y,'icon_key_'+color).setDepth(46);
@@ -104,7 +141,7 @@ export const Gimmicks={
     this.torches.forEach(t=>{if(t.lit||!Phaser.Geom.Intersects.RectangleToRectangle(hb,new Phaser.Geom.Rectangle(t.x-5,t.y-14,10,14)))return;
       t.lit=true;STATE.opened[t.key]=true;t.s.setTexture('torch1');t.glow.setAlpha(0.8);this.fireEm.explode(10,t.x,t.y-10);
       const same=this.torches.filter(o=>o.gate===t.gate),left=same.filter(o=>!o.lit).length;
-      if(left)this.toast('남은 횃불 '+left+'개',1400);
+      if(!t.gate)return;if(left)this.toast('남은 횃불 '+left+'개',1400);
       else{const g=this.gates.find(o=>o.def.id===t.gate);if(g){STATE.opened[g.def.id]=true;g.perm=true;this.setGate(g,true);this.toast('횃불이 모두 켜지자 철문이 열렸다!',2200)}}});
     for(const s of this.switches)if(Phaser.Geom.Intersects.RectangleToRectangle(hb,new Phaser.Geom.Rectangle(s.x-6,s.y-12,12,12))){
       this.swOn=!this.swOn;this.swCd=0.35;this.applySwitch();
@@ -193,6 +230,25 @@ export const Gimmicks={
         if(pb.bottom>top){p.y-=pb.bottom-top;if(pb.velocity.y>0)p.setVelocityY(0);this.coyote=0.09;this.airJumps=0}}
       else{if(pb.velocity.y>20)p.setVelocityY(20);if(Math.random()<dt*6)this.dustEm.explode(1,p.x,pb.bottom-4);
         if(this.tileAt(p.x,p.y-6)==='S'){this.sandT-=dt;if(this.sandT<=0){this.sandT=0.8;const s=this.stats,d=this.trap(6);s.hp=Math.max(0,s.hp-d);this.popNum(p.x,p.y-12,d,0xe0b070,false);if(s.hp<=0)this.die()}}}}
+    // 하늘: 바닥 없는 곳으로 떨어지면 피해 + 안전한 곳으로
+    if(this.R.theme==='sky'&&!this.R.exits.down&&pb.bottom>=LH-1){this.fallPit();return}
+    // 상승 기류
+    for(const r of this.updrafts)if(r.contains(p.x,p.y)&&!this.climbing){p.setVelocityY(Math.max(-175,pb.velocity.y-2000*dt));this.airJumps=0;if(Math.random()<dt*10)this.dustEm.explode(1,p.x+(Math.random()-.5)*10,pb.bottom)}
+    this.updrafts.forEach(r=>{if(Math.random()<dt*8){const s=this.add.image(r.x+Math.random()*r.width,r.bottom,'fx_streak').setScale(0.4,1.5).setAlpha(0.45).setDepth(14).setBlendMode(Phaser.BlendModes.ADD);
+      this.tweens.add({targets:s,y:r.y,alpha:0,duration:900,onComplete:()=>s.destroy()})}});
+    // 바람·돌풍: 그만큼 옆으로 밀림 (발판에 서 있어도)
+    let push=0;const W2=this.R.wind;
+    if(W2){this.windT+=dt;const ph=this.windT%W2.period,on=ph<W2.on;if(on){push+=W2.dir*W2.force;if(Math.random()<dt*14)this.windStreak(W2.dir)}
+      if(ph>=W2.period-0.6&&ph-dt<W2.period-0.6)this.toast(W2.dir>0?'바람이 분다 →':'← 바람이 분다',700)}
+    if(this.gustT>0){this.gustT-=dt;push+=this.gustDir*this.gustF;if(Math.random()<dt*20)this.windStreak(this.gustDir)}
+    if(push&&!this.climbing)p.x+=push*dt*(pb.blocked.down||pb.touching.down?0.6:1);
+    // 저주 가시
+    this.pspikes.forEach(s=>{s.t+=dt;const ph=s.t%s.d.period,warn=ph>s.d.period-1.4&&ph<=s.d.period-1,up=ph>s.d.period-1;
+      if(up!==s.up){s.up=up;if(up)this.shake(40,0.003)}
+      s.imgs.forEach(im=>{im.y=(s.d.ty+1)*T+(up?0:warn?6:9);im.setAlpha(up?1:warn?0.8:0.35)});
+      if(up&&p.inv<=0&&pb.right>s.d.tx0*T+2&&pb.left<(s.d.tx1+1)*T-2&&pb.bottom>(s.d.ty+1)*T-9&&pb.bottom<=(s.d.ty+1)*T+1){
+        this.hurtBy(this.trap(20),p.x-this.facing*10,'spike');if(!p.dead)p.setVelocityY(-280)}});
+    this.drawDark();
     // 분출구
     this.geysers.forEach(g=>{g.t+=dt;const ph=g.t%g.period,warn=ph>g.period-1.4&&ph<=g.period-0.9,fire=ph>g.period-0.9;
       if(warn&&Math.random()<dt*20)this.fireEm.explode(1,g.x+(Math.random()-.5)*8,g.y-2);

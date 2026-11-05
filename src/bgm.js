@@ -53,6 +53,14 @@ const SONGS={
     mel:`C5 C5 . C5 Eb5 - C5 .  G5 - F5 - Eb5 - D5 -  Ab4 Ab4 . Ab4 C5 - Eb5 .  D5 - Bb4 - F5 - D5 -
          C5 C5 . C5 Eb5 - G5 .  C6 - Bb5 - G5 - Eb5 -  Ab5 - G5 - F5 - Eb5 -  D5 - B4 - G4 - - -`,
     bass:'rrorrrorrrorrror',arp:'0.1.2.1.0.1.2.1.',drum:'k.h.s.h.k.k.s.hh'},
+  sky:{bpm:120,lead:0.25,chords:'D A Bm G D A G A',
+    mel:`A5 - F#5 - D5 - F#5 A5  E5 - - - C#5 - E5 -  F#5 - B5 - A5 - F#5 -  G5 - - - D5 - . .
+         A5 - D6 - C#6 - B5 A5  E5 - A5 - C#6 - E6 -  D6 - B5 - G5 - B5 D6  C#6 - - - A5 - . .`,
+    bass:'r...f...r...o...',arp:'0.1.2.1.0.1.2.1.',drum:'k...s...k...s.s.'},
+  demon:{bpm:132,lead:0.5,echo:0.3,chords:'Em C D B Em C Am B',
+    mel:`E5 - - B4 E5 - G5 -  G5 - F#5 - E5 - C5 -  D5 - - A4 D5 - F#5 -  D#5 - - - B4 - . .
+         E5 - G5 - B5 - A5 G5  C6 - B5 - G5 - E5 -  A5 - G5 - F#5 - E5 -  D#5 - F#5 - B4 - - -`,
+    bass:'r.r.f...r.r.o...',arp:'0...1...2...1...',drum:'k...s...k.k.s...'},
   boss:{bpm:156,lead:0.25,chords:'Am F G E Am F Dm E',
     mel:`A5 - E5 A5 C6 - B5 A5  F5 - A5 - C6 - A5 F5  G5 - D5 G5 B5 - A5 G5  E5 - G#5 - B5 - G#5 -
          A5 - C6 - E6 - D6 C6  F5 - A5 C6 F6 - E6 D6  D6 - A5 F5 D5 - F5 A5  G#5 - E5 - B4 - G#4 -`,

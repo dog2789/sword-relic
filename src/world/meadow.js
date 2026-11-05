@@ -108,6 +108,52 @@ export function drawLavaMid(lw){
   for(let X=40;X<MW;X+=90+(r()*60|0)){px(x,'#c0301a',X,0,6,MH);px(x,'#ff6a1a',X+1,0,3,MH);for(let y=0;y<MH;y+=7)px(x,'#ffd060',X+2,y+(r()*5|0),1,2)}
   return c;
 }
+/* 지도·미니맵에서 지역 색 */
+export const THEME_COL={cave:0x4a4468,treetop:0x5a7a32,castle:0x3a5aa0,ice:0x5aa0d0,desert:0xc09050,lava:0xa03a1a,sky:0x8ac8f0,demon:0x6a2a8a};
+
+/* 하늘 성채: 짙은 하늘에서 아래로 갈수록 밝아짐, 해, 아래쪽 구름 바다와 떠 있는 섬 */
+export function drawSkyFar(lw){
+  const FW=Math.ceil(W+(lw-W)*0.1)+4,FH=Math.ceil(H+(LH+HUD-H)*0.1)+4,r=rng(51);
+  const[c,x]=cv(FW,FH);
+  for(let y=0;y<FH;y+=4){const t=y/FH;px(x,`rgb(${60+t*120|0},${110+t*110|0},${200+t*50|0})`,0,y,FW,4)}
+  disc(x,'#fff8d8',Math.round(FW*0.3),28,12);disc(x,'#fffbe8',Math.round(FW*0.3),28,8);
+  for(let i=0;i<40;i++)px(x,'#ffffff',r()*FW|0,r()*60|0,1,1);
+  for(let X=-20;X<FW+20;X+=16+(r()*14|0))disc(x,'#e8f2fc',X,FH-24+(r()*10|0),14+(r()*10|0));
+  for(let X=-20;X<FW+20;X+=12+(r()*10|0))disc(x,'#ffffff',X,FH-10+(r()*6|0),12+(r()*6|0));
+  return c;
+}
+export function drawSkyMid(lw){
+  const MW=Math.ceil(W+(lw-W)*0.35)+4,MH=Math.ceil(H+(LH+HUD-H)*0.35)+4,r=rng(52);
+  const[c,x]=cv(MW,MH);
+  // 떠 있는 섬: 위는 풀, 아래는 뾰족한 바위
+  for(let X=30;X<MW;X+=110+(r()*80|0)){const w=30+(r()*24|0),y0=50+(r()*50|0);
+    for(let yy=0;yy<w*0.7;yy++){const hw=Math.round(w/2*(1-yy/(w*0.7)));px(x,yy<3?'#8ad06a':yy<8?'#9a8a7a':'#7a6a6a',X-hw,y0+yy,hw*2,1)}
+    px(x,'#c8c8d8',X-6,y0-14,4,14);px(x,'#c8c8d8',X+3,y0-10,4,10);px(x,'#e8e8f4',X-7,y0-15,6,2)}
+  for(let X=-10;X<MW+20;X+=18+(r()*14|0)){const cy=MH-18+(r()*14|0);disc(x,'#f4f9ff',X,cy,16+(r()*8|0));disc(x,'#ffffff',X-4,cy-5,8)}
+  return c;
+}
+/* 마왕성: 보랏빛 어둠, 붉은 달, 뾰족한 탑 실루엣 / 앞쪽은 검은 기둥과 보라 깃발, 붉은 창 */
+export function drawDemonFar(lw){
+  const FW=Math.ceil(W+(lw-W)*0.1)+4,FH=Math.ceil(H+(LH+HUD-H)*0.1)+4,r=rng(61);
+  const[c,x]=cv(FW,FH);
+  for(let y=0;y<FH;y+=4){const t=y/FH;px(x,`rgb(${24+t*30|0},${10+t*8|0},${36+t*20|0})`,0,y,FW,4)}
+  const mx=Math.round(FW*0.66);disc(x,'#6a1020',mx,36,15);disc(x,'#c0202a',mx,36,12);disc(x,'#e04a4a',mx-3,33,5);
+  for(let X=0;X<FW;X+=14+(r()*22|0)){const h=40+(r()*70|0),w=8+(r()*10|0);px(x,'#120818',X,FH-h,w,h);for(let yy=0;yy<14;yy++)px(x,'#120818',X+w/2-Math.round(yy/3),FH-h-14+yy,Math.round(yy/3)*2+1,1);
+    if(r()<.5)px(x,'#ff4a3a',X+w/2-1,FH-h+10,2,3)}
+  return c;
+}
+export function drawDemonMid(lw){
+  const MW=Math.ceil(W+(lw-W)*0.35)+4,MH=Math.ceil(H+(LH+HUD-H)*0.35)+4,r=rng(62);
+  const[c,x]=cv(MW,MH);
+  for(let X=12;X<MW;X+=70+(r()*20|0)){const w=16;
+    px(x,'#0c0610',X-1,0,w+2,MH);px(x,'#2a1a36',X,0,w,MH);px(x,'#3a2648',X+2,0,3,MH);px(x,'#1a1022',X+w-3,0,3,MH);
+    for(let y=0;y<MH;y+=12)px(x,'#22142c',X,y,w,1);
+    const bx=X+w+12,bh=44;px(x,'#5a4a2a',bx-2,12,18,2);
+    for(let y=0;y<bh;y++){const cut=y>bh-8?Math.abs(y-(bh-8))*2:0;px(x,y%10<1?'#3a0a5a':'#5a1a7a',bx+Math.min(cut,7),14+y,Math.max(0,14-cut*2),1)}
+    px(x,'#c0202a',bx+4,24,6,6);px(x,'#ff4a4a',bx+6,26,2,2);
+    x.fillStyle='rgba(160,60,255,0.08)';x.fillRect(X-14,40,12,40)}
+  return c;
+}
 export function drawCastleFar(lw){
   const FW=Math.ceil(W+(lw-W)*0.1)+4,FH=Math.ceil(H+(LH+HUD-H)*0.1)+4,r=rng(8);
   const[c,x]=cv(FW,FH);
@@ -172,6 +218,23 @@ export function drawLevel(m,cols,seed,deco={},theme='meadow'){
         if(r()<.35){let cx=X+(r()*12|0)+2,cy=Y+(r()*10|0)+3;for(let k=0;k<5;k++){px(x,k<2?'#ff8a2a':'#c0401a',cx,cy,1,1);cx+=r()<.5?1:0;cy+=1}}
         if(e.l)px(x,'#160e10',X,Y,1,16);if(e.rt)px(x,'#160e10',X+15,Y,1,16);if(e.b)px(x,'#160e10',X,Y+15,16,1);
         if(e.t){px(x,'#5a4448',X,Y,16,1);px(x,'#6a5054',X,Y+1,16,1)}
+      }else if(theme==='sky'){
+        // 구름빛 대리석 + 금 테두리
+        const deep=!e.t&&!e.b&&!e.l&&!e.rt;
+        px(x,deep?'#c8d4e8':'#e4ecf8',X,Y,16,16);px(x,deep?'#b8c4dc':'#ccd8ec',X,Y+8,16,1);px(x,deep?'#b8c4dc':'#ccd8ec',X+((ty%2)?5:12),Y,1,8);px(x,deep?'#b8c4dc':'#ccd8ec',X+((ty%2)?12:5),Y+8,1,8);
+        for(let k=0;k<2;k++)px(x,'#ffffff',X+(r()*14|0)+1,Y+(r()*14|0)+1,2,1);
+        if(e.l)px(x,'#8a9ab8',X,Y,1,16);if(e.rt)px(x,'#8a9ab8',X+15,Y,1,16);
+        if(e.b){px(x,'#8a9ab8',X,Y+15,16,1);if(at(tx,ty+1)==='.'&&r()<.5)for(let d=0;d<3;d++)px(x,'#c8d4e8',X+4+(r()*8|0),Y+16+d,2,1)}
+        if(e.t){px(x,'#f0c850',X,Y,16,2);px(x,'#c09a3a',X,Y+2,16,1);for(let k=0;k<16;k++)if(r()<.25)px(x,'#8ad06a',X+k,Y-1)}
+      }else if(theme==='demon'){
+        // 검보라 벽돌 + 핏빛 틈
+        const deep=!e.t&&!e.b&&!e.l&&!e.rt;
+        px(x,deep?'#1e1428':'#2e2038',X,Y,16,16);
+        px(x,'#140c1c',X,Y+7,16,1);px(x,'#140c1c',X,Y+15,16,1);px(x,'#140c1c',X+((ty%2)?4:11),Y,1,7);px(x,'#140c1c',X+((ty%2)?11:4),Y+8,1,7);
+        for(let k=0;k<3;k++)px(x,r()<.5?'#3a2a48':'#24182e',X+(r()*15|0),Y+(r()*15|0),2,1);
+        if(r()<.18)px(x,'#8a1a2a',X+(r()*12|0)+2,Y+(r()<.5?7:15),3,1);
+        if(e.l)px(x,'#0a0610',X,Y,1,16);if(e.rt)px(x,'#0a0610',X+15,Y,1,16);if(e.b)px(x,'#0a0610',X,Y+15,16,1);
+        if(e.t){px(x,'#4a3a5a',X,Y,16,1);px(x,'#3a2a48',X,Y+1,16,1)}
       }else if(theme==='ice'){
         const deep=!e.t&&!e.b&&!e.l&&!e.rt;
         px(x,deep?'#5a86b8':'#7fb0dc',X,Y,16,16);px(x,deep?'#6a96c8':'#a8d4f4',X+1,Y+1,6,1);px(x,'#4a76a8',X+9,Y+9,6,1);

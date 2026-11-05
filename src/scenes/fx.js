@@ -13,7 +13,9 @@ const FX={
   holy:{main:0x9fc0ff,cols:[0xffffff,0xbcd4ff,0xffe27a],grav:-40,speed:[20,100],life:[300,600],hit:'cross'},
   moon:{main:0xb8a8ff,cols:[0xffffff,0xd8d0ff,0x9a7aff,0x6a4ad8],grav:-30,speed:[30,100],life:[300,620],hit:'cross'},
   blood:{main:0xff3a4a,cols:[0xffb0b0,0xff4a5a,0xc0101a,0xffffff],grav:340,speed:[40,140],life:[260,520],hit:'drop'},
-  dragon:{main:0xffa02a,cols:[0xfff0a0,0xffa02a,0xe0401a,0xffffff],grav:-200,speed:[30,120],life:[320,720],hit:'flame'}
+  dragon:{main:0xffa02a,cols:[0xfff0a0,0xffa02a,0xe0401a,0xffffff],grav:-200,speed:[30,120],life:[320,720],hit:'flame'},
+  storm:{main:0xfff07a,cols:[0xffffff,0xfff07a,0x8ad0ff],grav:-20,speed:[50,160],life:[160,360],hit:'star'},
+  dark:{main:0x9a3aff,cols:[0xd8a0ff,0x9a3aff,0x4a0a8a,0xff3a5a],grav:-50,speed:[30,110],life:[300,640],hit:'cross'}
 };
 
 export function buildFxTextures(sc){
