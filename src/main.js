@@ -51,17 +51,35 @@ document.querySelectorAll('.pbtn[data-k]').forEach(b=>{
   b.addEventListener('contextmenu',e=>e.preventDefault());
 });
 
-/* 방향 패드: 가운데에서 손가락이 어느 쪽에 있는지로 방향을 정함 (대각선 = 두 방향) */
-const dp=document.getElementById('dpad'),arms={};dp.querySelectorAll('span').forEach(s=>arms[s.dataset.d]=s);
-const setD=(k,v)=>{if(VP[k]!==v){VP[k]=v;arms[k].classList.toggle('on',v)}};
-const dpAt=e=>{const r=dp.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2),dead=r.width*0.12;
-  const far=Math.hypot(dx,dy)>dead,ang=Math.atan2(Math.abs(dy),Math.abs(dx))*180/Math.PI;   // 0 = 수평, 90 = 수직
-  const h=far&&ang<62,v=far&&ang>32;   // 32~62도는 대각선
-  setD('left',h&&dx<0);setD('right',h&&dx>0);setD('up',v&&dy<0);setD('down',v&&dy>0)};
-let dpId=null;
-dp.addEventListener('pointerdown',e=>{e.preventDefault();dpId=e.pointerId;try{dp.setPointerCapture(e.pointerId)}catch(_){};dpAt(e);if(!startBtn.hidden)startBtn.hidden=true});
-dp.addEventListener('pointermove',e=>{if(e.pointerId===dpId)dpAt(e)});
-['pointerup','pointercancel','lostpointercapture'].forEach(ev=>dp.addEventListener(ev,e=>{if(e.pointerId!==dpId)return;dpId=null;['left','right','up','down'].forEach(k=>setD(k,false))}));
+/* 아날로그 스틱: 가운데에서 손가락까지의 방향·거리로 ←→↑↓를 정함 (대각선은 두 방향 함께) */
+const stick=document.getElementById('stick'),knob=stick.querySelector('.knob');
+const setD=(k,v)=>{VP[k]=v};
+const stickAt=e=>{const r=stick.getBoundingClientRect(),R=r.width/2,lim=R*0.55;
+  let dx=e.clientX-(r.left+R),dy=e.clientY-(r.top+R);const d=Math.hypot(dx,dy);if(d>lim){dx*=lim/d;dy*=lim/d}
+  knob.style.transform='translate('+dx+'px,'+dy+'px)';
+  const nx=dx/lim,ny=dy/lim;   // -1 ~ 1
+  const h=Math.abs(nx)>0.35&&Math.abs(nx)>Math.abs(ny)*0.4,v=Math.abs(ny)>0.5;   // 45° 근처는 둘 다 → 대각선
+  setD('left',h&&nx<0);setD('right',h&&nx>0);setD('up',v&&ny<0);setD('down',v&&ny>0)};
+let stId=null;
+stick.addEventListener('pointerdown',e=>{e.preventDefault();stId=e.pointerId;try{stick.setPointerCapture(e.pointerId)}catch(_){};stick.classList.add('on');stickAt(e);if(!startBtn.hidden)startBtn.hidden=true});
+stick.addEventListener('pointermove',e=>{if(e.pointerId===stId)stickAt(e)});
+['pointerup','pointercancel','lostpointercapture'].forEach(ev=>stick.addEventListener(ev,e=>{if(e.pointerId!==stId)return;stId=null;stick.classList.remove('on');knob.style.transform='';['left','right','up','down'].forEach(k=>setD(k,false))}));
+
+/* 위쪽 버튼 줄: 게임 HUD처럼 실제 아이템 아이콘과 개수를 보여 줌 */
+const pixSvg=(rows,pal)=>{let r='';rows.forEach((row,y)=>[...row].forEach((c,x)=>{if(pal[c])r+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+pal[c]+'"/>'}));
+  return 'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+Math.max(...rows.map(r=>r.length))+' '+rows.length+'" shape-rendering="crispEdges">'+r+'</svg>')};
+const MAP_IC=pixSvg(['..kkkkkkkk..','.kppppppppk.','kpprrpppbppk','kpprpppppppk','kppprrppgppk','kppppprpggpk','kpbpppprpppk','kppppppprrpk','kppgppppppxk','.kppppppppk.','..kkkkkkkk..'],{k:'#2a1a12',p:'#e8d0a0',r:'#c0503a',b:'#5a8acd',g:'#4a9a5a',x:'#e0404f'});
+const SND_ON=pixSvg(['......kk...','.....kyk...','....kyyk..w','.kkkyyyk.w.','.kyyyyyk.ww','.kyyyyyk...','.kkkyyyk.ww','....kyyk.w.','.....kyk..w','......kk...'],{k:'#2a1a12',y:'#e8c04a',w:'#8fe3ff'});
+const SND_OFF=pixSvg(['......kk...','.....kyk...','....kyyk...','.kkkyyyk.r.r','.kyyyyyk..r.','.kyyyyyk..r.','.kkkyyyk.r.r','....kyyk...','.....kyk...','......kk...'],{k:'#2a1a12',y:'#8a7a5a',r:'#e0404f'});
+document.getElementById('ic-map').src=MAP_IC;
+const icons={},iconOf=id=>{if(!game||!id)return'';const k='icon_'+id;if(icons[k])return icons[k];if(!game.textures.exists(k))return'';return icons[k]=game.textures.getBase64(k)};
+const slotEls=[...document.querySelectorAll('.slots .slot')],eqImg=document.getElementById('ic-equip');
+let lastHud='';
+setInterval(()=>{if(!MOBILE||!game)return;
+  const key=JSON.stringify([STATE.quick,STATE.items,STATE.equip&&STATE.equip.weapon]);if(key===lastHud)return;lastHud=key;
+  slotEls.forEach((b,i)=>{const id=STATE.quick&&STATE.quick[i],n=id?(STATE.items[id]||0):0,img=b.querySelector('img'),src=iconOf(id);
+    img.hidden=!src;if(src&&img.src!==src)img.src=src;b.querySelector('b').textContent=id?n:'';b.classList.toggle('empty',!id||n<=0)});
+  const w=iconOf(STATE.equip&&STATE.equip.weapon)||iconOf('traveler_sword');if(w&&eqImg.src!==w)eqImg.src=w},400);
 /* 폰에서 길게 누르기·두 번 눌러 확대 막기 */
 if(MOBILE){['contextmenu','selectstart','dblclick'].forEach(t=>document.addEventListener(t,e=>e.preventDefault()));
   document.addEventListener('touchmove',e=>{if(e.touches.length>1||e.target.closest('#stage,.pad'))e.preventDefault()},{passive:false})}
@@ -70,7 +88,7 @@ if(MOBILE){['contextmenu','selectstart','dblclick'].forEach(t=>document.addEvent
 const muteBtn=document.getElementById('mute');
 const muteLabel=()=>{muteBtn.textContent=isMuted()?'소리 켜기':'소리 끄기'};muteLabel();
 muteBtn.addEventListener('click',e=>{setMuted(!isMuted());muteLabel();padMuteLabel();e.currentTarget.blur();window.focus()});
-const padMute=document.getElementById('padmute'),padMuteLabel=()=>{padMute.textContent=isMuted()?'♪ 끔':'♪';padMute.classList.toggle('off',isMuted())};padMuteLabel();
+const padMute=document.getElementById('padmute'),padMuteLabel=()=>{document.getElementById('ic-snd').src=isMuted()?SND_OFF:SND_ON;padMute.querySelector('span').textContent=isMuted()?'꺼짐':'소리';padMute.classList.toggle('off',isMuted())};padMuteLabel();
 padMute.addEventListener('pointerdown',e=>{e.preventDefault();setMuted(!isMuted());muteLabel();padMuteLabel()});
 
 /* 처음부터: 두 번 눌러야 실행 (실수 방지) */

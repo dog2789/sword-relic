@@ -35,18 +35,20 @@
   </div>
 
   <div class="pad" aria-label="터치 조작">
-    <!-- 방향 패드: 누른 채로 손가락을 미끄러뜨리면 방향이 바뀜 (대각선 가능) -->
-    <div class="dpad" id="dpad" role="group" aria-label="방향">
-      <span data-d="up">▲</span><span data-d="left">◀</span><span data-d="right">▶</span><span data-d="down">▼</span>
-    </div>
+    <!-- 아날로그 스틱: 손가락을 미끄러뜨린 방향으로 (대각선 쉽게) -->
+    <div class="stick" id="stick" role="group" aria-label="이동 스틱"><div class="knob"></div></div>
     <div class="sys">
-      <button class="pbtn mini" data-k="q0" aria-label="퀵슬롯 1">1</button>
-      <button class="pbtn mini" data-k="q1" aria-label="퀵슬롯 2">2</button>
-      <button class="pbtn mini" data-k="q2" aria-label="퀵슬롯 3">3</button>
-      <button class="pbtn mini" data-k="q3" aria-label="퀵슬롯 4">4</button>
-      <button class="pbtn mini" data-k="menu" aria-label="장비창">장비</button>
-      <button class="pbtn mini" data-k="map" aria-label="지도">지도</button>
-      <button class="pbtn mini" id="padmute" type="button" aria-label="소리">♪</button>
+      <div class="slots">
+        <button class="pbtn slot" data-k="q0" aria-label="퀵슬롯 1"><i>1</i><img alt=""><b></b></button>
+        <button class="pbtn slot" data-k="q1" aria-label="퀵슬롯 2"><i>2</i><img alt=""><b></b></button>
+        <button class="pbtn slot" data-k="q2" aria-label="퀵슬롯 3"><i>3</i><img alt=""><b></b></button>
+        <button class="pbtn slot" data-k="q3" aria-label="퀵슬롯 4"><i>4</i><img alt=""><b></b></button>
+      </div>
+      <div class="tools">
+        <button class="pbtn slot tool" data-k="menu" aria-label="장비창"><img id="ic-equip" alt=""><span>장비</span></button>
+        <button class="pbtn slot tool" data-k="map" aria-label="지도"><img id="ic-map" alt=""><span>지도</span></button>
+        <button class="pbtn slot tool" id="padmute" type="button" aria-label="소리"><img id="ic-snd" alt=""><span>소리</span></button>
+      </div>
     </div>
     <div class="act">
       <button class="pbtn s" data-k="skill" aria-label="스킬">C<small>스킬</small></button>
