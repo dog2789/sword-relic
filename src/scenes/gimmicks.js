@@ -12,7 +12,7 @@ import {surfaceY} from '../world/rooms.js';
 export const Gimmicks={
   spawnGimmicks(){
     const R=this.R,m=this.map;
-    Object.assign(this,{doors:[],turrets:[],shots:[],blocks:[],switches:[],icicles:[],swOn:false,swCd:0,swT:0,doorMsgT:0,gates:[],plates:[],torches:[]});
+    Object.assign(this,{doors:[],turrets:[],shots:[],blocks:[],switches:[],icicles:[],swOn:false,swCd:0,swT:0,swTm:null,doorMsgT:0,gates:[],plates:[],torches:[]});
     // 철문: 누름판(plate) 또는 횃불(torches)로 열림. 횃불로 연 문은 계속 열려 있음
     (R.gates||[]).forEach(d=>{const o={def:d,imgs:[],zones:[],open:false,perm:!!STATE.opened[d.id]};
       for(let j=0;j<(d.h||3);j++){const x=d.tx*T+8,y=(d.ty+j)*T+8;o.imgs.push(this.add.image(x,y,'gate').setDepth(3));
@@ -147,7 +147,7 @@ export const Gimmicks={
     for(const s of this.switches)if(Phaser.Geom.Intersects.RectangleToRectangle(hb,new Phaser.Geom.Rectangle(s.x-6,s.y-12,12,12))){
       this.swOn=!this.swOn;this.swCd=0.35;this.applySwitch();
       // 시간 스위치: 정해진 초가 지나면 원래대로
-      const tm=this.switches.find(o=>o.def&&o.def.timer);if(tm&&this.swOn){this.swT=tm.def.timer;this.toast(tm.def.timer+'초 안에 지나가세요!',1600)}else this.swT=0;this.sparkEm.explode(8,s.x,s.y-8);this.shake(60,0.004);
+      const tm=this.swTm=s.def&&s.def.timer?s:this.switches.find(o=>o.def&&o.def.timer);if(tm&&this.swOn){this.swT=tm.def.timer;this.toast(tm.def.timer+'초 안에 지나가세요!',1600)}else this.swT=0;this.sparkEm.explode(8,s.x,s.y-8);this.shake(60,0.004);
       // 블록이 주인공과 겹치면 위로 밀어냄
       const p=this.player;this.blocks.forEach(b=>{if(b.z.body.enable&&Phaser.Geom.Intersects.RectangleToRectangle(new Phaser.Geom.Rectangle(p.body.x,p.body.y,p.body.width,p.body.height),new Phaser.Geom.Rectangle(b.z.x-8,b.z.y-8,16,16)))p.y=b.z.y-8-p.body.height/2-4});
       return}
@@ -157,7 +157,7 @@ export const Gimmicks={
   updateGimmicks(dt){
     const p=this.player,pb=p.body;this.swCd-=dt;this.doorMsgT-=dt;
     // 시간 스위치 카운트다운
-    if(this.swT>0){this.swT-=dt;const tm=this.switches.find(o=>o.def&&o.def.timer);
+    if(this.swT>0){this.swT-=dt;const tm=this.swTm;
       this.swTxt.setVisible(true).setText(String(Math.ceil(this.swT))).setPosition(tm.x,tm.y-16);
       if(this.swT<=0){this.swOn=false;this.applySwitch();this.swTxt.setVisible(false);const pr=new Phaser.Geom.Rectangle(pb.x,pb.y,pb.width,pb.height);
         this.blocks.forEach(b=>{if(b.z.body.enable&&Phaser.Geom.Intersects.RectangleToRectangle(pr,new Phaser.Geom.Rectangle(b.z.x-8,b.z.y-8,16,16)))p.y=b.z.y-8-pb.height/2-4})}}
@@ -172,7 +172,7 @@ export const Gimmicks={
       if(open&&!ps.some(pl=>pl.def.latch===false)){g.perm=true;STATE.opened[g.def.id]=true}
       this.setGate(g,open)});
     // 철문 안쪽(누름판·횃불 반대편)에서 다가가면 빗장을 풀고 열 수 있음
-    this.gates.forEach(g=>{if(g.perm||g.def.boss)return;
+    this.gates.forEach(g=>{if(g.perm||g.def.boss||g.def.lock)return;   // lock: 횃불을 다 켜야만 열림 (보물방)
       const xs=[...this.plates.filter(pl=>pl.def.gate===g.def.id).map(pl=>pl.x),...this.torches.filter(t=>t.gate===g.def.id).map(t=>t.x)];if(!xs.length)return;
       const gx=g.def.tx*T+8,side=Math.sign(xs.reduce((a,b)=>a+b,0)/xs.length-gx),ps=Math.sign(p.x-gx);
       const top=g.def.ty*T,bot=(g.def.ty+(g.def.h||3))*T;
