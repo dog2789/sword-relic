@@ -66,7 +66,7 @@ export class PlayScene extends Phaser.Scene{
     this.physics.add.collider(p,this.solids);
     this.physics.add.collider(p,this.oneways,null,()=>p.dropT<=0&&!this.climbing);
     this.enemies=this.physics.add.group();
-    this.physics.add.collider(this.enemies,this.solids);this.physics.add.collider(this.enemies,this.oneways);
+    const solidMob=e=>!e.noclip;this.physics.add.collider(this.enemies,this.solids,null,solidMob);this.physics.add.collider(this.enemies,this.oneways,null,solidMob);
     const ew=[];[[-8],[this.lw+8]].forEach(([x])=>{const z=this.add.zone(x,LH/2,16,LH);this.physics.add.existing(z,true);ew.push(z)});
     this.physics.add.collider(this.enemies,ew);
     this.wallGroup=this.physics.add.staticGroup();

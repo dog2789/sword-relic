@@ -221,6 +221,20 @@ export function buildTextures(sc){
   const EP={k:'#14040e',p:'#3a1a4a',w:'#f0e8f0',r:'#c0101a'};
   add('eyebat0',fromRows(["k............k","kk..........kk","kpk.kkkkkk.kpk","kppkwwwwwwkppk",".kppwwrrwwppk.","..kpwwrrwwpk..","...kpwwwwpk...","....kkkkkk...."],EP));
   add('eyebat1',fromRows(["..............","....kkkkkk....","...kwwwwwwk...","..kpwwrrwwpk..",".kppwwrrwwppk.","kpkpwwwwwwpkpk","kk.kppppppk.kk","k...kk..kk...k"],EP));
+  // 새 일반 몬스터: 동굴 거미, 유령, 눈사람, 폭탄 바위
+  const SPP={k:'#0e0814',p:'#6a4a8a',P:'#a888c8',r:'#ff3a4a'};
+  add('spider0',fromRows(["..k......k..","...k.kk.k...","k...kppk...k",".k.kpPPpk.k.","..kpPrrPpk..",".k.kpPPpk.k.","k...kppk...k","...k....k...","..k......k.."],SPP));
+  add('spider1',fromRows([".k........k.","..k..kk..k..",".k..kppk..k.","k..kpPPpk..k","..kpPrrPpk..","k..kpPPpk..k",".k..kppk..k.","..k......k..",".k........k."],SPP));
+  const GHP={k:'#3a3a5a',w:'#eef0ff',W:'#b8c0e0',e:'#1a1a2a'};
+  const ghost=fr=>["...kkkkkk...","..kwwwwwwk..",".kwwwwwwwwk.",".kweewweewk.",".kweewweewk.",".kwwwwwwwwk.",".kwwwkkwwwk.",".kwwwwwwwWk.",".kWwwwwwwWk.",".kWWwwwwWWk.",fr?".kWkWWkWWkk.":".kkWkkWkkWk.",fr?"..k..k..k...":".k..k..k..k."];
+  add('ghost0',fromRows(ghost(0),GHP));add('ghost1',fromRows(ghost(1),GHP));
+  const SNP={k:'#2a3a5a',w:'#ffffff',W:'#c8e0f0',e:'#1a1a2a',o:'#ff8a2a',R:'#e0303a',b:'#7a4a20'};
+  const snow=fr=>["....kkkk....","...kwwwwk...","..kwewwewk..","..kwwwoook..","...kwwwwk...",fr?"b.kRRRRRRk..":"..kRRRRRRk.b",fr?".bkwwwwwwk..":".kwwwwwwwkb.","kwwwwkwwwwwk","kwwwwwwwwwwk","kwwwwkwwwwwk","kWwwwwwwwwWk",".kWWwwwwWWk.","..kkkkkkkk.."];
+  add('snowman0',fromRows(snow(0),SNP));add('snowman1',fromRows(snow(1),SNP));
+  add('snowball',fromRows([".kkk.","kwwWk","kwWWk",".kkk."],{k:'#4a6a9a',w:'#ffffff',W:'#c8e0f0'}));
+  const BMP={k:'#14080a',a:'#4a3a3e',i:'#6a5a5e',l:'#ff6a1a',y:'#ffd060',Y:'#ff8a2a',e:'#ffe080'};
+  const bomb=fr=>[fr?"......y.....":".......y....",fr?"......ky....":"......kY....",".....k......","...kkkkkk...","..kaaaaaak..",".kaiaaaaaak.",".kaaekaekak.",".kaaaaaaaak.",".kaalllllak.","..kaaaaaak..",fr?"..kk....kk..":"...kk..kk..."];
+  add('bomber0',fromRows(bomb(0),BMP));add('bomber1',fromRows(bomb(1),BMP));
   knight('shade',{style:0,hair:1,skin:4,top:6,bottom:3,shoes:0},{helm:'shade_helm',armor:'shade_armor'},{k:'#0a0610',l:'#3a2a4a',L:'#c070ff',m:'#5a1a7a',j:'#1a0a20'});
   knight('skull',{style:0,hair:3,skin:0,top:4,bottom:3,shoes:0},{helm:'skull_helm',armor:'skull_robe'},null);
   knight('demon',{style:0,hair:1,skin:4,top:6,bottom:3,shoes:0},{helm:'demon_helm',armor:'demon_armor',boots:'demon_boots'},{k:'#14040a',l:'#3a0a14',L:'#ff4a4a',m:'#ffd34a',j:'#2a0a10'});
