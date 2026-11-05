@@ -565,7 +565,7 @@ export const ROOMS={
   /* ===== 추가 방 (지역마다 13개 이상) ===== */
   r0:{name:'풍차 언덕',theme:'meadow',cols:40,grid:[0,-1],exits:{down:{to:'r1',tx:20}},seed:401,
     build(p){p.ground(0,39,12);p.clear(20,12,20,13);p.vine(20,6,13);p.ground(4,10,9);p.ground(30,39,8);p.block(34,0,34,4)},
-    gates:[{id:'g_r0',tx:34,ty:5,h:3}],plates:[{tx:26,ty:11,gate:'g_r0'}],crates:[{tx:8,ty:8}],
+    gates:[{id:'g_r0',tx:34,ty:5,h:3}],plates:[{tx:16,ty:11,gate:'g_r0'}],crates:[{tx:8,ty:8}],
     crystal:{id:'c_r0',tx:37,ty:5},
     chests:[{id:'ch_r0',tx:36,ty:7,item:'clover_charm'}],
     slimes:[{tx:15,ty:10},{tx:28,ty:10}],mobs:[{t:'bat',tx:22,ty:4}],
