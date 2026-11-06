@@ -13,7 +13,7 @@ import {setMuted,isMuted} from './sfx.js';
 
 let game;
 /* 폰 화면 */
-if(MOBILE){document.body.classList.add('mobile');document.querySelector('#start span').innerHTML='▶ 터치해서 시작'}
+if(MOBILE){document.body.classList.add('mobile');document.querySelector('#start .go').textContent='▶ 터치해서 시작';document.querySelector('#start .keys').remove()}
 /* 오류가 나면 화면에 보여 줌 (폰에서는 콘솔을 볼 수 없어서) */
 let errShown=false;
 const showErr=msg=>{if(errShown)return;errShown=true;const d=document.createElement('div');d.className='errbox';
