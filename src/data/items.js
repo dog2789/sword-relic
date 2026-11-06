@@ -110,6 +110,9 @@ export const ITEMS={
   abyss_boots:{slot:'boots',name:'마검사 장화',desc:'보라 불꽃이 새겨진 검은 강철 장화',def:7,set:'abyss',effects:{speed:10},
     look:{base:{f:'#2a1e36'},cuff:'#9a3aff'}},
   abyss_ring:{slot:'acc',name:'심연의 반지',desc:'저주받은 예배당 제단의 반지. 검은 힘이 솟는다',atk:8,hp:30,gem:['#c070ff','#4a0a8a']},
+  /* 중간보스 장신구: 숫자보다 고유 효과 */
+  gale_plume:{slot:'acc',name:'바람 기사의 깃털',desc:'바람 기사의 투구에 꽂혀 있던 깃털. 바람과 돌풍에 밀리지 않는다',atk:4,effects:{windRes:true},gem:['#ffffff','#8fe3ff']},
+  guard_crest:{slot:'acc',name:'근위대장의 문장',desc:'마왕 근위대장의 방패 문장. 바라보는 쪽에서 오는 적의 공격을 막아 준다',def:4,effects:{guard:true},gem:['#ff4a4a','#5a0a14']},
   relic_sword:{slot:'weapon',name:'전설의 검',desc:'할아버지가 찾아 헤매던 전설의 검. 빛의 검기가 모든 것을 꿰뚫는다',atk:34,fx:'holy',wave:0xfff0a0,
     sword:{l:'#fff4c0',L:'#ffffff',m:'#f0c040',j:'#6a3a8a'},slashA:['#ffffff','#fff0a0','#f0c040'],slashC:['#ffffff','#fff4c0','#ffd060'],big:26},
   // NPC·몬스터 전용 (획득 불가)
@@ -167,7 +170,7 @@ export function equipBonus(equip){
   const b={atk:0,def:0,hp:0,airJumps:0,speed:0,noSand:false,fireRes:false,noSlip:false,wallCling:false,sets:[]},count={};
   for(const s of SLOTS){const it=ITEMS[equip[s]];if(!it)continue;
     b.atk+=it.atk||0;b.def+=it.def||0;b.hp+=it.hp||0;
-    const e=it.effects||{};b.airJumps+=e.airJumps||0;b.speed+=e.speed||0;if(e.noSlip)b.noSlip=true;if(e.noSand)b.noSand=true;if(e.fireRes)b.fireRes=true;if(e.wallCling)b.wallCling=true;
+    const e=it.effects||{};b.airJumps+=e.airJumps||0;b.speed+=e.speed||0;if(e.noSlip)b.noSlip=true;if(e.noSand)b.noSand=true;if(e.fireRes)b.fireRes=true;if(e.wallCling)b.wallCling=true;if(e.windRes)b.windRes=true;if(e.guard)b.guard=true;
     if(it.set)count[it.set]=(count[it.set]||0)+1}
   for(const k in count){const S=SETS[k];if(S&&count[k]>=S.need){b.sets.push(k);b.atk+=S.bonus.atk||0;b.def+=S.bonus.def||0;b.hp+=S.bonus.hp||0}}
   return b;
@@ -177,6 +180,6 @@ export function statLine(it){
   const p=[];if(it.atk)p.push('공격 +'+it.atk);if(it.def)p.push('방어 +'+it.def);if(it.hp)p.push('HP +'+it.hp);
   if(it.effects&&it.effects.airJumps)p.push('공중 점프 +'+it.effects.airJumps);
   if(it.effects&&it.effects.speed)p.push('이동 속도 +'+it.effects.speed+'%');
-  if(it.effects&&it.effects.noSlip)p.push('빙판 미끄럼 방지');if(it.effects&&it.effects.noSand)p.push('모래 늪 위를 걸음');if(it.effects&&it.effects.fireRes)p.push('용암 피해 절반');if(it.effects&&it.effects.wallCling)p.push('벽 붙기');
+  if(it.effects&&it.effects.noSlip)p.push('빙판 미끄럼 방지');if(it.effects&&it.effects.noSand)p.push('모래 늪 위를 걸음');if(it.effects&&it.effects.fireRes)p.push('용암 피해 절반');if(it.effects&&it.effects.wallCling)p.push('벽 붙기');if(it.effects&&it.effects.windRes)p.push('바람에 안 밀림');if(it.effects&&it.effects.guard)p.push('앞쪽 피해 -30%');
   return p.join('  ')||'능력치 없음';
 }

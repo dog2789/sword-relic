@@ -773,6 +773,7 @@ export class PlayScene extends Phaser.Scene{
   hurtPlayer(e){if(e.stun>0.15)return;this.hurtBy(e.dmg+Math.floor(Math.random()*3),e.x,'enemy')}
   hurtBy(raw,fromX,kind){
     const p=this.player,s=this.stats;if(p.inv>0||p.dead)return;
+    if(this.bonus.guard&&kind==='enemy'&&fromX!=null&&Math.sign(fromX-p.x)===this.facing)raw*=0.7;   // 근위대장의 문장: 바라보는 쪽 적 공격 막음
     // 방어력은 비율로 피해를 줄임 (방어 40이면 절반) — 방어구를 많이 껴도 아예 안 아프진 않게
     const d=Math.max(1,Math.round(raw*40/(40+this.defVal())));s.hp=Math.max(0,s.hp-d);
     this.popNum(p.x,p.y-12,d,0xff5a5a,false);p.inv=1.1;p.hurtT=0.28;sfx('hurt');

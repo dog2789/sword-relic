@@ -7,6 +7,10 @@ export const CROWN=[".....y.y.y....",".....yyyyy....",".....yyryy...."];
 export const SPAL={k:'#122015',g:'#5fcf5a',G:'#2f8a3a',w:'#e8ffe0'};
 export const KPAL={k:'#10142e',g:'#5a8cff',G:'#2f4fb0',w:'#e0ecff',y:'#f0c040',r:'#ff4a6a'};
 
+/* 고유 효과 장신구 모양 (나머지 장신구는 반지) */
+const ACC_SHAPES={
+  gale_plume:['..........kk','.........kgk','........kgwk','.......kgwGk','......kgwGk.','.....kgwGk..','....kgwGk...','...kgwGk....','..kgGGk.....','.kykkk......','kyk.........','kk..........'],
+  guard_crest:['..kkkkkkkk..','.kyyyyyyyyk.','.kygggggGyk.','.kygwggGGyk.','.kyggggGGyk.','.kyggGGGGyk.','..kyggGGyk..','..kygGGGyk..','...kygGyk...','....kyyk....','.....kk.....']};
 const ICONS={
   weapon:["..........kk",".........kLk","........kLlk",".......kLlk.","......kLlk..",".....kLlk...","..k.kLlk....","..kmkLk.....","...kmk......","..kjkmk.....",".kjk.kk.....","kkk........."],
   helm:["............","...kkkkkk...","..kaiiaaak..",".kaiaaaaaak.",".kaaaaaaaak.",".kaaaaaaaak.",".kmmmmmmmmk.",".kk......kk.","............"],
@@ -81,7 +85,7 @@ export function buildTextures(sc){
       // 휘두를 때 겹치는 빛 (조금 크고 두꺼운 호)
       add('glowA_'+id,arcTex(19,9,-88,88,[it.slashA[1],it.slashA[2],it.slashA[2]]));add('glowC_'+id,arcTex(it.big+4,it.big>22?14:12,-92,92,[it.slashC[1],it.slashC[2],it.slashC[2]]));
     }
-    const lk=it.look||{},rows=it.slot==='weapon'&&SWORD_ICONS[id]?SWORD_ICONS[id]:it.slot==='acc'&&lk.cape?CAPE_ICON:it.slot==='helm'&&HELM_ICON[lk.helm]?HELM_ICON[lk.helm]:it.slot==='armor'&&ARMOR_ICON[lk.armor]?ARMOR_ICON[lk.armor]:it.slot==='boots'?BOOT_ICON:ICONS[it.slot];
+    const lk=it.look||{},rows=it.slot==='weapon'&&SWORD_ICONS[id]?SWORD_ICONS[id]:it.slot==='acc'&&ACC_SHAPES[id]?ACC_SHAPES[id]:it.slot==='acc'&&lk.cape?CAPE_ICON:it.slot==='helm'&&HELM_ICON[lk.helm]?HELM_ICON[lk.helm]:it.slot==='armor'&&ARMOR_ICON[lk.armor]?ARMOR_ICON[lk.armor]:it.slot==='boots'?BOOT_ICON:ICONS[it.slot];
     add('icon_'+id,fromRows(rows,iconPal(it)));
   }
   for(const f in HERO_FRAMES)if(!sc.textures.exists('hero_'+f))sc.textures.createCanvas('hero_'+f,HERO_W,HERO_H);

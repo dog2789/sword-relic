@@ -244,7 +244,7 @@ export const Gimmicks={
     if(W2){this.windT+=dt;const ph=this.windT%W2.period,on=ph<W2.on;if(on){push+=W2.dir*W2.force;if(Math.random()<dt*14)this.windStreak(W2.dir)}
       if(ph>=W2.period-0.6&&ph-dt<W2.period-0.6)this.toast(W2.dir>0?'바람이 분다 →':'← 바람이 분다',700)}
     if(this.gustT>0){this.gustT-=dt;push+=this.gustDir*this.gustF;if(Math.random()<dt*20)this.windStreak(this.gustDir)}
-    if(push&&!this.climbing)p.x+=push*dt*(pb.blocked.down||pb.touching.down?0.6:1);
+    if(push&&!this.climbing&&!this.bonus.windRes)p.x+=push*dt*(pb.blocked.down||pb.touching.down?0.6:1);
     // 저주 가시
     this.pspikes.forEach(s=>{s.t+=dt;const ph=s.t%s.d.period,warn=ph>s.d.period-1.4&&ph<=s.d.period-1,up=ph>s.d.period-1;
       if(up!==s.up){s.up=up;if(up)this.shake(40,0.003)}
