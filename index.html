@@ -30,6 +30,15 @@
 <meta name="twitter:description" content="전설의 검을 찾아 떠나는 모험. 104개의 방, 보스 8마리. 브라우저에서 바로 플레이.">
 <meta name="twitter:image" content="https://swordrelic.com/og.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"소드 레릭 (SWORD RELIC)","alternateName":"SWORD RELIC","url":"https://swordrelic.com/","image":"https://swordrelic.com/og.png","description":"고향을 떠나 전설의 검을 찾아 나서는 픽셀 메트로베니아 웹게임. 초원부터 마왕성까지 104개의 방, 보스 8마리, 퍼즐과 무기마다 다른 스킬. 설치 없이 PC·모바일 브라우저에서 바로 플레이.","genre":["액션","어드벤처","메트로베니아","플랫포머"],"gamePlatform":["Web browser","PC","Mobile"],"applicationCategory":"Game","operatingSystem":"Any","inLanguage":"ko","playMode":"SinglePlayer","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
+<!-- 주소 하나로 모으기: vercel.app 저장 공간은 swordrelic.com과 따로라서, 들고 넘어감. 받는 쪽은 플레이 시간이 긴 세이브를 남기고 설정은 없을 때만 씀 -->
+<script>try{var H='swordrelic.com';
+if(location.hostname==='sword-relic.vercel.app'){var d={};for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k.indexOf('sr_')===0)d[k]=localStorage.getItem(k)}
+  location.replace('https://'+H+location.pathname+location.search+'#move='+encodeURIComponent(JSON.stringify(d)))}
+else if(location.hash.indexOf('#move=')===0){var m=JSON.parse(decodeURIComponent(location.hash.slice(6)));
+  var t=function(s){try{return (JSON.parse(s||'null')||{}).time||0}catch(e){return 0}};
+  for(var k in m){if(k.indexOf('sr_')!==0)continue;
+    if(k==='sr_save2'?t(m[k])>t(localStorage.getItem(k)):localStorage.getItem(k)===null)localStorage.setItem(k,m[k])}
+  history.replaceState(null,'',location.pathname+location.search)}}catch(e){}</script>
 <!-- 개발자 보기: 주소 뒤 ?dev 로 켜고 ?dev=0 으로 끔 (이 브라우저에만 기억). 끄면 설명·테스트 칸이 숨음 -->
 <script>try{var q=new URLSearchParams(location.search).get('dev');if(q!==null)localStorage.setItem('sr_dev',q==='0'?'':'1');if(localStorage.getItem('sr_dev'))document.documentElement.classList.add('dev')}catch(e){}</script>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">

@@ -11,7 +11,7 @@ npm run build         # dist/
 npm run build:single  # dist-single/index.html 한 파일 빌드 (Phaser는 CDN)
 ```
 
-- `main` 브랜치에 push하면 Vercel에 자동 배포됨. 주소 https://swordrelic.com (www는 여기로 넘김, sword-relic.vercel.app도 그대로 열림).
+- `main` 브랜치에 push하면 Vercel에 자동 배포됨. 주소 https://swordrelic.com (www는 여기로 넘김, sword-relic.vercel.app은 index.html 맨 위 스크립트가 localStorage `sr_*`를 주소 `#move=`에 담아 swordrelic.com으로 넘김. 받는 쪽은 플레이 시간 `time`이 긴 세이브를 남기고, 설정은 없을 때만 씀).
 - 일반 방문자는 제목·게임·소리 버튼만 보임. 설명·조작·지역·장비 카드와 테스트 버튼은 주소 뒤 `?dev`로 켬 (`?dev=0` 끔, localStorage `sr_dev`).
 - 홈 화면에 추가(PWA): `public/manifest.webmanifest`, 아이콘 `icon-192/512.png`, 서비스 워커 `public/sw.js` (새 파일 먼저 받고 끊기면 저장본, 배포판에서만 등록).
 - 방문자 통계: Vercel Web Analytics, index.html 머리의 `/_vercel/insights/script.js` (서비스 워커는 `/_vercel/`을 건드리지 않음). 보는 곳은 Vercel 대시보드 Analytics 탭.
