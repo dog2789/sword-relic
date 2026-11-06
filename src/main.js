@@ -94,7 +94,9 @@ setInterval(()=>{if(!MOBILE||!game)return;
   const w=iconOf(STATE.equip&&STATE.equip.weapon)||iconOf('traveler_sword');if(w&&eqImg.src!==w){eqImg.src=w;atkImg.src=w}},400);
 /* 폰에서 길게 누르기·두 번 눌러 확대 막기 */
 if(MOBILE){['contextmenu','selectstart','dblclick'].forEach(t=>document.addEventListener(t,e=>e.preventDefault()));
-  document.addEventListener('touchmove',e=>{if(e.touches.length>1||e.target.closest('#stage,.pad'))e.preventDefault()},{passive:false})}
+  document.addEventListener('touchmove',e=>{if(e.touches.length>1||e.target.closest('#stage,.pad'))e.preventDefault()},{passive:false});
+  // 조작판을 누른 손가락이 Phaser까지 가지 않게 (Phaser는 캔버스 밖 터치도 받아서, 가로 화면에서 버튼 아래 메뉴 줄이 같이 눌림)
+  document.querySelector('.pad').addEventListener('touchstart',e=>{if(e.target!==e.currentTarget)e.preventDefault()},{passive:false})}
 
 /* 소리 켜기/끄기 (효과음 + 배경음악, 브라우저에 기억됨) */
 const muteBtn=document.getElementById('mute');

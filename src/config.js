@@ -5,7 +5,7 @@ export const SPEED=92,JUMP=300,GRAV=820;
 export const VP={left:false,right:false,up:false,down:false,jump:false,attack:false,skill:false,menu:false,map:false,q0:false,q1:false,q2:false,q3:false,back:false};   // back = ESC (닫기·건너뛰기)
 /* 폰·태블릿(손가락 터치) 화면인지. 주소 뒤에 ?mobile 을 붙이면 PC에서도 폰 화면으로 볼 수 있음 */
 /* 폰에서는 ↑ 대신 공격(Z) 버튼으로 말 걸기·워프·순간이동 → 안내 문구도 바꿔 보여 줌 */
-export const keyText=s=>MOBILE?s.replace(/↑ 키/g,'공격(Z) 버튼'):s;
+export const keyText=s=>MOBILE?s.replace(/↑ 키/g,'공격(Z) 버튼').replace(/↓ 키/g,'스틱 ↓').replace(/숫자 (\d) 키/g,'$1번 칸').replace(/I 키/g,'장비 버튼'):s;
 export const MOBILE=typeof matchMedia!=='undefined'&&(matchMedia('(pointer:coarse)').matches||/[?&]mobile/.test(location.search));
 /* 폰 가로 화면: 게임 폭을 화면 비율에 맞춰 넓힘 (320~400, 가장 좁은 방이 416px라 그 안). 세로·PC는 320 */
 export const wideW=()=>MOBILE&&innerWidth>innerHeight?Math.min(400,Math.max(320,Math.round(H*innerWidth/innerHeight/2)*2)):320;

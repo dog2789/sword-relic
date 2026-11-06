@@ -101,7 +101,11 @@ export class PlayScene extends Phaser.Scene{
 
     this.spawnObjects(entry);this.spawnExtras();this.spawnGimmicks();this.pogo=false;
     (R.slimes||[]).forEach(s=>this.spawnEnemy({x:s.tx*T+8,y:s.ty*T}));
-    (R.mobs||[]).forEach(d=>spawnMob(this,d));
+    // 옆 입구 6칸 안의 몬스터는 방 안쪽 빈칸으로 밀어 둠 (들어오자마자 벽에 몰려 맞지 않게)
+    (R.mobs||[]).forEach(d=>{let m=d;
+      if((entry==='left'||entry==='right')&&Math.abs(d.tx*T+8-sx)<6*T&&Math.abs(d.ty*T+8-sy)<64){const dir=entry==='left'?1:-1;
+        for(let tx=Math.round(sx/T)+dir*6;tx>1&&tx<this.cols-2;tx+=dir)if(this.map[d.ty]&&this.map[d.ty][tx]==='.'){m={...d,tx};break}}
+      spawnMob(this,m)});
     // 위/아래 방에서 사다리를 타고 넘어오면 계속 매달린 채로 시작 (아래에서 올라오면 자동으로 조금 올라감)
     if(climb){this.startClimb();this.autoUp=entry==='bottom'}
     else if(entry==='bottom')p.setVelocityY(-360);   // 사다리 없는 굴뚝으로 올라오면 위로 튀어 오름
@@ -116,7 +120,7 @@ export class PlayScene extends Phaser.Scene{
     this.combo=0;this.comboT=0;this.targetT=0;this.hpGhost=this.stats.hp;this.tGhost=0;
     this.prev=this.heldNow();this.pend={};this.frozen=false;this.leaving=false;
     this.routeCams();
-    const tut=()=>this.toast('←→ 이동   X 점프   Z 공격   ↑ 대화   I 장비   M 지도',4600);
+    const tut=()=>this.toast(MOBILE?'스틱 이동   X 점프   Z 공격·대화   위 버튼 장비·지도':'←→ 이동   X 점프   Z 공격   ↑ 대화   I 장비   M 지도',4600);
     // 방 이벤트(컷신): 처음 들어왔을 때 한 번
     const ev=R.event&&!STATE.flags[R.event.id]?R.event:null;
     if(ev)this.time.delayedCall(ev.delay||500,()=>{if(this.leaving||this.overlayOpen())return;STATE.flags[ev.id]=true;this.openDialog('',ev.lines,()=>{if(data.tutorial)tut()})});

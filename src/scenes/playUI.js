@@ -105,7 +105,7 @@ export const PlayUI={
   overlayOpen(){return !!(this.menu||this.dlg||this.mapv||this.warpm||this.listm)},
   /* 오버레이 조작: 열린 순간 이미 눌려 있던 키는 무시하고, 새로 누른 키만 반응 */
   navHeld(){const v=VP;return{up:isDown('ArrowUp','KeyW')||v.up,down:isDown('ArrowDown','KeyS')||v.down,left:isDown('ArrowLeft','KeyA')||v.left,right:isDown('ArrowRight','KeyD')||v.right,
-    ok:isDown('KeyZ','KeyX','Enter','Space','KeyJ','KeyK')||v.attack||v.jump,back:isDown('Escape','KeyM','KeyI')||v.menu||v.map||v.back,x:isDown('KeyX')}},
+    ok:isDown('KeyZ','KeyX','Enter','Space','KeyJ','KeyK')||v.attack||v.jump,back:isDown('Escape','KeyM','KeyI')||v.menu||v.map||v.back,x:isDown('KeyX')||v.jump}},
   navPress(){const h=this.navHeld(),p=this.prevNav||h,r={};for(const k in h)r[k]=h[k]&&!p[k];this.prevNav=h;return r},
   navReset(){this.prevNav=this.navHeld()},
   /* 폰: 창 오른쪽 위에 누를 수 있는 닫기 버튼 (키보드 ESC·I·M 대신) */
