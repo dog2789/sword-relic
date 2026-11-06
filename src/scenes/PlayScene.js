@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import {W,H,T,HUD,ROWS,LH,SPEED,JUMP,VP,MOBILE,keyText,wideW,setW,landPad} from '../config.js';
+import {W,H,T,HUD,ROWS,LH,SPEED,JUMP,VP,MOBILE,keyText,wideW,setW,landPad,RESPAWN_MS} from '../config.js';
 import {buildTextures} from '../gfx/sprites.js';
 import {buildFonts} from '../gfx/fonts.js';
 import {cv,px} from '../gfx/pixel.js';
@@ -722,7 +722,7 @@ export class PlayScene extends Phaser.Scene{
       if(e.king)this.time.delayedCall(1500,()=>this.grantDoubleJump());
       this.openBossGates(id);sfx('fanfare');bgmStop();this.time.delayedCall(2600,()=>{if(!this.leaving)bgm(this.roomSong())});
       if(B.after)this.time.delayedCall(2800,()=>{if(!this.leaving&&!this.overlayOpen())this.openDialog('',id==='demon'?[...B.after,{n:(STATE.name||'모험가')+'의 기록',t:this.clearRecord()}]:B.after)})}
-    else if(!d.summon)this.time.delayedCall(6000,()=>{if(!this.leaving){if(d.t)spawnMob(this,d);else this.spawnEnemy(d)}});
+    else if(!d.summon)this.time.delayedCall(RESPAWN_MS,()=>{if(!this.leaving){if(d.t)spawnMob(this,d);else this.spawnEnemy(d)}});
   }
   spawnEnemy(d){
     const k=!!d.king,e=this.enemies.create(d.x,d.y,k?'kslime0':'slime0');
@@ -784,12 +784,26 @@ export class PlayScene extends Phaser.Scene{
     return '플레이 시간 '+(t/3600|0)+':'+p2(t%3600/60|0)+':'+p2(t%60)+'    레벨 '+this.stats.lv+'\n쓰러진 횟수 '+(STATE.deaths||0)+'번    보물 상자 '+got+' / '+all.length;
   }
   die(){
-    const p=this.player,s=this.stats;p.dead=true;STATE.deaths=(STATE.deaths||0)+1;p.setTint(0x666677);p.anims.stop();p.setTexture('hero_jump0');
+    const p=this.player,s=this.stats;p.dead=true;STATE.deaths=(STATE.deaths||0)+1;
+    p.setVelocityX(0).setDragX(4000);p.anims.stop();p.setTexture('hero_jump0');p.setTintFill(0xffffff);   // 넉백으로 쭉 미끄러지지 않게 멈춤
+    this.shake(220,0.014);
+    // 하얗게 번쩍 → 회색으로 뒤로 쓰러짐
+    this.time.delayedCall(140,()=>{p.clearTint().setTint(0x666677);this.tweens.add({targets:p,angle:p.flipX?90:-90,duration:380,ease:'Quad.easeIn',onComplete:()=>this.dustEm.explode(8,p.x,p.body.bottom)})});
+    // 비석이 위에서 떨어져 꽂힘
+    this.time.delayedCall(700,()=>{
+      if(!this.textures.exists('tomb')){const g=this.make.graphics({add:false});
+        g.fillStyle(0x2a2a34).fillRect(1,3,12,13).fillRect(3,1,8,2);g.fillStyle(0x9a9aa8).fillRect(2,4,10,11).fillRect(4,2,6,2);
+        g.fillStyle(0x5a5a68).fillRect(6,5,2,7).fillRect(4,7,6,2);g.fillStyle(0x4a6a3a).fillRect(0,15,14,1);g.generateTexture('tomb',14,16);g.destroy()}
+      const gy=p.body.bottom,t=this.add.image(p.x,gy-70,'tomb').setOrigin(0.5,1).setDepth(11).setAlpha(0);
+      this.tweens.add({targets:t,y:gy,alpha:1,duration:320,ease:'Quad.easeIn',onComplete:()=>{this.dustEm.explode(12,t.x,gy);this.shake(100,0.008);sfx('door');this.tweens.add({targets:p,alpha:0.25,duration:300})}});
+    });
     this.banner('GAME OVER',0xff5a5a);
-    this.time.delayedCall(1700,()=>{
+    const B=this.R.boss,retry=B&&!bossDone(B.id||'king');
+    this.time.delayedCall(1100,()=>this.toast(retry?'쓰러졌다… 보스 방 입구에서 다시 도전합니다':STATE.save?'쓰러졌다… 마지막 석상에서 다시 시작합니다 (골드·장비는 그대로)':'쓰러졌다… 처음 장소에서 다시 시작합니다 (석상에 저장하세요)',2000));
+    this.time.delayedCall(3200,()=>{
       s.hp=this.mhp();s.mp=s.maxMp;
       // 보스가 살아 있는 방에서 지면 그 방 입구에서 다시 (석상부터 걸어오지 않게)
-      const B=this.R.boss;if(B&&!bossDone(B.id||'king')){this.leaving=true;this.fadeCams(true,200,()=>this.scene.restart({...this.entryData,retry:true}));return}
+      if(retry){this.leaving=true;this.fadeCams(true,200,()=>this.scene.restart({...this.entryData,retry:true}));return}
       const room=STATE.save?STATE.save.room:'r1';
       this.leaving=true;this.fadeCams(true,200,()=>this.scene.restart({room,entry:STATE.save?'save':'start'}));
     });
