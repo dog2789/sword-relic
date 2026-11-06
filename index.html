@@ -43,7 +43,9 @@ if(location.hostname==='sword-relic.vercel.app'){var d={};for(var i=0;i<localSto
 else if(location.hash.indexOf('#move=')===0){var m=JSON.parse(decodeURIComponent(location.hash.slice(6)));
   var t=function(s){try{return (JSON.parse(s||'null')||{}).time||0}catch(e){return 0}};
   for(var k in m){if(k.indexOf('sr_')!==0)continue;
-    if(k==='sr_save2'?t(m[k])>t(localStorage.getItem(k)):localStorage.getItem(k)===null)localStorage.setItem(k,m[k])}
+    if(k==='sr_save2'?t(m[k])>t(localStorage.getItem(k)):localStorage.getItem(k)===null){
+      if(k==='sr_save2'&&localStorage.getItem(k))localStorage.setItem('sr_save2_old',localStorage.getItem(k));   // 덮어쓰기 전 예전 세이브 백업
+      localStorage.setItem(k,m[k])}}
   history.replaceState(null,'',location.pathname+location.search)}}catch(e){}</script>
 <!-- 개발자 보기: 주소 뒤 ?dev 로 켜고 ?dev=0 으로 끔 (이 브라우저에만 기억). 끄면 설명·테스트 칸이 숨음 -->
 <script>try{var q=new URLSearchParams(location.search).get('dev');if(q!==null)localStorage.setItem('sr_dev',q==='0'?'':'1');if(localStorage.getItem('sr_dev'))document.documentElement.classList.add('dev')}catch(e){}</script>

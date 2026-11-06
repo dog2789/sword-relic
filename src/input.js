@@ -31,6 +31,7 @@ const typing=e=>{const t=e.target;return t&&(t.isContentEditable||/^(INPUT|TEXTA
 export const ACTIONS=[['left','왼쪽','ArrowLeft'],['right','오른쪽','ArrowRight'],['up','위','ArrowUp'],['down','아래','ArrowDown'],
   ['atk','공격','KeyZ'],['jump','점프','KeyX'],['skill','스킬','KeyC'],['menu','장비','KeyI'],['map','지도','KeyM']];
 let remap={};
+export const keyName=c=>({ArrowLeft:'←',ArrowRight:'→',ArrowUp:'↑',ArrowDown:'↓',Space:'Space',Enter:'Enter',ShiftLeft:'Shift',ShiftRight:'Shift',ControlLeft:'Ctrl',ControlRight:'Ctrl',AltLeft:'Alt'}[c]||c.replace(/^(Key|Digit|Numpad)/,''));
 export const getBinds=()=>{try{return JSON.parse(localStorage.getItem('sr_keys')||'{}')||{}}catch(_){return{}}};
 export function setBinds(b){try{localStorage.setItem('sr_keys',JSON.stringify(b))}catch(_){}
   remap={};for(const [k,,def] of ACTIONS)if(b[k]&&b[k]!==def)remap[b[k]]=def;down.clear()}

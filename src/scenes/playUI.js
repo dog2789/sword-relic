@@ -156,7 +156,7 @@ export const PlayUI={
     M.g=fix(this.add.graphics());M.objs.push(M.g);
     const t=(x,y,s,o={})=>{const o2=fix(this.add.text(x,y,s,Object.assign({fontFamily:F9,fontSize:'10px',color:'#ece7f7'},o)));M.objs.push(o2);return o2};
     t(18,12,'워프',{fontFamily:F11,fontSize:'12px',color:'#8fe3ff'});
-    if(MOBILE)this.addCloseBtn(304,11,M.objs,()=>this.closeWarp());else t(302,13,'방향키 고르기   Z 이동   M 닫기',{color:'#8f86ab'}).setOrigin(1,0);
+    if(MOBILE)this.addCloseBtn(304,11,M.objs,()=>this.closeWarp());else t(302,13,keyText('방향키 고르기   Z 이동   M 닫기'),{color:'#8f86ab'}).setOrigin(1,0);
     t(18,30,'등록한 워프 '+list.length+'곳',{color:'#cfc8e4'});
     M.name=t(160,136,'',{fontFamily:F11,fontSize:'12px',color:'#ffe27a'}).setOrigin(0.5,0);
     M.hint=t(160,152,'',{color:'#8f86ab'}).setOrigin(0.5,0);

@@ -1,7 +1,7 @@
 /* 골드, 대장장이(무기 강화), 잡화점
    PlayScene에 섞어 쓰는 함수 모음 (Object.assign(PlayScene.prototype, Economy)) */
 import Phaser from 'phaser';
-import {W,H,HUD,MOBILE} from '../config.js';
+import {W,H,HUD,MOBILE,keyText} from '../config.js';
 import {ITEMS,CONSUMABLES,WLV_MAX,wlvCost,wlvAtk,weaponName} from '../data/items.js';
 import {STATE} from '../state.js';
 import {sfx} from '../sfx.js';
@@ -41,7 +41,7 @@ export const Economy={
     L.up=t(160,33,'▲',{color:'#ffe27a'}).setOrigin(0.5).setInteractive().on('pointerdown',()=>{L.sel=Math.max(0,L.top-1);this.drawList()});
     L.dn=t(160,166,'▼',{color:'#ffe27a'}).setOrigin(0.5).setInteractive().on('pointerdown',()=>{L.sel=Math.min(L.items.length-1,L.top+6);this.drawList()});
     L.desc=t(30,146,'',{color:'#cfc8e4',wordWrap:{width:262},lineSpacing:2});
-    if(!MOBILE)t(290,159,'Z 선택   X 나가기',{color:'#6f6890'}).setOrigin(1,0);
+    if(!MOBILE)t(290,159,keyText('Z 선택   X 나가기'),{color:'#6f6890'}).setOrigin(1,0);
     const bz=fix(this.add.zone(-this.ovl.x,0,W,16).setOrigin(0).setInteractive());bz.on('pointerdown',()=>this.closeList());L.objs.push(bz);
     if(MOBILE)this.addCloseBtn(291,21,L.objs,()=>this.closeList());
     this.navReset();this.drawList();
@@ -60,7 +60,7 @@ export const Economy={
       if(L.top+i===L.sel){g.fillStyle(0x2c2346,1).fillRect(30,42+i*17,262,16);g.lineStyle(1,0xffe27a,1).strokeRect(30.5,42.5+i*17,261,15)}
       r.icon.setTexture(it.icon);r.a.setText(it.label).setColor(it.ok===false?'#6f6890':'#ece7f7');
       r.b.setText(it.right||'').setColor(it.ok===false?'#8a5a6a':'#ffd34a')});
-    const cur=L.items[L.sel];L.desc.setText(cur?cur.desc||'':'');
+    const cur=L.items[L.sel];L.desc.setText(keyText(cur?cur.desc||'':''));
   },
   listPick(){const L=this.listm,it=L.items[L.sel];if(!it)return;if(it.ok===false){this.cameras.main.shake(60,0.002);return}L.pick(it,this);if(this.listm)this.drawList()},
   updateList(){

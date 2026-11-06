@@ -1,7 +1,7 @@
 /* 장비창(I): [장비] 칸마다 모든 장비를 도감처럼 나열 / [상태] 능력치, 시간, 열쇠, 능력
    C 탭 바꾸기, ←→↑↓ 고르기, Z 장착·해제, I/ESC 닫기 */
 import Phaser from 'phaser';
-import {W,H,VP,MOBILE} from '../config.js';
+import {W,H,VP,MOBILE,keyText} from '../config.js';
 import {ITEMS,SETS,SLOTS,SLOT_NAMES,KEYS,setProgress,statLine,weaponName} from '../data/items.js';
 import {ROOMS} from '../world/rooms.js';
 import {STATE,bossDone} from '../state.js';
@@ -23,7 +23,7 @@ export const MenuMixin={
     M.t=(x,y,s,o={},keep=true)=>{const t=fix(this.add.text(x,y,s,Object.assign({fontFamily:F9,fontSize:'10px',color:'#ece7f7'},o)));(keep?M.objs:M.dyn).push(t);return t};
     M.tabs=['장비','상태'].map((n,i)=>{const t=M.t(28+i*44,13,n,{fontFamily:F11,fontSize:'12px'});t.setInteractive().on('pointerdown',()=>{M.tab=i;this.buildTab()});return t});
     if(MOBILE){M.hintC=M.t(246,15,'C 다음 칸',{color:'#8f86ab'}).setOrigin(1,0);this.addCloseBtn(302,12,M.objs,()=>this.closeMenu())}
-    else M.t(300,15,'C 탭   I 닫기',{color:'#8f86ab'}).setOrigin(1,0);
+    else M.t(300,15,keyText('C 탭   I 닫기'),{color:'#8f86ab'}).setOrigin(1,0);
     const r=this.equip.weapon?SLOTS.indexOf('weapon'):0;M.r=r;M.c=Math.max(0,slotItems(SLOTS[r]).indexOf(this.equip[SLOTS[r]]));
     this.buildTab();this.navReset();
   },
@@ -93,9 +93,9 @@ export const MenuMixin={
     const it=ITEMS[cell.id],own=STATE.bag.includes(cell.id),eq=this.equip[SLOTS[M.r]]===cell.id;
     if(!own){M.name.setText('???');M.desc.setText('아직 얻지 못한 장비예요. 상자나 보스에게서 찾아보세요.');return}
     M.name.setText((it.slot==='weapon'?weaponName(cell.id):it.name)+'   '+statLine(it)+(eq?'  (장착 중)':''));
-    M.zh.setText(eq?(it.slot==='weapon'?'':MOBILE?'다시 눌러 벗기':'Z 벗기'):MOBILE?'다시 눌러 장착':'Z 장착');
-    M.desc.setText(it.desc+(it.set?'  ['+SETS[it.set].name+']':''));
-    if(it.slot==='weapon'){const sk=skillOf(cell.id);M.sk.setText('C 스킬 「'+sk.name+'」 MP '+sk.mp+' · '+sk.desc)}
+    M.zh.setText(eq?(it.slot==='weapon'?'':MOBILE?'다시 눌러 벗기':keyText('Z 벗기')):MOBILE?'다시 눌러 장착':keyText('Z 장착'));
+    M.desc.setText(keyText(it.desc)+(it.set?'  ['+SETS[it.set].name+']':''));
+    if(it.slot==='weapon'){const sk=skillOf(cell.id);M.sk.setText(keyText('C 스킬')+' 「'+sk.name+'」 MP '+sk.mp+' · '+sk.desc)}
   },
   equipCell(){
     const M=this.menu,sl=SLOTS[M.r],cell=M.cells[M.r][M.c];if(!cell||!STATE.bag.includes(cell.id))return;

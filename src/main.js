@@ -10,7 +10,7 @@ import {STATE,newGame} from './state.js';
 import {ITEMS} from './data/items.js';
 import {loadFonts} from './fonts.js';
 import {setMuted,isMuted,setVolume,getVolume} from './sfx.js';
-import {ACTIONS,getBinds,setBinds,captureKey} from './input.js';
+import {ACTIONS,getBinds,setBinds,captureKey,keyName} from './input.js';
 
 let game;
 /* 폰 화면 */
@@ -119,9 +119,10 @@ $('set-bs').addEventListener('click',e=>{const b=e.target.closest('button');if(!
 $('mute').addEventListener('click',e=>{e.currentTarget.blur();openSet()});
 
 /* 키 설정 (PC): 칸을 누르면 다음 키 하나를 받음. 같은 키를 쓰던 다른 동작은 기본 키로 돌아감 */
-const keyName=c=>({ArrowLeft:'←',ArrowRight:'→',ArrowUp:'↑',ArrowDown:'↓',Space:'Space',Enter:'Enter',ShiftLeft:'Shift',ShiftRight:'Shift',ControlLeft:'Ctrl',ControlRight:'Ctrl',AltLeft:'Alt'}[c]||c.replace(/^(Key|Digit|Numpad)/,''));
 const kgrid=dlg.querySelector('.kgrid');
-const drawKeys=()=>{const b=getBinds();kgrid.replaceChildren(...ACTIONS.map(([k,name,def])=>{
+const drawKeys=()=>{const b=getBinds();
+  document.querySelectorAll('#start kbd').forEach((k,i)=>{const a=ACTIONS[4+i];k.textContent=keyName(b[a[0]]||a[2])});   // 시작 팝업 Z·X·C
+  kgrid.replaceChildren(...ACTIONS.map(([k,name,def])=>{
   const l=document.createElement('label'),btn=document.createElement('button');btn.type='button';btn.textContent=keyName(b[k]||def);
   btn.addEventListener('click',()=>{btn.textContent='키 입력…';btn.classList.add('wait');
     captureKey(c=>{if(c&&c!=='Escape'){const nb=getBinds();for(const a in nb)if(nb[a]===c)delete nb[a];nb[k]=c;setBinds(nb)}drawKeys()})});

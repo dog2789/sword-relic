@@ -1,7 +1,7 @@
 /* 캐릭터 만들기: 새로 시작할 때 인트로 전에 나오는 화면
    ↑↓ 항목 고르기, ←→ 바꾸기, Z 결정 / 터치는 ◀ ▶ 와 버튼을 직접 누름 */
 import Phaser from 'phaser';
-import {W,H,VP,MOBILE} from '../config.js';
+import {W,H,VP,MOBILE,keyText} from '../config.js';
 import {HERO_W,HERO_H,HAIR_STYLES,LOOK_OPTS,LOOK,drawHero,saveLook} from '../gfx/hero.js';
 import {STATE} from '../state.js';
 import {bgm} from '../bgm.js';
@@ -57,7 +57,7 @@ export class CustomizeScene extends Phaser.Scene{
         zl.on('pointerdown',()=>{this.sel=i;this.change(r.k,-1)});zr.on('pointerdown',()=>{this.sel=i;this.change(r.k,1)});
       }
       return o});
-    this.add.text(W/2,H-6,MOBILE?'◀ ▶ 눌러 바꾸기 · 이름 줄 눌러 입력':'↑↓ 고르기 · ←→ 바꾸기 · Z 결정',{fontFamily:F9,fontSize:'10px',color:'#ffffff',stroke:'#1a1230',strokeThickness:2}).setOrigin(0.5,1);
+    this.add.text(W/2,H-6,MOBILE?'◀ ▶ 눌러 바꾸기 · 이름 줄 눌러 입력':keyText('↑↓ 고르기 · ←→ 바꾸기 · Z 결정'),{fontFamily:F9,fontSize:'10px',color:'#ffffff',stroke:'#1a1230',strokeThickness:2}).setOrigin(0.5,1);
     this.ed=edges();this.busy=false;
     this.cameras.main.setOrigin(0,0);fitCameras(this);
     this.cameras.main.fadeIn(300,0,0,0);

@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import {bgm} from '../bgm.js';
-import {W,H,VP,MOBILE} from '../config.js';
+import {W,H,VP,MOBILE,keyText} from '../config.js';
 import {buildTextures} from '../gfx/sprites.js';
 import {buildFonts} from '../gfx/fonts.js';
 import {cv,px} from '../gfx/pixel.js';
@@ -41,7 +41,7 @@ export class TitleScene extends Phaser.Scene{
       .setOrigin(0.5).setInteractive({useHandCursor:true});
       t.on('pointerdown',()=>{this.sel=i;this.choose()});return t});
     this.cursor=this.add.text(0,0,'▶',{fontFamily:F9,fontSize:'10px',color:'#ffe27a',stroke:'#1a1230',strokeThickness:2}).setOrigin(0.5);
-    this.hint=this.add.text(W/2,H-12,MOBILE?'화면을 눌러 선택':'Z 또는 화면을 눌러 선택',{fontFamily:F9,fontSize:'10px',color:'#ffffff',stroke:'#1a1230',strokeThickness:2}).setOrigin(0.5);
+    this.hint=this.add.text(W/2,H-12,MOBILE?'화면을 눌러 선택':keyText('Z 또는 화면을 눌러 선택'),{fontFamily:F9,fontSize:'10px',color:'#ffffff',stroke:'#1a1230',strokeThickness:2}).setOrigin(0.5);
     this.tweens.add({targets:this.hint,alpha:0.3,duration:700,yoyo:true,repeat:-1});
     this.ed=edges();
     this.prevVP={};this.busy=false;
