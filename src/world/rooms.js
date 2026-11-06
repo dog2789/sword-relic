@@ -9,6 +9,7 @@
             slimes(슬라임), mobs(다른 몬스터 {t:'bat'|'snail', tx, ty}),
             movers(움직이는 발판), fallers(떨어지는 발판), mushrooms(점프 버섯), breaks(부서지는 벽) */
 import {T,ROWS} from '../config.js';
+import {densify} from './densify.js';
 
 function makeGrid(cols){const m=[];for(let y=0;y<ROWS;y++)m.push(Array(cols).fill('.'));return m}
 function painter(m){
@@ -885,7 +886,7 @@ export const ROOMS={
 export const roomChests=R=>[...(R.chests||[]),...(R.chest?[R.chest]:[])];
 
 export function buildRoomMap(id){
-  const R=ROOMS[id],m=makeGrid(R.cols);R.build(painter(m));return m;
+  const R=ROOMS[id],m=makeGrid(R.cols);R.build(painter(m));return densify(m,R,id);
 }
 /* 해당 열 바닥(맨 아래에서부터 이어진 땅)의 윗면 y(px) */
 export function floorTopY(m,tx){
