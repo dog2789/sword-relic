@@ -5,7 +5,7 @@
    - 새 구조물 위아래 2칸은 비어 있어야 놓음 (머리 공간)
    tools/reach.mjs로 모든 방을 검사해서, 길이 막히는 방은 DENSE_SEED로 다른 배치를 쓰거나 DENSE_OFF로 끔 */
 const ROWS=14;
-export const DENSE_OFF=new Set(['s5']);   // s5: 위 출구는 일부러 막은 곳
+export const DENSE_OFF=new Set(['s5','v1','l8']);   // s5: 위 출구는 일부러 막은 곳 / v1 고향 마을·l8 전설의 제단: 이야기 장면이라 손대지 않음
 export const DENSE_SEED={i9:1};   // i9: 기본 배치는 횃불·철문 길을 막음
 // 테마별 재료: 발판('-' 나무, '=' 잎)과 바위 턱('#') 비율
 const MAT={meadow:['-',0.25],treetop:['=',0.15],cave:['-',0.6],castle:['-',0.55],ice:['-',0.6],desert:['-',0.55],lava:['-',0.6],sky:['-',0.35],demon:['-',0.6]};

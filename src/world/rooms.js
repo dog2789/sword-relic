@@ -10,6 +10,7 @@
             movers(움직이는 발판), fallers(떨어지는 발판), mushrooms(점프 버섯), breaks(부서지는 벽) */
 import {T,ROWS} from '../config.js';
 import {densify} from './densify.js';
+import {ROOMS2} from './rooms2.js';
 
 function makeGrid(cols){const m=[];for(let y=0;y<ROWS;y++)m.push(Array(cols).fill('.'));return m}
 function painter(m){
@@ -34,8 +35,8 @@ function painter(m){
 
 export const ROOMS={
   /* ----- 고향 마을 (시작 지점) ----- */
-  v1:{name:'고향 마을',theme:'meadow',cols:46,grid:[-1,0],exits:{left:'v2',right:'r1'},seed:7,
-    build(p){p.ground(0,45,12);p.plat(17,20,6);p.plat(31,35,6);p.plat(24,26,9)},
+  v1:{name:'고향 마을',theme:'meadow',cols:46,grid:[-1,0],exits:{left:'v2',right:'r1',up:{to:'r6',tx:2}},seed:7,
+    build(p){p.ground(0,45,12);p.vine(2,0,11);p.plat(17,20,6);p.plat(31,35,6);p.plat(24,26,9)},
     start:{tx:8},save:{tx:13},warp:{id:'w_v1',tx:41},
     npcs:[{id:'mother',tx:6,tex:'npc_mother',name:'엄마'},{id:'smith',tx:22,tex:'npc_smith',name:'대장장이'},
       {id:'kid',tx:28,tex:'npc_kid',name:'꼬마'},{id:'shop',tx:36,tex:'npc_shop',name:'잡화점 누나'}],
@@ -69,7 +70,7 @@ export const ROOMS={
     chest:{id:'ch_r3',tx:32,item:'iron_armor'},
     chests:[{id:'ch_r3b',tx:11,ty:5,gold:40}],
     slimes:[{tx:19,ty:8},{tx:26,ty:6},{tx:45,ty:10}],
-    mobs:[{t:'shroom',tx:21,ty:9},{t:'snail',tx:26,ty:10},{t:'hare',tx:30,ty:10},{t:'bee',tx:12,ty:3}],
+    mobs:[{t:'shroom',tx:21,ty:9},{t:'snail',tx:26,ty:10},{t:'hare',tx:30,ty:8},{t:'bee',tx:12,ty:3}],
     deco:{trees:[4,13,44],rocks:[23]}},
 
   r4:{name:'고목 쉼터',theme:'meadow',cols:30,grid:[3,0],exits:{left:'r3',right:'r5',up:{to:'t1',tx:14}},seed:41,
@@ -285,8 +286,8 @@ export const ROOMS={
     chests:[{id:'ch_t2',tx:34,ty:1,gold:70}],
     slimes:[{tx:19,ty:6}],mobs:[{t:'mantis',tx:20,ty:7},{t:'bee',tx:12,ty:4},{t:'bat',tx:32,ty:3}],
     deco:{}},
-  t3:{name:'새 둥지',theme:'treetop',cols:30,grid:[5,-1],exits:{left:'t2'},seed:183,
-    build(p){p.block(0,6,6,6);p.block(8,8,13,8);p.block(15,7,29,7);p.block(23,3,29,3);p.block(23,4,23,4);p.block(29,4,29,6)},
+  t3:{name:'새 둥지',theme:'treetop',cols:30,grid:[5,-1],exits:{left:'t2',up:{to:'t4',tx:3}},seed:183,
+    build(p){p.block(0,6,6,6);p.vine(3,0,5);p.block(8,8,13,8);p.block(15,7,29,7);p.block(23,3,29,3);p.block(23,4,23,4);p.block(29,4,29,6)},
     gates:[{id:'g_t3',tx:23,ty:5,h:2}],plates:[{tx:17,ty:6,gate:'g_t3'}],crates:[{tx:20,ty:6}],
     chests:[{id:'ch_t3',tx:26,ty:6,item:'feather'}],
     mobs:[{t:'bee',tx:10,ty:4},{t:'bee',tx:20,ty:2}],
@@ -571,9 +572,9 @@ export const ROOMS={
     chests:[{id:'ch_r0',tx:36,ty:7,item:'clover_charm'}],
     slimes:[{tx:15,ty:10},{tx:28,ty:10}],mobs:[{t:'shroom',tx:17,ty:11},{t:'bat',tx:22,ty:4}],
     deco:{trees:[2,14],rocks:[24],fence:[[11,13]]}},
-  c12:{name:'울리는 동굴',theme:'cave',cols:40,grid:[0,2],exits:{right:'c10',up:{to:'c13',tx:6}},seed:403,
+  c12:{name:'울리는 동굴',theme:'cave',cols:40,grid:[0,2],exits:{right:'c10',up:{to:'c13',tx:6},down:{to:'c14',tx:26}},seed:403,
     build(p){p.block(0,0,39,1);p.clear(6,0,6,1);p.ladder(6,0,11);p.ground(0,39,12);p.block(0,2,0,11);
-      p.block(20,2,20,8);p.blockA(20,9,20,11);p.clear(10,12,14,12);p.spikes(10,14,12);p.plat(10,14,9);p.block(30,7,34,7)},
+      p.block(20,2,20,8);p.blockA(20,9,20,11);p.clear(10,12,14,12);p.spikes(10,14,12);p.plat(10,14,9);p.block(30,7,34,7);p.clear(26,12,26,13);p.ladder(26,12,13)},
     switches:[{tx:26,ty:11},{tx:16,ty:11}],
     turrets:[{tx:1,ty:5,dir:'r',rate:2.6}],
     chests:[{id:'ch_c12',tx:2,ty:11,gold:140},{id:'ch_c12b',tx:32,ty:6,gold:120}],
@@ -587,8 +588,8 @@ export const ROOMS={
     chests:[{id:'ch_c13',tx:30,ty:3,item:'echo_ring'}],
     slimes:[{tx:20,ty:11}],mobs:[{t:'spider',tx:14,ty:4},{t:'bat',tx:26,ty:5}],
     deco:{}},
-  k12:{name:'성벽 통로',theme:'castle',cols:44,grid:[12,0],exits:{left:'k10',up:{to:'k13',tx:40}},seed:411,
-    build(p){p.block(0,0,43,0);p.clear(40,0,40,0);p.ladder(40,0,11);p.ground(0,43,12);p.block(43,1,43,11);
+  k12:{name:'성벽 통로',theme:'castle',cols:44,grid:[12,0],exits:{left:'k10',up:{to:'k13',tx:40},right:'k14'},seed:411,
+    build(p){p.block(0,0,43,0);p.clear(40,0,40,0);p.ladder(40,0,11);p.ground(0,43,12);p.block(43,1,43,8);
       p.clear(10,12,14,13);p.spikes(10,14,13);p.clear(22,12,27,12);p.spikes(22,27,12);p.block(30,8,34,8)},
     fallers:[{tx:10,ty:10,w:2},{tx:13,ty:9,w:2},{tx:23,ty:9,w:2}],
     turrets:[{tx:42,ty:3,dir:'l',rate:2.4}],
@@ -620,8 +621,8 @@ export const ROOMS={
     chests:[{id:'ch_i12',tx:26,ty:2,item:'moon_sword'}],
     mobs:[{t:'snowman',tx:10,ty:12},{t:'bat',tx:24,ty:5}],
     deco:{}},
-  i13:{name:'빙결의 정원',theme:'ice',cols:34,grid:[10,2],exits:{left:'i12'},seed:433,
-    build(p){p.block(0,0,33,1);p.ground(0,33,12);p.ground(0,5,4);p.block(33,2,33,11);p.block(30,2,30,8);p.block(7,8,9,8)},
+  i13:{name:'빙결의 정원',theme:'ice',cols:34,grid:[10,2],exits:{left:'i12',right:'i14'},seed:433,
+    build(p){p.block(0,0,33,1);p.ground(0,33,12);p.ground(0,5,4);p.block(33,2,33,8);p.block(30,2,30,8);p.block(7,8,9,8)},
     gates:[{id:'g_i13',tx:30,ty:9,h:3}],torches:[{tx:12,ty:11,gate:'g_i13'},{tx:8,ty:7,gate:'g_i13'},{tx:20,ty:11,gate:'g_i13'},{tx:27,ty:11,gate:'g_i13'}],
     crystal:{id:'c_i13',tx:31,ty:9},
     chests:[{id:'ch_i13',tx:32,ty:11,item:'moon_helm'}],
@@ -640,7 +641,7 @@ export const ROOMS={
     chests:[{id:'ch_d10',tx:37,ty:3,item:'blood_helm'}],
     mobs:[{t:'vult',tx:23,ty:3},{t:'scorp',tx:14,ty:6},{t:'bat',tx:18,ty:3},{t:'bat',tx:30,ty:4}],
     deco:{}},
-  d11:{name:'신전 지붕',theme:'desert',cols:36,grid:[-7,-1],exits:{down:{to:'d5',tx:10}},seed:449,
+  d11:{name:'신전 지붕',theme:'desert',cols:36,grid:[-7,-1],exits:{down:{to:'d5',tx:10},left:'d14'},seed:449,
     build(p){p.ground(0,35,12);p.clear(10,12,10,13);p.ladder(10,10,13);p.clear(14,12,30,12);p.spikes(14,30,12);p.blockB(14,11,30,11);p.block(20,6,24,6)},
     switches:[{tx:12,ty:11,timer:6},{tx:33,ty:11}],
     crystal:{id:'c_d11',tx:22,ty:4},
@@ -688,8 +689,8 @@ export const ROOMS={
     mobs:[{t:'mslime',tx:22,ty:11},{t:'sala',tx:9,ty:11},{t:'bomber',tx:14,ty:11},{t:'bomber',tx:30,ty:11}],
     deco:{},
     event:{id:'ev_sulfur',delay:400,lines:[{n:'나',t:'왼쪽 철문 너머에서 열기가 느껴져. 누름판에 상자를 올려야겠어.'}]}},
-  l12:{name:'흑요석 광산',theme:'lava',cols:40,grid:[-5,4],exits:{right:'l11',left:'l13'},seed:479,
-    build(p){p.block(0,0,39,1);p.ground(0,39,13);p.clear(6,12,33,12);p.lava(6,12,33,12);p.ground(0,5,12);p.ground(34,39,12);p.block(19,8,21,8)},
+  l12:{name:'흑요석 광산',theme:'lava',cols:40,grid:[-5,4],exits:{right:'l11',left:'l13',down:{to:'l14',tx:37}},seed:479,
+    build(p){p.block(0,0,39,1);p.ground(0,39,13);p.clear(6,12,33,12);p.lava(6,12,33,12);p.ground(0,5,12);p.ground(34,39,12);p.block(19,8,21,8);p.clear(37,12,37,13);p.ladder(37,12,13)},
     movers:[{tx:7,ty:7,w:2,axis:'y',range:4,speed:40},{tx:12,ty:5,w:3,axis:'x',range:6,speed:45},{tx:26,ty:6,w:2,axis:'y',range:5,speed:40}],
     turrets:[{tx:38,ty:4,dir:'l',rate:2.8}],
     chests:[{id:'ch_l12',tx:20,ty:7,item:'dragon_armor'}],
@@ -764,8 +765,8 @@ export const ROOMS={
     chests:[{id:'ch_s9',tx:3,ty:11,gold:380}],
     mobs:[{t:'tcloud',tx:15,ty:3},{t:'haunt',tx:31,ty:10},{t:'wisp',tx:20,ty:6},{t:'harpy',tx:10,ty:4}],deco:{},
     event:{id:'ev_s9',delay:400,lines:[{n:'나',t:'번개 신전... 왼쪽 철문은 횃불을 모두 밝혀야 열리는 것 같아.'}]}},
-  s10:{name:'하늘 폭포',theme:'sky',cols:40,grid:[10,-4],exits:{right:'s9',left:'s11',down:{to:'s5',tx:22}},seed:541,
-    build(p){p.ground(0,14,12);p.ground(30,39,12)},
+  s10:{name:'하늘 폭포',theme:'sky',cols:40,grid:[10,-4],exits:{right:'s9',left:'s11',down:{to:'s5',tx:22},up:{to:'s14',tx:5}},seed:541,
+    build(p){p.ground(0,14,12);p.ground(30,39,12);p.ladder(5,0,11)},
     clouds:[{tx:16,ty:10,w:2},{tx:20,ty:9,w:2},{tx:24,ty:10,w:2},{tx:27,ty:11,w:2}],
     wind:{dir:-1,force:35,period:4,on:1.5},
     chests:[{id:'ch_s10',tx:2,ty:11,gold:400}],
@@ -832,8 +833,8 @@ export const ROOMS={
       after:[{n:'나',t:'정면으론 방패에 막혀... 막힌 뒤의 반격만 조심하면 됐어. 이제 마검을 가져갈 수 있겠어.'}]},
     mobs:[],deco:{},
     event:{id:'ev_m6',delay:400,lines:[{n:'나',t:'무덤 위에서 검은 기운이 일렁여... 저기 검이 잠들어 있는 것 같아.'}]}},
-  m7:{name:'무너진 탑',theme:'demon',cols:30,grid:[0,-4],exits:{right:'m6',down:{to:'m8',tx:4}},seed:619,
-    build(p){p.block(0,0,29,1);p.ground(0,29,12);p.block(0,2,0,11);p.clear(4,12,4,13);p.ladder(4,12,13);p.block(20,7,24,7);p.block(10,9,13,9)},
+  m7:{name:'무너진 탑',theme:'demon',cols:30,grid:[0,-4],exits:{right:'m6',down:{to:'m8',tx:4},left:'m14'},seed:619,
+    build(p){p.block(0,0,29,1);p.ground(0,29,12);p.block(0,2,0,8);p.clear(4,12,4,13);p.ladder(4,12,13);p.block(20,7,24,7);p.block(10,9,13,9)},
     save:{tx:14},
     crystal:{id:'c_m7',tx:22,ty:6},
     chests:[{id:'ch_m7',tx:11,ty:8,gold:500}],
@@ -882,6 +883,7 @@ export const ROOMS={
     slimes:[],deco:{}}
 };
 
+Object.assign(ROOMS,ROOMS2);   // 추가 방 45개 (rooms2.js)
 /* 방의 상자 목록 (chest 하나 또는 chests 여러 개) */
 export const roomChests=R=>[...(R.chests||[]),...(R.chest?[R.chest]:[])];
 
