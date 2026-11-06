@@ -125,7 +125,8 @@ export class PlayScene extends Phaser.Scene{
     this.events.off('prerender',this.routeCams,this);this.events.on('prerender',this.routeCams,this);
     const tut=()=>this.toast(MOBILE?'스틱 이동   X 점프   Z 공격·대화   위 버튼 장비·지도':'←→ 이동   X 점프   Z 공격   ↑ 대화   I 장비   M 지도',4600);
     // 방 이벤트(컷신): 처음 들어왔을 때 한 번
-    const ev=R.event&&!STATE.flags[R.event.id]?R.event:null;
+    const bt=R.boss&&R.boss.talk&&!bossDone(R.boss.id||'king')&&!STATE.flags['talk_'+(R.boss.id||'king')];   // 보스 대사가 방 대사를 함께 보여 줌
+    const ev=!bt&&R.event&&!STATE.flags[R.event.id]?R.event:null;
     if(ev)this.time.delayedCall(ev.delay||500,()=>{if(this.leaving||this.overlayOpen())return;STATE.flags[ev.id]=true;this.openDialog('',ev.lines,()=>{if(data.tutorial)tut()})});
     else if(data.tutorial)tut();
     if(data.retry)this.toast('보스 방 입구에서 다시 도전해요',2400);
@@ -207,7 +208,11 @@ export class PlayScene extends Phaser.Scene{
         if(id==='king')this.spawnEnemy({x:bx,y:R.boss.ty*T,king:true});else spawnMob(this,{t:id,tx:B.tx,ty:B.ty});
         // 보스를 쓰러뜨리기 전에는 방을 나갈 수 없음
         this.bossLock=true;this.physics.world.setBoundsCollision(true,true,!R.exits.up,!R.exits.down);
-        this.time.delayedCall(700,()=>{this.banner(B.title||'KING SLIME',0xff7a7a);this.toast(B.intro||'슬라임 둥지의 주인이 나타났다!',2600)});
+        const fight=()=>{this.banner(B.title||'KING SLIME',0xff7a7a);this.toast(B.intro||'슬라임 둥지의 주인이 나타났다!',2600)};
+        // 보스 대사(talk): 처음 만났을 때만, 끝나면 전투 (대화 중엔 세상이 멈춤). 방 첫 대사가 있으면 앞에 붙임
+        if(B.talk&&!STATE.flags['talk_'+id])this.time.delayedCall(600,()=>{if(this.leaving)return;STATE.flags['talk_'+id]=true;
+          const ev=R.event&&!STATE.flags[R.event.id]?R.event.lines:[];if(R.event)STATE.flags[R.event.id]=true;this.openDialog('',[...ev,...B.talk],fight)});
+        else this.time.delayedCall(700,fight);
       }else if(R.boss.drop&&!STATE.collected['drop_'+this.roomId])this.spawnPickup(R.boss.drop,bx,floorTopY(m,R.boss.tx)-14,'drop_'+this.roomId);
     }
     (R.movers||[]).forEach(d=>{
@@ -474,7 +479,7 @@ export class PlayScene extends Phaser.Scene{
       g.fillStyle(cur?(blink?0xffe27a:0xc9a24a):base,1).fillRect(x,y,cw,ch);
       g.fillStyle(cur?0xfff3b0:0xffffff,cur?1:0.18).fillRect(x,y,cw,1);
       if(R.save)g.fillStyle(0x7cff8a,1).fillRect(x+2,y+3,2,2);
-      if(R.boss&&!bossDone(R.boss.id||'king'))g.fillStyle(0xff4a5a,1).fillRect(x+cw/2-1,y+2,3,3);
+      if(R.boss&&!bossDone(R.boss.id||'king'))g.fillStyle(0xff4a5a,1).fillRect(x+cw/2-1,y+3,2,2);
       if(roomChests(R).some(c=>!STATE.opened[c.id]))g.fillStyle(0xffd34a,1).fillRect(x+cw-4,y+3,2,2);
     });
   }

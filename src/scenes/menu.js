@@ -60,8 +60,9 @@ export const MenuMixin={
       ab.forEach(([n,on],i)=>M.t(222,48+i*12,(on?'● ':'○ ')+n,{color:on?'#9ff0ff':'#5a5478'},false));
       M.t(214,90,'열쇠',{color:'#8f86ab'},false);
       Object.keys(KEYS).forEach((k,i)=>{const o=img(228+i*18,110,'icon_key_'+k);if(!STATE.keys[k])o.setTintFill(0x2a2440)});
-      const bs=Object.values(ROOMS).filter(R=>R.boss).map(R=>R.boss.id||'king'),bd=bs.filter(bossDone).length;
-      M.t(214,124,'보스  '+bd+' / '+bs.length,{color:'#ffb0b0'},false);
+      // 전체 보스 수는 숨김 (몇 마리 남았는지 궁금하게)
+      const bd=Object.values(ROOMS).filter(R=>R.boss).map(R=>R.boss.id||'king').filter(bossDone).length;
+      M.t(214,124,'쓰러뜨린 보스  '+bd,{color:'#ffb0b0'},false);
     }
     this.drawMenu();
   },

@@ -236,13 +236,12 @@ export const PlayUI={
       // 표시는 칸이 작아서(11×7) 겹치지 않게 가로로 한 줄 (많으면 앞의 3개: 보스·세이브·워프·보물 순)
       const mk=[];if(R.boss&&!bossDone(R.boss.id||'king'))mk.push('boss');if(R.save)mk.push('save');
       if(R.warp&&STATE.warps[R.warp.id])mk.push('warp');if(roomChests(R).some(c=>!STATE.opened[c.id]))mk.push('chest');
-      const n=Math.min(3,mk.length),mx=x+Math.floor((cw-(4*n-1))/2),my=y+Math.floor((ch-3)/2);
-      mk.slice(0,3).forEach((k,j)=>this.mapMark(g,k,mx+j*4,my));
+      const n=Math.min(3,mk.length),mx=x+Math.floor((cw-(3*n-1))/2),my=y+Math.floor((ch-2)/2);
+      mk.slice(0,3).forEach((k,j)=>this.mapMark(g,k,mx+j*3,my));
     });
   },
-  /* 지도 표시 하나 (3×3): 세이브 초록 네모, 워프 하늘색 +, 보물 금색 네모, 보스 빨간 네모 */
-  mapMark(g,k,x,y){if(k==='warp'){g.fillStyle(0x6fe0ff,1).fillRect(x,y+1,3,1).fillRect(x+1,y,1,3);return}
-    g.fillStyle({save:0x7cff8a,chest:0xffd34a,boss:0xff4a5a}[k],1).fillRect(x,y,3,3)},
+  /* 지도 표시 하나 (2×2 점): 세이브 초록, 워프 하늘색, 보물 금색, 보스 빨강 */
+  mapMark(g,k,x,y){g.fillStyle({save:0x7cff8a,warp:0x6fe0ff,chest:0xffd34a,boss:0xff4a5a}[k],1).fillRect(x,y,2,2)},
   drawMap(time){
     const M=this.mapv,g=M.g;g.clear();this.paintMap(g,time,null);
     M.legend.forEach(([k],i)=>{if(k==='cur')g.fillStyle(0xffe27a,1).fillRect(22+i*56,151,5,5);else this.mapMark(g,k,23+i*56,152)});

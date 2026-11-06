@@ -6,9 +6,10 @@
    tools/reach.mjs로 모든 방을 검사해서, 길이 막히는 방은 DENSE_SEED로 다른 배치를 쓰거나 DENSE_OFF로 끔 */
 const ROWS=14;
 export const DENSE_OFF=new Set(['s5','v1','l8']);   // s5: 위 출구는 일부러 막은 곳 / v1 고향 마을·l8 전설의 제단: 이야기 장면이라 손대지 않음
-export const DENSE_SEED={i9:1};   // i9: 기본 배치는 횃불·철문 길을 막음
+export const DENSE_SEED={i9:1,r8:1,l16:1};   // i9: 기본 배치는 횃불·철문 길을 막음
 // 테마별 재료: 발판('-' 나무, '=' 잎)과 바위 턱('#') 비율
-const MAT={meadow:['-',0.25],treetop:['=',0.15],cave:['-',0.6],castle:['-',0.55],ice:['-',0.6],desert:['-',0.55],lava:['-',0.6],sky:['-',0.35],demon:['-',0.6]};
+// 발판보다 바위·흙 지형 위주 (발판이 너무 많으면 단조로워 보임)
+const MAT={meadow:['-',0.88],treetop:['=',0.6],cave:['-',0.93],castle:['-',0.9],ice:['-',0.93],desert:['-',0.93],lava:['-',0.93],sky:['-',0.75],demon:['-',0.9]};
 
 function rngOf(seed){let s=(seed*9301+49297)%233280||1;return()=>{s=(s*9301+49297)%233280;return s/233280}}
 const SKIP=new Set(['build','exits','deco','name','theme','cols','grid','seed','dark','event','wind','intro','title','after','lines']);
@@ -75,15 +76,18 @@ export function densify(m,R,id){
       for(const dy of shuf([2,3]))for(const w of [ri(3,4),2])for(const dx of lv?[dir*ri(2,3),-dir*2]:[0,1]){
         if(done)break;const ty=cur-dy,x0=cx+dx;
         if(!fits(x0,w,ty,ch))continue;
-        put(x0,x0+w-1,ty,ch);placed++;n++;cur=ty;cx=x0;dir=-dir;done=true}
+        put(x0,x0+w-1,ty,ch);placed++;n++;
+        // 바위 턱은 아래 땅까지 2~3칸이면 기둥으로 이어서 언덕·계단 모양으로 (공중에 뜬 판만 늘어나지 않게)
+        if(ch==='#'&&cur-ty<=3&&rnd()<0.6){const a=x0+(w>2&&rnd()<0.5?1:0),b=x0+w-1-(w>2&&rnd()<0.5?1:0);if(boxFree(a,b,ty+1,cur-1))for(let y=ty+1;y<cur;y++)put(a,b,y,'#')}
+        cur=ty;cx=x0;dir=-dir;done=true}
       if(!done)break;
     }
     if(n)x+=ri(3,5);
   }
   // 4) 큰 빈 공간: 사방 2칸이 비어 있는 곳에 작은 바위 덩어리나 발판 (3칸 격자로 훑음)
   for(let pass=0;pass<2;pass++)for(let y=4;y<ROWS-3;y+=ri(2,3))for(let x=7;x<cols-9;x+=ri(3,4)){
-    const w=ri(2,3),h=rnd()<0.3?2:1,ch=rnd()<Math.max(solidP,0.5)?'#':plat;
-    if(boxFree(x-1,x+w,y-2,y+h+1)&&rnd()<0.7)for(let i=0;i<h;i++)put(x,x+w-1,y+i,ch==='#'||i===0?ch:'#')}
+    const w=ri(2,4),h=rnd()<0.4?2:1,ch=rnd()<Math.max(solidP,0.85)?'#':plat;
+    if(boxFree(x-1,x+w,y-2,y+h+1)&&rnd()<0.7)for(let i=0;i<h;i++){const s0=i&&w>2&&rnd()<0.5?1:0;put(x+s0,x+w-1-(i&&!s0&&w>2?1:0),y+i,ch==='#'||i===0?ch:'#')}}
   // 3) 천장 돌출: 천장(맨 윗줄이 막힘)이 있고 위 출구가 없는 방
   if(!ex.up)for(let x=7;x<cols-8;x+=ri(4,7)){
     if(m[0][x]!=='#'||rnd()<0.4)continue;
