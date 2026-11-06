@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sword-relic.vercel.app/sitemap.xml
+Sitemap: https://swordrelic.com/sitemap.xml
