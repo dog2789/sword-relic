@@ -230,7 +230,7 @@ export const PlayUI={
       const base=THEME_COL[R.theme]||0x3f7a3a;
       g.fillStyle(warp?(isW?base:0x2a2440):(cur?(blink?0xffe27a:0xc9a24a):base),1).fillRect(x,y,cw,ch);g.fillStyle(0xffffff,cur&&!warp?0.6:0.2).fillRect(x,y,cw,1);
       if(warp){
-        if(isW){g.fillStyle(0x6fe0ff,1).fillTriangle(x+cw/2-3,y+ch/2,x+cw/2,y+ch/2-3,x+cw/2+3,y+ch/2).fillTriangle(x+cw/2-3,y+ch/2,x+cw/2,y+ch/2+3,x+cw/2+3,y+ch/2)}
+        if(isW)this.mapMark(g,'warp',x+Math.floor((cw-2)/2),y+Math.floor((ch-2)/2));   // 지도와 같은 2×2 점
         if(cur){g.fillStyle(0xffe27a,1).fillRect(x+1,y+ch-3,cw-2,2)}
         if(i===warp.sel){g.lineStyle(2,blink?0xffe27a:0xffffff,1).strokeRect(x-2,y-2,cw+4,ch+4)}
         return}
