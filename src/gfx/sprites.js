@@ -252,6 +252,44 @@ export function buildTextures(sc){
   knight('skull',{style:0,hair:3,skin:0,top:4,bottom:3,shoes:0},{helm:'skull_helm',armor:'skull_robe'},null);
   knight('demon',{style:0,hair:1,skin:4,top:6,bottom:3,shoes:0},{helm:'demon_helm',armor:'demon_armor',boots:'demon_boots'},{k:'#14040a',l:'#3a0a14',L:'#ff4a4a',m:'#ffd34a',j:'#2a0a10'});
   add('darkorb',fromRows([".kkkk.","kpPPpk","kPWWPk","kPWWPk","kpPPpk",".kkkk."],{k:'#14041c',p:'#5a1a9a',P:'#9a3aff',W:'#f0d0ff'}));
+  /* 지역마다 하나씩 더 (2차): 초원 버섯, 고목 사마귀, 동굴 두더지, 고성 가고일, 얼음 정령, 사막 독수리, 용암 슬라임, 하늘 천둥 구름, 마왕성 미믹 */
+  const SHP={k:'#3a1010',r:'#d83a3a',w:'#fff0e0',s:'#f0dcb8',S:'#c8a880',e:'#2a1a10'};
+  const shroom=fr=>[...(fr?["............"]:[]),"...kkkkkk...",".kkrrwrrrkk.","krrwwrrrrwrk","krrrrrrwwrrk","kkkkkkkkkkkk","...kseesk...","...kssssk...",...(fr?[]:["..kssssssk.."]),"..kSSSSSSk..","..kkkkkkkk.."];
+  add('shroom0',fromRows(shroom(0),SHP));add('shroom1',fromRows(shroom(1),SHP));
+  add('spore',fromRows([".y.","yYy",".y."],{y:'#e8f0a0',Y:'#ffffff'}));
+  // 사마귀: 갑옷 몬스터처럼 kn_mantis_* (idle·run·wind·atk), 16x14, 오른쪽을 봄
+  const MTP={k:'#0e2008',g:'#6ac83a',G:'#3a8a22',e:'#ff3a3a',y:'#d8f080'};
+  const mBody=["......kkggGGk...","....kkggGGGk....","..kkgggGGGk.....",".kggggGGGk......","kGGGGkkkk.......","..k..k.k..k.....",".k..k...k..k...."];
+  const mHead=claw=>["...........kkk..","..........kgggk.","..........kgegk.","...........kgk..",...claw,...mBody];
+  const mt={idle:["..........kgGk..",".........kgGk.k.","........kgGkkgk."],
+    run:["..........kgGk..",".........kgGkk..","........kgGkkgk."],
+    wind:["..........kgGkk.",".........kgGkkyk","........kgGk.kgk"],
+    atk:["..........kgGk..",".........kgGkkkk","........kgGkyyyy"]};
+  const MT={idle0:mHead(mt.idle),idle1:mHead(mt.run),run0:mHead(mt.run),run1:mHead(mt.idle),wind:mHead(mt.wind),atk:mHead(mt.atk)};
+  for(const k in MT)add('kn_mantis_'+k,fromRows(MT[k],MTP));
+  const MLP={k:'#1a0e08',b:'#7a5a3a',B:'#5a3e24',e:'#000000',p:'#ff9ab0',w:'#e8d8c0'};
+  const mole=fr=>["...kkkkkk...","..kbbbbbbk..",".kbbebbebbk.",".kbbbppbbbk.","kbbbbppbbbbk",fr?"kwkbbbbbbkwk":"kbbbbbbbbbbk",fr?"kwkbbbbbbkwk":"kwkbbbbbbkwk",".kkbBBBBbkk.","..kBBBBBBk..","..kkkkkkkk.."];
+  add('mole0',fromRows(mole(0),MLP));add('mole1',fromRows(mole(1),MLP));
+  add('rock',fromRows([".kkk.","kaAak","kAaak",".kkk."],{k:'#1a1410',a:'#8a7a68',A:'#5a4a3a'}));
+  const GAP={k:'#14121a',a:'#8a8898',A:'#5a5868',r:'#ff4a4a'};
+  const garg=fr=>[fr?"k............k":"..............",fr?"kak..kkkk..kak":"k...kkkkkk...k",fr?"kaak.kaaak.aak":"kak.kaaaak.kak",".kaakarrakaak.","..kAkaaaakAk..",fr?"...kkaAAakk...":"..kakaAAakak..","....kaAAak....","...kaAkkAak...","...kk....kk..."];
+  add('garg0',fromRows(garg(0),GAP));add('garg1',fromRows(garg(1),GAP));
+  const IWP={k:'#1a3a6a',W:'#ffffff',b:'#9ff0ff',B:'#4aa8f0',e:'#1a2a4a'};
+  const iwisp=fr=>["....kk....","...kWbk...",fr?"..kWbbBk..":".kkWbbBkk.",".kWbebeBk.","kWbbbbbbBk",".kbbbbbBk.",fr?".kkbbBBkk.":"..kbbBBk..","...kbBk...","....kk...."];
+  add('iwisp0',fromRows(iwisp(0),IWP));add('iwisp1',fromRows(iwisp(1),IWP));
+  const VUP={k:'#1a0e08',b:'#6a4a2a',B:'#4a3018',w:'#e8dcc8',p:'#e89a8a',y:'#f0c040'};
+  const vult=fr=>fr?["......kkk.......",".....kwwwk......","kk..kwbbbwkpk...","kbkkbbbbbbbpyk..","kbbbbBBBbbbkk...",".kBBBBkkBBBk....","..kkkk..kkk.....","................"]
+    :["kk..........kk..","kbk..kkk...kbk..",".kbkkwwwk.kbk...","..kbbbbbbbbkpk..","...kbBBBbbbbpyk.","....kBBkkBBkk...",".....kk..kk.....","................"];
+  add('vult0',fromRows(vult(0),VUP));add('vult1',fromRows(vult(1),VUP));
+  const MSP={k:'#2a0804',g:'#ff6a1a',G:'#b02a0a',w:'#ffe080'};
+  add('mslime0',fromRows(SL0,MSP));add('mslime1',fromRows(SL1,MSP));
+  add('flame',fromRows(["..y...",".yYy..",".yYYy.","yYWYy.","yYWWYy",".yYYy."],{y:'#ff6a1a',Y:'#ffb040',W:'#fff0a0'}));
+  const TCP={k:'#2a2a3a',c:'#8a8aa0',C:'#5a5a72',w:'#c8c8d8',e:'#ffe060'};
+  const cloud=fr=>["....kkkk........","...kwwwwkkkk....","..kwccccwwwwk...",".kkccccccccccknk".replace('n',fr?'k':'.'),"kccceccccecccck.","kcccccccccccccck","kCCCCCCCCCCCCCk.",fr?".kkkkkkkkkkkkk..":"..kkkkkkkkkkk..."];
+  add('tcloud0',fromRows(cloud(0),TCP));add('tcloud1',fromRows(cloud(1),TCP));
+  add('zap',fromRows(["..kk.",".kWk.","kWyk.",".kWWk","..kyk",".kWk.","kWyk.",".kWWk","..kyk",".kWk.","kWk..","k...."],{k:'#5a4a10',W:'#ffffff',y:'#ffe060'}));
+  // 미믹: 잘 땐 보물 상자(chest0) 그대로, 깨면 이빨·혀
+  add('mimic1',fromRows(["..kkkkkkkkkk..",".kbbbbbbbbbbk.","kbBBBBBBBBBBbk","kwkwkwkwkwkwkk","k.r........r.k","k..rrr..rrr..k","kwkwkwkwkwkwkk","kyyyyyyyyyyyyk","kbbbbbyybbbbbk","kbbbbbbbbbbbbk","kkkkkkkkkkkkkk"],{k:'#1a1008',b:'#8a5a2a',B:'#b07a3a',y:'#f0c040',w:'#ffffff',r:'#e0303a'}));
   // 저주 가시 (튀어나왔다 들어감)
   {const[c,x]=cv(16,10);for(let i=0;i<4;i++){const cx=i*4;for(let h=0;h<8;h++){const hw=Math.floor(h/3);px(x,'#c070ff',cx+2-hw,h,hw+1,1);px(x,'#5a1a7a',cx+2,h,hw,1)}}px(x,'#2a1036',0,8,16,2);add('pspike',c)}
   // 순간이동 문: 보라빛 소용돌이

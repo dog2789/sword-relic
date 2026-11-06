@@ -38,20 +38,31 @@ export const MOBS={
   eyebat:{hp:36,dmg:11,exp:10,nm:'눈알 박쥐',kb:0.7,size:[10,6],off:[2,1],fly:true,tex:'eyebat0'},
   shade:{hp:70,dmg:13,exp:17,nm:'그림자 기사',kb:0.3,size:[9,14],off:[12,6],tex:'kn_shade_idle0'},
   skull:{hp:52,dmg:12,exp:15,nm:'해골 마법사',kb:0.35,size:[9,14],off:[12,6],tex:'kn_skull_idle0'},
+  /* 2차 지역 몬스터: 초원 버섯(튀어 오르며 포자), 고목 사마귀(멈칫 후 앞발 베기), 동굴 두더지(땅에서 솟아 돌 던짐), 고성 가고일(석상인 척하다 급습),
+     얼음 정령(냉기 조각: 맞으면 느려짐), 사막 독수리(머리 위에서 내리꽂기), 용암 슬라임(지나간 자리에 불길), 천둥 구름(아래로 번개), 미믹(보물 상자인 척) */
+  shroom:{hp:30,dmg:8,exp:8,nm:'버섯 도깨비',kb:0.6,size:[10,8],off:[1,3],tex:'shroom0'},
+  mantis:{hp:46,dmg:10,exp:11,nm:'사마귀',kb:0.4,size:[8,12],off:[6,2],tex:'kn_mantis_idle0'},
+  mole:{hp:38,dmg:10,exp:11,nm:'두더지',kb:0.3,size:[10,9],off:[1,1],tex:'mole0'},
+  garg:{hp:55,dmg:12,exp:14,nm:'가고일',kb:0.4,size:[10,8],off:[2,1],fly:true,tex:'garg0'},
+  iwisp:{hp:40,dmg:11,exp:13,nm:'얼음 정령',kb:0.6,size:[8,8],off:[1,1],fly:true,tex:'iwisp0'},
+  vult:{hp:44,dmg:12,exp:13,nm:'독수리',kb:0.5,size:[12,6],off:[2,1],fly:true,tex:'vult0'},
+  mslime:{hp:50,dmg:12,exp:14,nm:'용암 슬라임',kb:0.4,size:[12,8],off:[1,2],tex:'mslime0'},
+  tcloud:{hp:48,dmg:12,exp:14,nm:'천둥 구름',kb:0.4,size:[14,7],off:[1,1],fly:true,tex:'tcloud0'},
+  mimic:{hp:90,dmg:14,exp:25,nm:'미믹',kb:0.2,size:[12,10],off:[1,1],tex:'chest0'},
   demon:{hp:3400,dmg:40,exp:1000,def:34,nm:'마왕',kb:0.02,size:[9,14],off:[12,6],scale:2.2,boss:true,tex:'kn_demon_idle0'}
 };
 /* 보스 순서 (뒤로 갈수록 어려움): 패턴 타이머를 1 + 0.04×단계 배 빠르게 */
 const BOSS_LV={batlord:1,rust:2,turtle:3,scorpking:4,golem:5,griffin:6,demon:7};
 /* 박쥐처럼 맴도는 몬스터 (공격은 다름: 박쥐 급습, 하피 활강, 눈알 박쥐 광선 구슬) */
-const BATLIKE=['bat','harpy','eyebat'];
-const NEW=['spider','ghost','snowman','bomber','hare','bee','worm'];
+const BATLIKE=['bat','harpy','eyebat','garg'];
+const NEW=['spider','ghost','snowman','bomber','hare','bee','worm','shroom','mole','garg','iwisp','vult','mslime','tcloud'];
 
 export function makeMobAnims(scene){
   const mk=(key,frames,rate)=>{if(!scene.anims.exists(key))scene.anims.create({key,frames:frames.map(f=>({key:f})),frameRate:rate,repeat:-1})};
   mk('bat_anim',['bat0','bat1'],8);mk('snail_anim',['snail0','snail1'],3);mk('batlord_anim',['batlord0','batlord1'],6);mk('fish_anim',['fish0','fish1'],5);mk('turtle_anim',['turtle0','turtle1'],3);mk('scorp_anim',['scorp0','scorp1'],6);mk('scorpking_anim',['scorpk0','scorpk1'],5);mk('sala_anim',['sala0','sala1'],5);mk('golem_anim',['golem0','golem1'],3);
   mk('harpy_anim',['harpy0','harpy1'],7);mk('wisp_anim',['wisp0','wisp1'],6);mk('eyebat_anim',['eyebat0','eyebat1'],8);mk('griffin_anim',['griffin0','griffin1'],5);
   for(const k of NEW)mk(k+'_anim',[k+'0',k+'1'],k==='ghost'?3:k==='snowman'||k==='worm'?2:k==='bee'?12:6);
-  for(const k of ['haunt','rust','mummy','shade','skull','demon']){mk(k+'_idle',['kn_'+k+'_idle0','kn_'+k+'_idle1'],2.5);mk(k+'_run',['kn_'+k+'_run0','kn_'+k+'_run1'],k==='rust'?5:7)}
+  for(const k of ['haunt','rust','mummy','shade','skull','demon','mantis']){mk(k+'_idle',['kn_'+k+'_idle0','kn_'+k+'_idle1'],2.5);mk(k+'_run',['kn_'+k+'_run0','kn_'+k+'_run1'],k==='rust'?5:7)}
 }
 
 export function spawnMob(scene,d){
@@ -71,7 +82,12 @@ export function spawnMob(scene,d){
     let ty=d.ty;while(ty>0&&scene.tileAt(x,(ty-1)*T+8)!=='#')ty--;e.top=ty*T;e.home.y=Math.max(e.top+10,y-24);e.body.reset(x,e.home.y);e.state='wait';
     e.thread=scene.add.rectangle(x,e.top,1,1,0xd8d0e8,0.7).setOrigin(0.5,0).setDepth(4);e.on('destroy',()=>e.thread.destroy())}
   if(d.t==='ghost'){e.noclip=true;e.state='float';e.cool=2+Math.random()*2}
-  if(d.t==='snowman'||d.t==='bomber')e.state='walk';
+  if(d.t==='snowman'||d.t==='bomber'||d.t==='mslime')e.state='walk';
+  if(d.t==='garg'){e.state='stone';e.anims.stop();e.setTexture('garg0')}
+  if(d.t==='mimic'){e.state='sleep';e.cool=0}
+  if(d.t==='mole'){   // 아래 바닥까지 내려가 구멍 속에 숨음 (지렁이처럼 숨어 있을 땐 맞지 않음)
+    let ty=d.ty;while(ty<12&&scene.tileAt(x,(ty+1)*T+8)==='.')ty++;e.home.y=(ty+1)*T-6;e.body.reset(x,e.home.y);
+    e.state='under';e.body.enable=false;e.cool=0.8;e.alpha=0;e.anims.stop();return e}
   if(d.t==='worm'){   // 아래 바닥까지 내려가 땅속에 숨음
     let ty=d.ty;while(ty<12&&scene.tileAt(x,(ty+1)*T+8)==='.')ty++;e.home.y=(ty+1)*T-5;e.body.reset(x,e.home.y);
     e.state='under';e.body.enable=false;e.cool=1;e.anims.stop();e.setTexture('worm1');e.alpha=0;return e}
@@ -96,6 +112,16 @@ export function updateMob(scene,e,dt){
   if(e.mob==='hare')return updateHare(scene,e,dt);
   if(e.mob==='bee')return updateBee(scene,e,dt);
   if(e.mob==='worm')return updateWorm(scene,e,dt);
+  if(e.mob==='shroom')return updateShroom(scene,e,dt);
+  if(e.mob==='mole')return updateMole(scene,e,dt);
+  if(e.mob==='iwisp')return updateIceWisp(scene,e,dt);
+  if(e.mob==='vult')return updateVulture(scene,e,dt);
+  if(e.mob==='mslime')return updateMagmaSlime(scene,e,dt);
+  if(e.mob==='tcloud')return updateCloud(scene,e,dt);
+  if(e.mob==='mimic')return updateMimic(scene,e,dt);
+  if(e.mob==='mantis')return updateKnight(scene,e,dt,{spd:26,chase:52,reach:26,wind:0.42,lunge:150,atkT:0.2,rest:0.55,w:18,h:12,bonus:3,see:120});
+  if(e.mob==='garg'&&e.state==='stone'){   // 석상: 가만히 있다가 가까이 오거나 맞으면 깨어남
+    e.setVelocity(0,0);const p2=scene.player;if(e.stun>0||(!p2.dead&&Math.hypot(p2.x-e.x,p2.y-e.y)<80)){e.state='hover';e.home.x=e.x;e.home.y=e.y;e.cool=0.3;e.play('garg_anim');scene.dustEm.explode(6,e.x,e.y)}return}
   if(e.mob==='harpy'&&e.state==='swoop')return updateSwoop(scene,e,dt);
   if(BATLIKE.includes(e.mob)){
     e.t0+=dt;
@@ -480,15 +506,90 @@ function updateTurtle(scene,e,dt){
     e.st=1.2}
   e.setVelocityX(e.dir*26);
 }
+/* ── 2차 지역 몬스터 ── */
+const shot=(scene,key,x,y,o)=>{const s=scene.add.image(x,y,key).setDepth(12);scene.eshots.push(Object.assign({s,g:0,life:2.4},o));return s};
+/* 버섯 도깨비: 가만히 있다가 가까이 오면 주인공 쪽으로 튀어 오르며 포자를 흩뿌림 */
+function updateShroom(scene,e,dt){
+  const p=scene.player,g=onGround(e);e.setTexture(g?'shroom0':'shroom1');if(e.anims.isPlaying)e.anims.stop();
+  if(e.stun>0){e.stun-=dt;return}if(!g)return;
+  e.setVelocityX(0);e.cool-=dt;const dx=p.x-e.x;
+  if(e.cool<=0&&!p.dead&&Math.abs(dx)<70&&Math.abs(p.y-e.y)<40){e.dir=Math.sign(dx)||1;e.setFlipX(e.dir<0);e.cool=2.2+Math.random()*0.6;
+    const lx=e.x+e.dir*30;if(FLOOR(scene.tileAt(lx,e.body.bottom+4))&&!'^LS'.includes(scene.tileAt(lx,e.body.bottom-2)))e.setVelocity(e.dir*70,-200);else e.setVelocity(0,-180);
+    for(let i=0;i<4;i++)shot(scene,'spore',e.x,e.y-6,{vx:(i-1.5)*28+e.dir*10,vy:-70-Math.random()*50,g:70,life:2,dmg:Math.round(e.dmg*0.8),spin:true})}
+}
+/* 두더지: 땅속에 숨어 있다가 주인공이 가까우면 솟아올라 돌을 던지고 다시 숨음 (나와 있을 때만 맞음) */
+function updateMole(scene,e,dt){
+  const p=scene.player,dx=p.x-e.x;e.st-=dt;
+  if(e.state==='under'){e.cool-=dt;if(Math.random()<dt*3)scene.dustEm.explode(1,e.x,e.home.y+6);
+    if(e.cool<=0&&!p.dead&&Math.abs(dx)<150&&Math.abs(p.y-e.y)<80){e.state='up';e.st=1.5;e.thrown=false;e.body.enable=true;e.body.reset(e.x,e.home.y);e.setVelocity(0,0);e.alpha=1;e.setTexture('mole0');scene.dustEm.explode(8,e.x,e.home.y+6)}return}
+  e.setVelocity(0,0);e.dir=Math.sign(dx)||1;e.setFlipX(e.dir<0);
+  if(e.stun>0){e.stun-=dt;return}
+  if(!e.thrown&&e.st<1.1){e.thrown=true;e.setTexture('mole1');
+    if(!p.dead){const tt=0.7,vx=Phaser.Math.Clamp(dx/tt,-170,170),vy=(p.y-e.y+6-0.5*360*tt*tt)/tt;shot(scene,'rock',e.x,e.y-6,{vx,vy,g:360,dmg:e.dmg,spin:true})}}
+  if(e.st<=0){e.state='under';e.body.enable=false;e.alpha=0;e.cool=1.6+Math.random();scene.dustEm.explode(6,e.x,e.home.y+6)}
+}
+/* 얼음 정령: 둥실 떠다니다 냉기 조각을 쏨. 맞으면 잠깐 느려짐 */
+function updateIceWisp(scene,e,dt){
+  const p=scene.player;e.t0+=dt;
+  if(e.stun>0){e.stun-=dt;e.setVelocity(e.body.velocity.x*0.9,e.body.velocity.y*0.9);return}
+  e.setVelocity((e.home.x+Math.sin(e.t0*1.1)*20-e.x)*2,(e.home.y+Math.sin(e.t0*2.3)*8-e.y)*2);
+  const dx=p.x-e.x,dy=p.y-e.y,d=Math.hypot(dx,dy)||1;e.cool-=dt;e.setFlipX(dx<0);
+  if(e.cool<=0&&!p.dead&&d<160){e.cool=2+Math.random()*0.8;e.setTintFill(0xffffff);scene.time.delayedCall(90,()=>e.active&&e.clearTint());
+    shot(scene,'iceshard',e.x,e.y,{vx:dx/d*135,vy:dy/d*135,dmg:e.dmg,chill:true})}
+}
+/* 독수리: 높이 맴돌며 주인공 위로 따라오다가, 바로 위에 오면 수직으로 내리꽂고 다시 올라감 */
+function updateVulture(scene,e,dt){
+  const p=scene.player;if(e.stun>0){e.stun-=dt;e.setVelocity(e.body.velocity.x*0.9,e.body.velocity.y*0.9);if(e.stun<=0)e.state='rise';return}
+  const dx=p.x-e.x;e.cool-=dt;
+  if(e.state==='dive'){e.st-=dt;e.setVelocity(0,280);if(e.body.blocked.down||e.y>p.y+12||e.st<=0){e.state='rise';e.cool=1.6}return}
+  if(e.state==='rise'){e.setVelocity(0,-90);if(e.y<=e.home.y)e.state='hover';return}
+  const near=!p.dead&&Math.abs(dx)<170&&p.y>e.y;
+  const tx=near?Phaser.Math.Clamp(p.x,e.home.x-170,e.home.x+170):e.home.x+Math.sin(e.t0+=dt)*30;
+  e.setVelocity(Phaser.Math.Clamp((tx-e.x)*2,-70,70),(e.home.y-e.y)*3);e.setFlipX(e.body.velocity.x<0);
+  if(near&&Math.abs(dx)<12&&e.cool<=0){e.state='dive';e.st=1.2;e.setTint(0xffd0a0);scene.time.delayedCall(150,()=>e.active&&e.clearTint())}
+}
+/* 용암 슬라임: 순찰하다 주인공을 보면 쫓아옴. 지나간 자리에 잠깐 불길이 남음 */
+function updateMagmaSlime(scene,e,dt){
+  const p=scene.player;e.cool-=dt;
+  if(e.cool<=0&&onGround(e)&&Math.abs(e.body.velocity.x)>5){e.cool=0.4;shot(scene,'flame',e.x-e.dir*6,e.body.bottom-7,{vx:0,vy:0,life:1.6,dmg:Math.round(e.dmg*0.7),still:true})}
+  if(e.stun>0){e.stun-=dt;return}if(!onGround(e))return;
+  const dx=p.x-e.x,see=!p.dead&&Math.abs(dx)<120&&Math.abs(p.y-e.y)<40;if(see)e.dir=Math.sign(dx)||1;
+  const a=scene.tileAt(e.x+e.dir*10,e.body.bottom+4);
+  if((e.dir<0&&e.body.blocked.left)||(e.dir>0&&e.body.blocked.right)||!FLOOR(a)||'^LS'.includes(scene.tileAt(e.x+e.dir*10,e.body.bottom-2))){if(see){e.setVelocityX(0);return}e.dir*=-1}
+  e.setVelocityX(e.dir*(see?42:22));e.setFlipX(e.dir<0);
+}
+/* 천둥 구름: 제 높이에서 주인공 머리 위로 천천히 따라와 번쩍인 뒤 아래로 번개 */
+function updateCloud(scene,e,dt){
+  const p=scene.player;if(e.stun>0){e.stun-=dt;e.setVelocity(e.body.velocity.x*0.9,0);return}
+  const dx=p.x-e.x,near=!p.dead&&Math.abs(dx)<200&&p.y>e.y;e.cool-=dt;
+  if(e.state==='charge'){e.st-=dt;e.setVelocity(0,0);e.setTintFill(Math.floor(e.st*14)%2?0xffffff:0xffe060);
+    if(e.st<=0){e.clearTint();e.state='hover';e.cool=2.2+Math.random()*0.6;shot(scene,'zap',e.x,e.y+10,{vx:0,vy:360,life:1.2,dmg:e.dmg+2});scene.shake(60,0.004)}return}
+  const tx=near?Phaser.Math.Clamp(p.x,e.home.x-200,e.home.x+200):e.home.x;
+  e.setVelocity(Phaser.Math.Clamp((tx-e.x)*1.5,-45,45),(e.home.y-e.y)*3);
+  if(near&&Math.abs(dx)<14&&e.cool<=0){e.state='charge';e.st=0.6}
+}
+/* 미믹: 보물 상자인 척 자고 있다가 가까이 오거나 맞으면 깨서 깡충깡충 물러 옴 */
+function updateMimic(scene,e,dt){
+  const p=scene.player,g=onGround(e),dx=p.x-e.x;
+  if(e.state==='sleep'){e.setVelocityX(0);if(e.stun>0||(!p.dead&&Math.abs(dx)<36&&Math.abs(p.y-e.y)<30)){e.state='awake';e.cool=0.35;e.setTexture('mimic1');scene.shake(80,0.006);e.y-=2}return}
+  if(e.stun>0){e.stun-=dt;return}if(!g){e.setTexture('mimic1');return}
+  e.setVelocityX(0);e.setTexture(Math.floor(scene.time.now/200)%2?'mimic1':'chest0');e.cool-=dt;
+  if(e.cool>0||p.dead)return;e.dir=Math.sign(dx)||1;e.setFlipX(e.dir<0);
+  const lx=e.x+e.dir*36;
+  if(!FLOOR(scene.tileAt(lx,e.body.bottom+4))||'^LS'.includes(scene.tileAt(lx,e.body.bottom-2))){e.cool=0.6;return}
+  e.setVelocity(e.dir*110,-190);e.cool=0.7+Math.random()*0.3;
+}
+
 /* 보스 투사체 (얼음 조각, 떨어지는 고드름): 중력 영향, 벽·바닥에 닿으면 부서짐 */
 export function updateEShots(scene,dt){
   const p=scene.player;
   scene.eshots=scene.eshots.filter(f=>{
     if(f.delay>0){f.delay-=dt;f.s.x+=Math.sin(f.delay*60);return true}
     f.life-=dt;if(f.home&&!p.dead){const dx=p.x-f.s.x,dy=p.y-f.s.y,d=Math.hypot(dx,dy)||1,k=Math.min(1,dt*1.6);f.vx+=(dx/d*f.home-f.vx)*k;f.vy+=(dy/d*f.home-f.vy)*k}
-    f.vy+=f.g*dt;f.s.x+=f.vx*dt;f.s.y+=f.vy*dt;if(f.spin)f.s.rotation+=dt*6;else f.s.rotation=Math.atan2(f.vy,f.vx)-Math.PI/2;
+    f.vy+=f.g*dt;f.s.x+=f.vx*dt;f.s.y+=f.vy*dt;if(f.spin)f.s.rotation+=dt*6;else if(!f.still)f.s.rotation=Math.atan2(f.vy,f.vx)-Math.PI/2;
+    if(f.still&&f.life<0.4)f.s.setAlpha(f.life/0.4);
     if(scene.tileAt(f.s.x,f.s.y+4)==='#')f.life=0;
-    if(f.life>0&&!p.dead&&Math.abs(p.x-f.s.x)<7&&Math.abs(p.y-f.s.y)<11){f.life=0;scene.hurtBy(f.dmg,f.s.x,'enemy')}
+    if(f.life>0&&!p.dead&&Math.abs(p.x-f.s.x)<7&&Math.abs(p.y-f.s.y)<11){f.life=0;scene.hurtBy(f.dmg,f.s.x,'enemy');if(f.chill)scene.chillT=1.6}
     if(f.life<=0){scene.sparkEm.explode(5,f.s.x,f.s.y);f.s.destroy();return false}return true});
 }
 

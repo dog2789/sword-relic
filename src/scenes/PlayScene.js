@@ -33,7 +33,7 @@ export class PlayScene extends Phaser.Scene{
     if(W!==wideW()){setW(wideW());const sc=calcScale();RS.S=sc.S;this.scale.resize(W*sc.S,H*sc.S);this.scale.setZoom(sc.css/sc.S)}
     buildTextures(this);buildFonts(this);buildFxTextures(this);this.fxEms={};
     // 이전 방의 참조 정리
-    Object.assign(this,{slash:null,sword:null,chests:[],statue:null,crystal:null,tInfo:null,menu:null,pickups:[],walls:[],fallers:[],mushrooms:[],climbing:false,bounceT:0,safe:null,autoUp:false,warpObj:null,npcObjs:[],bubble:null,listm:null,dlg:null,mapv:null,warpm:null,quickUI:[],quakes:[],eshots:[],geysers:[],inSand:false,wallT:0,wallLock:0,wallDir:0});
+    Object.assign(this,{chillT:0,slash:null,sword:null,chests:[],statue:null,crystal:null,tInfo:null,menu:null,pickups:[],walls:[],fallers:[],mushrooms:[],climbing:false,bounceT:0,safe:null,autoUp:false,warpObj:null,npcObjs:[],bubble:null,listm:null,dlg:null,mapv:null,warpm:null,quickUI:[],quakes:[],eshots:[],geysers:[],inSand:false,wallT:0,wallLock:0,wallDir:0});
     const id=data.room&&ROOMS[data.room]?data.room:(ROOMS[STATE.room]?STATE.room:'r1');
     this.entryData={room:id,entry:data.entry||'start',dx:data.dx};
     STATE.room=id;STATE.visited[id]=true;saveGame();   // 자동 저장 (폰은 브라우저가 쉽게 닫혀서)
@@ -521,6 +521,7 @@ export class PlayScene extends Phaser.Scene{
   update(time,delta){
     fitCameras(this);
     const dt=Math.min(delta,50)/1000,inp=this.readInput();
+    if(this.chillT>0){this.chillT-=dt;if(Math.random()<dt*10)this.sparkEm.explode(1,this.player.x,this.player.y)}   // 냉기: 느려진 동안 반짝임
     if(this.dlg){this.updateDialog(dt);this.drawHud(0,time);return}
     if(this.listm){this.updateList();this.drawHud(0,time);return}
     if(this.warpm){this.updateWarp(time);this.drawHud(0,time);return}
@@ -584,7 +585,7 @@ export class PlayScene extends Phaser.Scene{
     if(!a.active&&move)this.facing=move;
     const swim=this.inWater,ice=onG&&this.onIce&&!this.bonus.noSlip;
     if(swim){if(b.velocity.y>70)p.setVelocityY(70);this.airJumps=0}
-    const slow=a.active?(onG?0.12:0.7):1,target=move*SPEED*(1+this.bonus.speed/100)*slow*(swim?0.7:1)*(this.inSand&&!this.bonus.noSand?0.45:1),k=1-Math.pow(ice?0.965:onG?0.62:0.8,dt*60);
+    const slow=(a.active?(onG?0.12:0.7):1)*(this.chillT>0?0.55:1),target=move*SPEED*(1+this.bonus.speed/100)*slow*(swim?0.7:1)*(this.inSand&&!this.bonus.noSand?0.45:1),k=1-Math.pow(ice?0.965:onG?0.62:0.8,dt*60);
     this.nudgeT=(this.nudgeT||0)-dt;
     this.wallLock-=dt;
     if(this.wallLock<=0&&(this.nudgeT<=0||move))p.setVelocityX(b.velocity.x+(target-b.velocity.x)*k);
