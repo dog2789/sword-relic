@@ -2,7 +2,7 @@
    bat 박쥐(공중 급습), snail 가시 달팽이(지상 순찰), haunt 망령 갑옷(검 휘두르기)
    보스: batlord 박쥐 군주(급습 + 박쥐 소환), rust 녹슨 수문장(돌진 베기 + 점프 내려찍기) */
 import Phaser from 'phaser';
-import {T,LH} from '../config.js';
+import {T,LH,RESPAWN_MS} from '../config.js';
 
 /* 지역이 깊어질수록 일반 몬스터·함정이 강해짐 (체력·공격·방어·경험치) */
 export const TIER={meadow:1,treetop:1,cave:1.4,castle:1.9,ice:2.4,desert:2.9,lava:3.4,sky:3.9,demon:4.4};
@@ -196,7 +196,7 @@ function updateBomber(scene,e,dt){
     if(e.st<=0){const x=e.x,y=e.y,d=e.def;scene.fireEm.explode(30,x,y);scene.dustEm.explode(10,x,y+4);scene.shake(140,0.012);
       const ring=scene.add.circle(x,y,6).setStrokeStyle(2,0xffa040,1).setDepth(12);scene.tweens.add({targets:ring,scale:6,alpha:0,duration:260,onComplete:()=>ring.destroy()});
       if(!p.dead&&Math.hypot(p.x-x,p.y-y)<36)scene.hurtBy(Math.round(e.dmg*1.8),x,'enemy');
-      e.destroy();scene.time.delayedCall(6000,()=>{if(!scene.leaving)spawnMob(scene,d)})}return}
+      e.destroy();scene.time.delayedCall(RESPAWN_MS,()=>{if(!scene.leaving)spawnMob(scene,d)})}return}
   if(e.stun>0){e.stun-=dt;return}if(!onGround(e))return;
   const dx=p.x-e.x,see=!p.dead&&Math.abs(dx)<130&&Math.abs(p.y-e.y)<40;
   if(see&&Math.abs(dx)<24){e.state='fuse';e.st=0.8;e.anims.stop();return}
