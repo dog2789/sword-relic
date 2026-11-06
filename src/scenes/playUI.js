@@ -202,7 +202,7 @@ export const PlayUI={
     t(18,134,'현재 위치: '+this.R.name,{color:'#ffe27a'});
     // 폰: 닫기는 오른쪽 위 (아래쪽은 공격·점프 버튼에 가려짐)
     if(MOBILE)this.addCloseBtn(304,11,M.objs,()=>this.closeMap());else t(302,134,'M 닫기',{color:'#8f86ab'}).setOrigin(1,0);
-    const lg=[[0xffe27a,'현재'],[0x8fe3ff,'세이브'],[0x6fe0ff,'워프'],[0xffd34a,'보물'],[0xff4a5a,'보스']];
+    const lg=[['cur','현재'],['save','세이브'],['warp','워프'],['chest','보물'],['boss','보스']];
     M.legend=lg;lg.forEach(([c,s],i)=>t(30+i*56,148,s,{color:'#8f86ab'}));
     const zone=fix(this.add.zone(-this.ovl.x,0,W,H).setOrigin(0).setInteractive());zone.on('pointerdown',()=>this.closeMap());M.objs.push(zone);
     this.navReset();
@@ -233,15 +233,19 @@ export const PlayUI={
         if(cur){g.fillStyle(0xffe27a,1).fillRect(x+1,y+ch-3,cw-2,2)}
         if(i===warp.sel){g.lineStyle(2,blink?0xffe27a:0xffffff,1).strokeRect(x-2,y-2,cw+4,ch+4)}
         return}
-      if(R.save)g.fillStyle(0x8fe3ff,1).fillRect(x+2,y+2,3,3);
-      if(R.warp&&STATE.warps[R.warp.id]){g.fillStyle(0x6fe0ff,1).fillTriangle(x+cw-7,y+4,x+cw-5,y+2,x+cw-3,y+4).fillTriangle(x+cw-7,y+4,x+cw-5,y+6,x+cw-3,y+4)}
-      if(roomChests(R).some(c=>!STATE.opened[c.id]))g.fillStyle(0xffd34a,1).fillRect(x+2,y+ch-5,3,3);
-      if(R.boss&&!bossDone(R.boss.id||'king'))g.fillStyle(0xff4a5a,1).fillRect(x+cw/2-2,y+ch/2-2,4,4);
+      // 표시는 칸이 작아서(11×7) 겹치지 않게 가로로 한 줄 (많으면 앞의 3개: 보스·세이브·워프·보물 순)
+      const mk=[];if(R.boss&&!bossDone(R.boss.id||'king'))mk.push('boss');if(R.save)mk.push('save');
+      if(R.warp&&STATE.warps[R.warp.id])mk.push('warp');if(roomChests(R).some(c=>!STATE.opened[c.id]))mk.push('chest');
+      const n=Math.min(3,mk.length),mx=x+Math.floor((cw-(4*n-1))/2),my=y+Math.floor((ch-3)/2);
+      mk.slice(0,3).forEach((k,j)=>this.mapMark(g,k,mx+j*4,my));
     });
   },
+  /* 지도 표시 하나 (3×3): 세이브 초록 네모, 워프 하늘색 +, 보물 금색 네모, 보스 빨간 네모 */
+  mapMark(g,k,x,y){if(k==='warp'){g.fillStyle(0x6fe0ff,1).fillRect(x,y+1,3,1).fillRect(x+1,y,1,3);return}
+    g.fillStyle({save:0x7cff8a,chest:0xffd34a,boss:0xff4a5a}[k],1).fillRect(x,y,3,3)},
   drawMap(time){
     const M=this.mapv,g=M.g;g.clear();this.paintMap(g,time,null);
-    M.legend.forEach(([c],i)=>{g.fillStyle(c,1).fillRect(22+i*56,151,5,5)});
+    M.legend.forEach(([k],i)=>{if(k==='cur')g.fillStyle(0xffe27a,1).fillRect(22+i*56,151,5,5);else this.mapMark(g,k,23+i*56,152)});
   },
   updateMap(time){const n=this.navPress();if(n.back||n.ok){this.closeMap();return}this.drawMap(time)},
   closeMap(){const M=this.mapv;if(!M)return;M.objs.forEach(o=>o.destroy());this.mapv=null;this.resumeWorld();this.prev=this.heldNow()},

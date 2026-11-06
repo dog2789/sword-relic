@@ -469,7 +469,7 @@ export class PlayScene extends Phaser.Scene{
       const cur=i===this.roomId,blink=Math.floor(time/350)%2,base=THEME_COL[R.theme]||0x3f7a3a;
       g.fillStyle(cur?(blink?0xffe27a:0xc9a24a):base,1).fillRect(x,y,cw,ch);
       g.fillStyle(cur?0xfff3b0:0xffffff,cur?1:0.18).fillRect(x,y,cw,1);
-      if(R.save)g.fillStyle(0x8fe3ff,1).fillRect(x+2,y+3,2,2);
+      if(R.save)g.fillStyle(0x7cff8a,1).fillRect(x+2,y+3,2,2);
       if(R.boss&&!bossDone(R.boss.id||'king'))g.fillStyle(0xff4a5a,1).fillRect(x+cw/2-1,y+2,3,3);
       if(roomChests(R).some(c=>!STATE.opened[c.id]))g.fillStyle(0xffd34a,1).fillRect(x+cw-4,y+3,2,2);
     });

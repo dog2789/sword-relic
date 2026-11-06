@@ -88,10 +88,12 @@ const icons={},iconOf=id=>{if(!game||!id)return'';const k='icon_'+id;if(icons[k]
 const slotEls=[...document.querySelectorAll('.slots .slot')],eqImg=document.getElementById('ic-equip'),atkImg=document.getElementById('ic-atk');
 let lastHud='';
 setInterval(()=>{if(!MOBILE||!game)return;
-  const key=JSON.stringify([STATE.quick,STATE.items,STATE.equip&&STATE.equip.weapon]);if(key===lastHud)return;lastHud=key;
+  const key=JSON.stringify([STATE.quick,STATE.items,STATE.equip&&STATE.equip.weapon]);if(key===lastHud)return;
+  let ok=true;   // 아이콘 그림이 아직 안 만들어졌으면(타이틀 화면 등) 기억하지 않고 다음에 다시 시도
   slotEls.forEach((b,i)=>{const id=STATE.quick&&STATE.quick[i],n=id?(STATE.items[id]||0):0,img=b.querySelector('img'),src=iconOf(id);
-    img.hidden=!src;if(src&&img.src!==src)img.src=src;b.querySelector('b').textContent=id?n:'';b.classList.toggle('empty',!id||n<=0)});
-  const w=iconOf(STATE.equip&&STATE.equip.weapon)||iconOf('traveler_sword');if(w&&eqImg.src!==w){eqImg.src=w;atkImg.src=w}},400);
+    if(id&&!src)ok=false;img.hidden=!src;if(src&&img.src!==src)img.src=src;b.querySelector('b').textContent=id?n:'';b.classList.toggle('empty',!id||n<=0)});
+  const w=iconOf(STATE.equip&&STATE.equip.weapon)||iconOf('traveler_sword');if(!w)ok=false;else if(eqImg.src!==w){eqImg.src=w;atkImg.src=w}
+  if(ok)lastHud=key},400);
 /* 폰에서 길게 누르기·두 번 눌러 확대 막기 */
 if(MOBILE){['contextmenu','selectstart','dblclick'].forEach(t=>document.addEventListener(t,e=>e.preventDefault()));
   document.addEventListener('touchmove',e=>{if(e.touches.length>1||e.target.closest('#stage,.pad'))e.preventDefault()},{passive:false});
