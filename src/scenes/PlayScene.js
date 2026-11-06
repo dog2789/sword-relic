@@ -289,7 +289,7 @@ export class PlayScene extends Phaser.Scene{
       if(auto)this.setEquip(it.slot,id,true);
       this.banner('NEW ITEM!',0xffd34a);
       if(id==='relic_sword'&&!STATE.flags.ending)this.time.delayedCall(3800,()=>{STATE.flags.ending=true;this.openDialog('',[
-        {n:'나',t:'이게... 할아버지가 평생 찾아 헤매던 전설의 검.'},{n:'할아버지의 목소리',t:'...잘 해냈구나. 고향을 떠나 여기까지 온 네가 자랑스럽다.'},
+        {n:'나',t:'이게... 할아버지가 평생 찾아 헤매던 전설의 검.'},{n:'할아버지의 목소리',t:'...잘 해냈구나, {name}. 고향을 떠나 여기까지 온 네가 자랑스럽다.'},
         {n:'할아버지의 목소리',t:'그 검은 이제 네 것이다. 네가 지키고 싶은 것을 위해 휘두르거라.'},{n:'나',t:'고마워요, 할아버지. 이제 집으로 돌아가요. 엄마가 기다리고 있을 거예요.'},
         {n:'할아버지의 목소리',t:'...그런데 고성 탑 꼭대기의 봉인이 풀린 것 같구나. 하늘 위, 마왕의 성으로 가는 길이...'},
         {n:'',t:'- 소드 레릭 1부 끝 -   (고성 탑 꼭대기에서 2부가 이어져요)'}])});

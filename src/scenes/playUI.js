@@ -14,7 +14,7 @@ import {isDown} from '../input.js';
 const NPC_TALK={
   elder(){
     if(!STATE.abilities.djump)return{lines:[
-      '소년아, 정말 떠나는구나. 할아버지를 꼭 닮았어.',
+      '{name}, 정말 떠나는구나. 할아버지를 꼭 닮았어.',
       '길을 가다 지치면 석상에 손을 얹거라. 기운이 돌아올 게다.',
       '들판 바닥의 사다리 구멍은 땅속 동굴로 이어진단다. 그 위에서 ↓ 키를 눌러 보거라.',
       '동쪽 끝 슬라임 둥지 너머엔 옛 고성이 있다고 하더구나.']};
@@ -35,7 +35,7 @@ const NPC_TALK={
   },
   mother(){
     return{lines:STATE.abilities.djump?['돌아왔구나! 얼굴 보니 다행이다.','무리하지 말고, 힘들면 언제든 집에 들르렴.']:
-      ['정말 떠나는 거구나... 할아버지가 쓰시던 그 검, 잘 챙겼지?','전설의 검은 동쪽 고성 어딘가에 잠들어 있다고들 하더라.','몸조심하렴. 대장간 아저씨한테 검도 손봐 달라고 하고.']};
+      ['{name}, 정말 떠나는 거구나... 할아버지가 쓰시던 그 검, 잘 챙겼지?','전설의 검은 동쪽 고성 어딘가에 잠들어 있다고들 하더라.','몸조심하렴. 대장간 아저씨한테 검도 손봐 달라고 하고.']};
   },
   smith(){
     return{lines:['어서 오게! 골드만 있으면 자네 검을 더 단단하게 두드려 주지.'],end:s=>s.openSmith()};
@@ -44,16 +44,16 @@ const NPC_TALK={
     return{lines:['어서 오세요~ 먼 길 떠나려면 물약은 넉넉히 챙겨야죠.'],end:s=>s.openShop()};
   },
   kid(){
-    return{lines:STATE.bosses&&STATE.bosses.rust?['형! 고성의 녹슨 수문장을 쓰러뜨렸다며? 진짜 멋있다!']:
+    return{lines:STATE.bosses&&STATE.bosses.rust?['{name} 형! 고성의 녹슨 수문장을 쓰러뜨렸다며? 진짜 멋있다!']:
       ['형, 몬스터를 쓰러뜨리면 반짝이는 골드가 나온대!','골드를 모으면 대장간에서 검을 강화할 수 있어. 나도 크면 기사가 될 거야!']};
   },
   grandpa(){
     return{lines:STATE.flags.ending?['고향에 돌아가면 어머니께 안부 전해 다오.','그리고... 남은 보물도 찾아보거라. 세상은 아직 넓단다.']:
-      ['...드디어 왔구나, 내 손주야.','제단 위의 검을 집어 보거라. 그것이 네가 찾던 전설의 검이란다.']};
+      ['...드디어 왔구나, 내 손주 {name}.','제단 위의 검을 집어 보거라. 그것이 네가 찾던 전설의 검이란다.']};
   },
   knight(){
     return{lines:[
-      '...여기까지 왔는가, 젊은 검사여.',
+      '...여기까지 왔는가, 젊은 검사 {name}.',
       '나는 이 성을 지키던 청기사단의 기사였다. 마왕의 군세에 성은 무너지고 말았지.',
       '폭포 회랑 너머 무기고와 어둠의 회랑에 우리 청기사단의 갑옷이 남아 있다.',
       '왕좌의 방은 녹슨 수문장이 지키고 있다. 내려찍기의 충격파는 뛰어서 피하거라.',
@@ -105,7 +105,7 @@ export const PlayUI={
   overlayOpen(){return !!(this.menu||this.dlg||this.mapv||this.warpm||this.listm)},
   /* 오버레이 조작: 열린 순간 이미 눌려 있던 키는 무시하고, 새로 누른 키만 반응 */
   navHeld(){const v=VP;return{up:isDown('ArrowUp','KeyW')||v.up,down:isDown('ArrowDown','KeyS')||v.down,left:isDown('ArrowLeft','KeyA')||v.left,right:isDown('ArrowRight','KeyD')||v.right,
-    ok:isDown('KeyZ','KeyX','Enter','Space','KeyJ','KeyK')||v.attack||v.jump,back:isDown('Escape','KeyM','KeyI')||v.menu||v.map||v.back}},
+    ok:isDown('KeyZ','KeyX','Enter','Space','KeyJ','KeyK')||v.attack||v.jump,back:isDown('Escape','KeyM','KeyI')||v.menu||v.map||v.back,x:isDown('KeyX')}},
   navPress(){const h=this.navHeld(),p=this.prevNav||h,r={};for(const k in h)r[k]=h[k]&&!p[k];this.prevNav=h;return r},
   navReset(){this.prevNav=this.navHeld()},
   /* 폰: 창 오른쪽 위에 누를 수 있는 닫기 버튼 (키보드 ESC·I·M 대신) */
@@ -127,7 +127,7 @@ export const PlayUI={
       sk.setInteractive({useHandCursor:true}).on('pointerdown',(p,x,y,ev)=>{ev&&ev.stopPropagation();this.closeDialog()});D.objs.push(sk)}
     this.navReset();
   },
-  dlgLine(D){const L=D.lines[D.i];return typeof L==='string'?{n:D.def,t:keyText(L)}:{n:L.n||D.def,t:keyText(L.t)}},
+  dlgLine(D){const L=D.lines[D.i],me=STATE.name||'모험가',nm=s=>s==='나'?me:s,tx=s=>keyText(s).replace(/{name}/g,me);return typeof L==='string'?{n:D.def,t:tx(L)}:{n:nm(L.n||D.def),t:tx(L.t)}},
   dlgFrame(){const D=this.dlg,g=D.g,nm=this.dlgLine(D).n,w=Math.max(48,nm.length*10+12);g.clear();
     g.fillStyle(0x0f0b1e,0.94).fillRect(8,100,304,52);g.lineStyle(1,0xc9a24a,1).strokeRect(8.5,100.5,303,51);
     g.fillStyle(0x2c2346,1).fillRect(14,94,w,14);g.lineStyle(1,0xc9a24a,1).strokeRect(14.5,94.5,w-1,13);D.name.setText(nm)},

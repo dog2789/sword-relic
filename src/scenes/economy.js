@@ -41,7 +41,7 @@ export const Economy={
     L.up=t(160,33,'▲',{color:'#ffe27a'}).setOrigin(0.5).setInteractive().on('pointerdown',()=>{L.sel=Math.max(0,L.top-1);this.drawList()});
     L.dn=t(160,166,'▼',{color:'#ffe27a'}).setOrigin(0.5).setInteractive().on('pointerdown',()=>{L.sel=Math.min(L.items.length-1,L.top+6);this.drawList()});
     L.desc=t(30,146,'',{color:'#cfc8e4',wordWrap:{width:262},lineSpacing:2});
-    if(!MOBILE)t(290,159,'Z 선택   I/M 나가기',{color:'#6f6890'}).setOrigin(1,0);
+    if(!MOBILE)t(290,159,'Z 선택   X 나가기',{color:'#6f6890'}).setOrigin(1,0);
     const bz=fix(this.add.zone(-this.ovl.x,0,W,16).setOrigin(0).setInteractive());bz.on('pointerdown',()=>this.closeList());L.objs.push(bz);
     if(MOBILE)this.addCloseBtn(291,21,L.objs,()=>this.closeList());
     this.navReset();this.drawList();
@@ -67,7 +67,7 @@ export const Economy={
     const L=this.listm,n=this.navPress(),k=L.items.length||1;
     if(n.up){L.sel=(L.sel+k-1)%k;this.drawList()}
     if(n.down){L.sel=(L.sel+1)%k;this.drawList()}
-    if(n.ok)this.listPick();else if(n.back)this.closeList();
+    if(n.x||n.back)this.closeList();else if(n.ok)this.listPick();
   },
   closeList(){const L=this.listm;if(!L)return;L.objs.forEach(o=>o.destroy());this.listm=null;this.resumeWorld();this.prev=this.heldNow()},
 
