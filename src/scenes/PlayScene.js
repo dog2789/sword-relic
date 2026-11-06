@@ -418,8 +418,12 @@ export class PlayScene extends Phaser.Scene{
     this.toastTxt=this.add.text(W/2,6,'',{fontFamily:F9,fontSize:'10px',color:'#fff8e0',backgroundColor:'#1a1230dd',padding:{x:7,y:4},align:'center'})
       .setOrigin(0.5,0).setScrollFactor(0).setDepth(130).setVisible(false);
     this.mmGfx=this.add.graphics().setScrollFactor(0).setDepth(105);
+    // 창(대화·장비·지도·상점)은 320폭 기준으로 그려서, 화면이 넓으면 이 상자째 가운데로 옮김
+    this.ovl=this.add.container((W-320)/2,0).setScrollFactor(0).setDepth(200);
   }
   setTextRes(){}
+  /* 창 요소를 가운데 상자에 넣음. 상자 안은 depth가 아니라 넣은 순서로 그려짐 */
+  toOvl(o,d){o.setScrollFactor(0).setDepth(d);if(d>=200&&this.ovl){if(o.type==='Text'){o._rs=RS.S;o.setResolution(RS.S)}this.ovl.add(o)}return o}
   /* 화면 고정 요소는 HUD 카메라에서만, 나머지는 월드 카메라에서만 그림 */
   routeCams(){const m=this.cameras.main.id,u=this.uiCam.id;
     this.children.list.forEach(o=>{const f=o.scrollFactorX===0?m:u;if(o.cameraFilter!==f)o.cameraFilter=f})}

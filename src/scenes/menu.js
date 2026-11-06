@@ -9,7 +9,7 @@ import {skillOf} from './skills.js';
 import {isDown} from '../input.js';
 import {F9,F11} from '../fonts.js';
 
-const fix=(o,d=200)=>o.setScrollFactor(0).setDepth(d);
+const fix=(o,d=200)=>o.scene.toOvl(o,d);
 const CX=64,CW=17,RY=34,RH=17,VIS=7;   // 한 줄에 7칸까지 보이고, 더 있으면 옆으로 넘어감
 const slotItems=sl=>Object.keys(ITEMS).filter(id=>ITEMS[id].slot===sl&&!ITEMS[id].hidden);
 const hms=t=>{t=Math.floor(t||0);const h=Math.floor(t/3600),m=Math.floor(t/60)%60,s=t%60;return(h?h+':':'')+String(m).padStart(h?2:1,'0')+':'+String(s).padStart(2,'0')};
@@ -70,7 +70,7 @@ export const MenuMixin={
     M.r=nr;M.c=Math.max(0,Math.min(n-1,(M.off[nr]||0)+vis))},
   drawMenu(){
     const M=this.menu,g=M.g;g.clear();
-    g.fillStyle(0x05030b,0.72).fillRect(0,0,W,H);
+    g.fillStyle(0x05030b,0.72).fillRect(-this.ovl.x,0,W,H);
     g.fillStyle(0x161028,1).fillRect(14,8,292,170);g.lineStyle(1,0xc9a24a,1).strokeRect(14.5,8.5,291,169);
     g.fillStyle(0x2c2346,1).fillRect(20+M.tab*44,11,40,16);g.lineStyle(1,0xffe27a,1).strokeRect(20.5+M.tab*44,11.5,39,15);
     g.fillStyle(0x3a2a5a,1).fillRect(18,28,284,1);

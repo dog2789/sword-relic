@@ -26,5 +26,5 @@ export function fitCameras(scene){
   if(main.zoom!==S)main.setZoom(S);
   if(scene.uiCam){if(scene.uiCam.zoom!==S)scene.uiCam.setZoom(S);if(scene.uiCam.width!==W*S)scene.uiCam.setSize(W*S,H*S)}
   // 한글 텍스트는 S배 해상도로 그려서 확대해도 선명하게
-  scene.children.list.forEach(o=>{if(o.type==='Text'&&o._rs!==S){o._rs=S;o.setResolution(S)}});
+  [...scene.children.list,...(scene.ovl?scene.ovl.list:[])].forEach(o=>{if(o.type==='Text'&&o._rs!==S){o._rs=S;o.setResolution(S)}});
 }

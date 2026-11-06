@@ -7,7 +7,7 @@ import {STATE} from '../state.js';
 import {sfx} from '../sfx.js';
 import {F9,F11} from '../fonts.js';
 
-const fix=(o,d=210)=>o.setScrollFactor(0).setDepth(d);
+const fix=(o,d=210)=>o.scene.toOvl(o,d);
 const SHOP=[{id:'potion',price:30},{id:'ether',price:40}];
 
 export const Economy={
@@ -42,14 +42,14 @@ export const Economy={
     L.dn=t(160,166,'▼',{color:'#ffe27a'}).setOrigin(0.5).setInteractive().on('pointerdown',()=>{L.sel=Math.min(L.items.length-1,L.top+6);this.drawList()});
     L.desc=t(30,146,'',{color:'#cfc8e4',wordWrap:{width:262},lineSpacing:2});
     if(!MOBILE)t(290,159,'Z 선택   I/M 나가기',{color:'#6f6890'}).setOrigin(1,0);
-    const bz=fix(this.add.zone(0,0,W,16).setOrigin(0).setInteractive());bz.on('pointerdown',()=>this.closeList());L.objs.push(bz);
+    const bz=fix(this.add.zone(-this.ovl.x,0,W,16).setOrigin(0).setInteractive());bz.on('pointerdown',()=>this.closeList());L.objs.push(bz);
     if(MOBILE)this.addCloseBtn(291,21,L.objs,()=>this.closeList());
     this.navReset();this.drawList();
   },
   drawList(){
     const L=this.listm,g=L.g;L.items=L.build();g.clear();
     if(L.sel>=L.items.length)L.sel=Math.max(0,L.items.length-1);
-    g.fillStyle(0x05030b,0.7).fillRect(0,0,W,H);
+    g.fillStyle(0x05030b,0.7).fillRect(-this.ovl.x,0,W,H);
     g.fillStyle(0x161028,0.98).fillRect(22,14,276,160);g.lineStyle(1,0xc9a24a,1).strokeRect(22.5,14.5,275,159);
     g.fillStyle(0x221a3a,1).fillRect(26,140,268,18);
     L.gold.setText((STATE.gold||0)+' G');

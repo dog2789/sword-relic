@@ -61,7 +61,7 @@ const NPC_TALK={
   }
 };
 
-const fix=(o,d=200)=>o.setScrollFactor(0).setDepth(d);
+const fix=(o,d=200)=>o.scene.toOvl(o,d);
 
 export const PlayUI={
   /* ---------- 방 오브젝트: 워프, NPC ---------- */
@@ -122,7 +122,7 @@ export const PlayUI={
     D.body=fix(this.add.text(18,112,'',{fontFamily:F9,fontSize:'10px',color:'#ece7f7',wordWrap:{width:286},lineSpacing:3}));D.objs.push(D.body);
     D.arrow=fix(this.add.text(302,140,'▼',{fontFamily:F9,fontSize:'10px',color:'#ffe27a'}).setOrigin(1,0));D.objs.push(D.arrow);
     this.tweens.add({targets:D.arrow,alpha:0.2,duration:400,yoyo:true,repeat:-1});
-    const zone=fix(this.add.zone(0,0,W,H).setOrigin(0).setInteractive());zone.on('pointerdown',()=>this.advanceDialog());D.objs.push(zone);
+    const zone=fix(this.add.zone(-this.ovl.x,0,W,H).setOrigin(0).setInteractive());zone.on('pointerdown',()=>this.advanceDialog());D.objs.push(zone);
     if(D.cut){const sk=fix(this.add.text(306,84,MOBILE?'건너뛰기 ▶▶':'ESC 건너뛰기',{fontFamily:F9,fontSize:'10px',color:'#ffffff',stroke:'#0f0b1e',strokeThickness:3}).setOrigin(1,0).setPadding(6,4,2,4),201);
       sk.setInteractive({useHandCursor:true}).on('pointerdown',(p,x,y,ev)=>{ev&&ev.stopPropagation();this.closeDialog()});D.objs.push(sk)}
     this.navReset();
@@ -158,8 +158,8 @@ export const PlayUI={
     t(18,12,'워프',{fontFamily:F11,fontSize:'12px',color:'#8fe3ff'});
     if(MOBILE)this.addCloseBtn(304,11,M.objs,()=>this.closeWarp());else t(302,13,'방향키 고르기   Z 이동   M 닫기',{color:'#8f86ab'}).setOrigin(1,0);
     t(18,30,'등록한 워프 '+list.length+'곳',{color:'#cfc8e4'});
-    M.name=t(W/2,136,'',{fontFamily:F11,fontSize:'12px',color:'#ffe27a'}).setOrigin(0.5,0);
-    M.hint=t(W/2,152,'',{color:'#8f86ab'}).setOrigin(0.5,0);
+    M.name=t(160,136,'',{fontFamily:F11,fontSize:'12px',color:'#ffe27a'}).setOrigin(0.5,0);
+    M.hint=t(160,152,'',{color:'#8f86ab'}).setOrigin(0.5,0);
     // 터치: 워프 방을 누르면 고르고, 한 번 더 누르면 이동
     const L=this.mapLayout();
     list.forEach((r,i)=>{const[x,y]=L.pos(r),z=fix(this.add.zone(x-2,y-2,L.cw+4,L.ch+4).setOrigin(0).setInteractive());
@@ -197,13 +197,14 @@ export const PlayUI={
     const t=(x,y,s,o={})=>{const o2=fix(this.add.text(x,y,s,Object.assign({fontFamily:F9,fontSize:'10px',color:'#ece7f7'},o)));M.objs.push(o2);return o2};
     const ids=Object.keys(ROOMS),tr=this.treasures(),wp=ids.filter(i=>ROOMS[i].warp),wpOn=wp.filter(i=>STATE.warps[ROOMS[i].warp.id]);
     t(18,12,'지도',{fontFamily:F11,fontSize:'12px',color:'#ffe27a'});
-    t(302,13,'탐험률 '+this.explorePct()+'%',{color:'#8fe3ff'}).setOrigin(1,0);
+    t(302,MOBILE?30:13,'탐험률 '+this.explorePct()+'%',{color:'#8fe3ff'}).setOrigin(1,0);
     t(18,30,'방 '+ids.filter(i=>STATE.visited[i]).length+'/'+ids.length+'    보물 '+tr.got+'/'+tr.all+'    워프 '+wpOn.length+'/'+wp.length,{color:'#cfc8e4'});
     t(18,134,'현재 위치: '+this.R.name,{color:'#ffe27a'});
-    if(MOBILE)this.addCloseBtn(304,132,M.objs,()=>this.closeMap());else t(302,134,'M 닫기',{color:'#8f86ab'}).setOrigin(1,0);
+    // 폰: 닫기는 오른쪽 위 (아래쪽은 공격·점프 버튼에 가려짐)
+    if(MOBILE)this.addCloseBtn(304,11,M.objs,()=>this.closeMap());else t(302,134,'M 닫기',{color:'#8f86ab'}).setOrigin(1,0);
     const lg=[[0xffe27a,'현재'],[0x8fe3ff,'세이브'],[0x6fe0ff,'워프'],[0xffd34a,'보물'],[0xff4a5a,'보스']];
     M.legend=lg;lg.forEach(([c,s],i)=>t(30+i*56,148,s,{color:'#8f86ab'}));
-    const zone=fix(this.add.zone(0,0,W,H).setOrigin(0).setInteractive());zone.on('pointerdown',()=>this.closeMap());M.objs.push(zone);
+    const zone=fix(this.add.zone(-this.ovl.x,0,W,H).setOrigin(0).setInteractive());zone.on('pointerdown',()=>this.closeMap());M.objs.push(zone);
     this.navReset();
   },
   /* 지도 칸 배치: 방이 늘어나도 창 안에 들어가도록 칸 크기를 맞춤 */
@@ -211,11 +212,11 @@ export const PlayUI={
     const ids=Object.keys(ROOMS),G=i=>ROOMS[i].grid;
     const minX=Math.min(...ids.map(i=>G(i)[0])),maxX=Math.max(...ids.map(i=>G(i)[0])),minY=Math.min(...ids.map(i=>G(i)[1])),maxY=Math.max(...ids.map(i=>G(i)[1]));
     const nx=maxX-minX+1,ny=maxY-minY+1,gap=nx>14?3:nx>7?6:8,cw=Math.min(30,Math.floor((292-gap*(nx-1))/nx)),ch=Math.min(17,Math.floor((92-gap*(ny-1))/ny));
-    const mw=nx*cw+(nx-1)*gap,mh=ny*ch+(ny-1)*gap,x0=Math.round((W-mw)/2),y0=Math.round(44+(88-mh)/2);
+    const mw=nx*cw+(nx-1)*gap,mh=ny*ch+(ny-1)*gap,x0=Math.round((320-mw)/2),y0=Math.round(44+(88-mh)/2);
     return{ids,cw,ch,gap,pos:i=>[x0+(G(i)[0]-minX)*(cw+gap),y0+(G(i)[1]-minY)*(ch+gap)]};
   },
   paintMap(g,time,warp){
-    g.fillStyle(0x05030b,0.8).fillRect(0,0,W,H);g.fillStyle(0x0f0b1e,0.97).fillRect(8,6,304,160);g.lineStyle(1,warp?0x8fe3ff:0xc9a24a,1).strokeRect(8.5,6.5,303,159);
+    g.fillStyle(0x05030b,0.8).fillRect(-this.ovl.x,0,W,H);g.fillStyle(0x0f0b1e,0.97).fillRect(8,6,304,160);g.lineStyle(1,warp?0x8fe3ff:0xc9a24a,1).strokeRect(8.5,6.5,303,159);
     const{ids,cw,ch,gap,pos}=this.mapLayout(),blink=Math.floor(time/300)%2;
     const nb=j=>{const e=ROOMS[j].exits;return[e.left,e.right,e.up&&e.up.to,e.down&&e.down.to].filter(Boolean)};
     const known=i=>STATE.visited[i]||ids.some(j=>STATE.visited[j]&&nb(j).includes(i));
