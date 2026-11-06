@@ -22,6 +22,7 @@ function fresh(){
     wlv:{},         // 무기 강화 단계 {무기id: 1~8}
     keys:{},        // 가진 열쇠 {red:true}
     time:0,         // 플레이 시간(초)
+    deaths:0,       // 쓰러진 횟수 (엔딩 기록)
     bossDown:false, // 킹슬라임
     bosses:{},      // 그 외 보스 {id:true}
     visited:{v1:true},

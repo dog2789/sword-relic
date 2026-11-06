@@ -13,6 +13,7 @@ npm run build:single  # dist-single/index.html 한 파일 빌드 (Phaser는 CDN)
 
 - `main` 브랜치에 push하면 Vercel에 자동 배포됨. 주소 https://swordrelic.com (www는 여기로 넘김, sword-relic.vercel.app도 그대로 열림).
 - 일반 방문자는 제목·게임·소리 버튼만 보임. 설명·조작·지역·장비 카드와 테스트 버튼은 주소 뒤 `?dev`로 켬 (`?dev=0` 끔, localStorage `sr_dev`).
+- 홈 화면에 추가(PWA): `public/manifest.webmanifest`, 아이콘 `icon-192/512.png`, 서비스 워커 `public/sw.js` (새 파일 먼저 받고 끊기면 저장본, 배포판에서만 등록).
 - 검색·공유: index.html 머리의 description·og·twitter·JSON-LD, 썸네일 `public/og.png`(1200×630), `public/robots.txt`, `public/sitemap.xml`. 도메인을 바꾸면 이 세 곳의 swordrelic.com을 같이 바꿀 것.
 - 바뀐 게 생기면: 수정 → `npx vite build`로 빌드 확인 → 직접 해 보기(또는 아래 헤드리스 확인) → 커밋·push.
 
@@ -28,8 +29,8 @@ npm run build:single  # dist-single/index.html 한 파일 빌드 (Phaser는 CDN)
 - `src/data/items.js`: 장비(`ITEMS`), 세트(`SETS`: 철 기사, 흑철, 청기사, 흑월, 적월, 용기사, 천공 기사, 마검사), 강화 비용.
 - `src/gfx/hero.js`: 주인공 도트(문자열 한 글자 = 픽셀 하나, 글자 = 색 슬롯). 투구 모양 full | great | crown | horned | moon | bloodmoon | dragon | winged | demon, 갑옷 plate | heavy | spike | moon | dragon.
 - `src/gfx/sprites.js`: 아이템 아이콘, 검 모양, 몬스터 텍스처.
-- `src/state.js`: 진행 상황 저장 (localStorage `sr_save2`).
-- `src/sfx.js`: 효과음을 Web Audio로 합성 (`sfx('slash'|'hit'|'jump'|'coin'|'hurt'|'chest'|'door'|'gate'|'fanfare')`). 첫 입력 때 소리를 켜고, 출력 앞에 리미터. 소리 끄기는 `setMuted` (localStorage `sr_mute`).
+- `src/state.js`: 진행 상황 저장 (localStorage `sr_save2`). 방에 들어올 때마다 자동 저장, 이어하기는 마지막 석상(없으면 r1). 보스가 살아 있는 방에서 지면 그 방 입구에서 다시. 이름 `STATE.name`(대사의 `{name}`과 말하는 사람 "나"가 이름으로 바뀜), 쓰러진 횟수 `deaths`는 마왕 엔딩 기록에 나옴.
+- `src/sfx.js`: 효과음을 Web Audio로 합성 (`sfx('slash'|'hit'|'jump'|'coin'|'hurt'|'chest'|'door'|'gate'|'fanfare')`). 첫 입력 때 소리를 켜고, 출력 앞에 리미터. 소리 끄기는 `setMuted` (localStorage `sr_mute`), 음량은 `setVolume(m|f)` (`sr_vol`). 설정 창은 index.html의 `#setdlg` (PC "설정" 버튼, 폰 "설정" 칸, 폰 버튼 크기 `sr_bs` → CSS `--bs`).
 - `src/bgm.js`: 배경음악. 곡은 코드·멜로디 글자로 적고, OfflineAudioContext로 한 바퀴를 미리 만들어 반복 재생 (실시간 예약은 끊겨서 안 씀). 방 곡은 `PlayScene.roomSong()`: 안 잡은 보스 → boss, 고향 마을(v1) → village, 나머지는 지역 테마.
 
 ## 규칙과 공식

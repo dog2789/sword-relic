@@ -721,7 +721,7 @@ export class PlayScene extends Phaser.Scene{
       const drop=B.drop;if(drop)this.time.delayedCall(600,()=>this.spawnPickup(drop,ex,Math.min(ey,floorTopY(this.map,Math.floor(ex/T))-14),'drop_'+this.roomId));
       if(e.king)this.time.delayedCall(1500,()=>this.grantDoubleJump());
       this.openBossGates(id);sfx('fanfare');bgmStop();this.time.delayedCall(2600,()=>{if(!this.leaving)bgm(this.roomSong())});
-      if(B.after)this.time.delayedCall(2800,()=>{if(!this.leaving&&!this.overlayOpen())this.openDialog('',B.after)})}
+      if(B.after)this.time.delayedCall(2800,()=>{if(!this.leaving&&!this.overlayOpen())this.openDialog('',id==='demon'?[...B.after,{n:(STATE.name||'모험가')+'의 기록',t:this.clearRecord()}]:B.after)})}
     else if(!d.summon)this.time.delayedCall(6000,()=>{if(!this.leaving){if(d.t)spawnMob(this,d);else this.spawnEnemy(d)}});
   }
   spawnEnemy(d){
@@ -778,8 +778,13 @@ export class PlayScene extends Phaser.Scene{
     this.shake(120,0.01);p.setTintFill(0xff4a5a);this.time.delayedCall(90,()=>p.clearTint());
     if(s.hp<=0)this.die();
   }
+  // 마지막 엔딩에 보여 주는 기록: 플레이 시간·레벨·쓰러진 횟수·연 보물 상자
+  clearRecord(){
+    const t=Math.floor(STATE.time||0),p2=n=>String(n).padStart(2,'0'),all=Object.values(ROOMS).flatMap(roomChests),got=all.filter(c=>STATE.opened[c.id]).length;
+    return '플레이 시간 '+(t/3600|0)+':'+p2(t%3600/60|0)+':'+p2(t%60)+'    레벨 '+this.stats.lv+'\n쓰러진 횟수 '+(STATE.deaths||0)+'번    보물 상자 '+got+' / '+all.length;
+  }
   die(){
-    const p=this.player,s=this.stats;p.dead=true;p.setTint(0x666677);p.anims.stop();p.setTexture('hero_jump0');
+    const p=this.player,s=this.stats;p.dead=true;STATE.deaths=(STATE.deaths||0)+1;p.setTint(0x666677);p.anims.stop();p.setTexture('hero_jump0');
     this.banner('GAME OVER',0xff5a5a);
     this.time.delayedCall(1700,()=>{
       s.hp=this.mhp();s.mp=s.maxMp;
