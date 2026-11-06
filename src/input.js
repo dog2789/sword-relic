@@ -26,8 +26,22 @@ function codeOf(e){
 const GAME=new Set(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space','KeyZ','KeyX','KeyC','KeyI','KeyM','Enter','Escape']);
 const typing=e=>{const t=e.target;return t&&(t.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))};
 
-window.addEventListener('keydown',e=>{if(typing(e))return;const c=codeOf(e);down.add(c);if(GAME.has(c))e.preventDefault()},true);
-window.addEventListener('keyup',e=>{const c=codeOf(e);down.delete(c)},true);
+/* 키 설정: 사용자가 고른 키를 원래 키(게임 코드가 보는 이름)로 바꿔서 기록 → 게임 코드는 그대로 둠
+   localStorage sr_keys = {동작: 고른 키 code}. 고른 키가 다른 동작의 기본 키였으면 그 기본 동작은 안 함 */
+export const ACTIONS=[['left','왼쪽','ArrowLeft'],['right','오른쪽','ArrowRight'],['up','위','ArrowUp'],['down','아래','ArrowDown'],
+  ['atk','공격','KeyZ'],['jump','점프','KeyX'],['skill','스킬','KeyC'],['menu','장비','KeyI'],['map','지도','KeyM']];
+let remap={};
+export const getBinds=()=>{try{return JSON.parse(localStorage.getItem('sr_keys')||'{}')||{}}catch(_){return{}}};
+export function setBinds(b){try{localStorage.setItem('sr_keys',JSON.stringify(b))}catch(_){}
+  remap={};for(const [k,,def] of ACTIONS)if(b[k]&&b[k]!==def)remap[b[k]]=def;down.clear()}
+setBinds(getBinds());
+let capture=null;   // 키 설정 창에서 다음 키 하나를 받아 갈 함수
+export const captureKey=f=>{capture=f};
+
+window.addEventListener('keydown',e=>{
+  if(capture){e.preventDefault();e.stopPropagation();const f=capture;capture=null;f(codeOf(e));return}
+  if(typing(e))return;const c=remap[codeOf(e)]||codeOf(e);down.add(c);if(GAME.has(c))e.preventDefault()},true);
+window.addEventListener('keyup',e=>{const c=codeOf(e);down.delete(remap[c]||c)},true);
 window.addEventListener('blur',()=>down.clear());
 document.addEventListener('visibilitychange',()=>{if(document.hidden)down.clear()});
 

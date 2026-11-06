@@ -193,3 +193,14 @@ html:not(.dev) :is(.sub:not(.lead),.cards,.gear-label,#testgear,#newgame){displa
 .mobonly{display:none}body.mobile .mobonly{display:grid}
 .sclose{margin:14px 0 0 auto}
 .setdlg :focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+/* PC 전용: 키 설정 칸, 전체 화면 버튼 */
+body.mobile .pconly{display:none}
+#set-keys h3{margin:12px 0 8px;font-size:13px;font-weight:600;color:var(--gold)}
+#set-keys small{font-weight:400;font-size:11px;color:var(--muted)}
+.kgrid{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px}
+.kgrid label{display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.kgrid button,.kreset{min-width:64px;min-height:28px;background:var(--bg);color:var(--ink);border:2px solid var(--line);font:inherit;font-size:12px;cursor:pointer}
+.kgrid button.wait{border-color:var(--gold);color:var(--gold)}
+.kreset{margin-top:8px;color:var(--muted)}
+/* 전체 화면: 게임 칸만 화면 가득, 가운데 */
+#stage:fullscreen{align-items:center;padding:0;border:0;background:#000}
