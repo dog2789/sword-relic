@@ -39,12 +39,15 @@ setBinds(getBinds());
 let capture=null;   // 키 설정 창에서 다음 키 하나를 받아 갈 함수
 export const captureKey=f=>{capture=f};
 
+// 노드(tools/reach.mjs가 방 데이터를 불러올 때)에는 window가 없음
+if(typeof window!=='undefined'){
 window.addEventListener('keydown',e=>{
   if(capture){e.preventDefault();e.stopPropagation();const f=capture;capture=null;f(codeOf(e));return}
   if(typing(e))return;const c=remap[codeOf(e)]||codeOf(e);down.add(c);if(GAME.has(c))e.preventDefault()},true);
 window.addEventListener('keyup',e=>{const c=codeOf(e);down.delete(remap[c]||c)},true);
 window.addEventListener('blur',()=>down.clear());
 document.addEventListener('visibilitychange',()=>{if(document.hidden)down.clear()});
+}
 
 export const isDown=(...codes)=>codes.some(c=>down.has(c));
 
