@@ -235,6 +235,16 @@ export function buildTextures(sc){
   const BMP={k:'#14080a',a:'#4a3a3e',i:'#6a5a5e',l:'#ff6a1a',y:'#ffd060',Y:'#ff8a2a',e:'#ffe080'};
   const bomb=fr=>[fr?"......y.....":".......y....",fr?"......ky....":"......kY....",".....k......","...kkkkkk...","..kaaaaaak..",".kaiaaaaaak.",".kaaekaekak.",".kaaaaaaaak.",".kaalllllak.","..kaaaaaak..",fr?"..kk....kk..":"...kk..kk..."];
   add('bomber0',fromRows(bomb(0),BMP));add('bomber1',fromRows(bomb(1),BMP));
+  // 초원 뿔 토끼, 고목 꿀벌, 사막 모래 지렁이
+  const HRP={k:'#2a1a14',w:'#fff8f0',W:'#d8c8b8',p:'#ff9ab0',e:'#1a1010',h:'#ffd34a'};
+  const hare=fr=>[".....kk.kk..",".....kpkkpk.",".....kpkkpk.","....kwwwwwkh","...kwwwwewkh","kk.kwwwwwwpk","kwkwwwwwwwk.",".kwwwwwwwk..",".kWwwwwWWk..",fr?".kk....kkk..":"..kk.kk.kk.."];
+  add('hare0',fromRows(hare(0),HRP));add('hare1',fromRows(hare(1),HRP));
+  const BEP={k:'#1a1408',y:'#ffd030',d:'#3a2a10',w:'#ffffff',W:'#c8e0ff',e:'#000000',s:'#5a4a30'};
+  const bee=fr=>[fr?"..........":"...ww.ww..",fr?"..WwwWww..":"..wWwwWw..","..kkkkkkk.",".kydydyyek","skydydyyyk",".kydydyyk.","..kkkkkkk."];
+  add('bee0',fromRows(bee(0),BEP));add('bee1',fromRows(bee(1),BEP));
+  const WMP={k:'#2a1a0a',s:'#d8a868',S:'#a8783a',m:'#a0202a',t:'#fff0d8',e:'#1a0a0a'};
+  const worm=fr=>["....kkkk....","...kssssk...","..kseSSesk..",fr?"..kssssssk..":"..kmtmmtmk..",fr?"..kSSSSSSk..":"..kmmmmmmk..","..ksSssSsk..","...kssssk...","...kSssSk...","...kssssk...","..kkSssSkk.."];
+  add('worm0',fromRows(worm(0),WMP));add('worm1',fromRows(worm(1),WMP));
   knight('shade',{style:0,hair:1,skin:4,top:6,bottom:3,shoes:0},{helm:'shade_helm',armor:'shade_armor'},{k:'#0a0610',l:'#3a2a4a',L:'#c070ff',m:'#5a1a7a',j:'#1a0a20'});
   knight('skull',{style:0,hair:3,skin:0,top:4,bottom:3,shoes:0},{helm:'skull_helm',armor:'skull_robe'},null);
   knight('demon',{style:0,hair:1,skin:4,top:6,bottom:3,shoes:0},{helm:'demon_helm',armor:'demon_armor',boots:'demon_boots'},{k:'#14040a',l:'#3a0a14',L:'#ff4a4a',m:'#ffd34a',j:'#2a0a10'});

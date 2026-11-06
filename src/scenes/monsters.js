@@ -30,6 +30,10 @@ export const MOBS={
   ghost:{hp:44,dmg:12,exp:14,nm:'떠도는 유령',kb:0.6,size:[10,10],off:[1,1],fly:true,tex:'ghost0'},
   snowman:{hp:60,dmg:11,exp:15,nm:'눈사람',kb:0.2,size:[10,13],off:[1,0],tex:'snowman0'},
   bomber:{hp:40,dmg:12,exp:14,nm:'폭탄 바위',kb:0.5,size:[10,8],off:[1,3],tex:'bomber0'},
+  /* 초원 뿔 토끼(깡충 뛰어 덤빔), 고목 꿀벌(멈칫한 뒤 일직선 침 돌격), 사막 모래 지렁이(땅속으로 따라와 발밑에서 솟음) */
+  hare:{hp:28,dmg:8,exp:7,nm:'뿔 토끼',kb:0.7,size:[10,8],off:[1,2],tex:'hare0'},
+  bee:{hp:20,dmg:9,exp:7,nm:'꿀벌',kb:0.8,size:[8,6],off:[1,1],fly:true,tex:'bee0'},
+  worm:{hp:50,dmg:13,exp:15,nm:'모래 지렁이',kb:0.1,size:[8,10],off:[2,0],fly:true,tex:'worm0'},
   /* 마왕성 */
   eyebat:{hp:36,dmg:11,exp:10,nm:'눈알 박쥐',kb:0.7,size:[10,6],off:[2,1],fly:true,tex:'eyebat0'},
   shade:{hp:70,dmg:13,exp:17,nm:'그림자 기사',kb:0.3,size:[9,14],off:[12,6],tex:'kn_shade_idle0'},
@@ -40,13 +44,13 @@ export const MOBS={
 const BOSS_LV={batlord:1,rust:2,turtle:3,scorpking:4,golem:5,griffin:6,demon:7};
 /* 박쥐처럼 맴도는 몬스터 (공격은 다름: 박쥐 급습, 하피 활강, 눈알 박쥐 광선 구슬) */
 const BATLIKE=['bat','harpy','eyebat'];
-const NEW=['spider','ghost','snowman','bomber'];
+const NEW=['spider','ghost','snowman','bomber','hare','bee','worm'];
 
 export function makeMobAnims(scene){
   const mk=(key,frames,rate)=>{if(!scene.anims.exists(key))scene.anims.create({key,frames:frames.map(f=>({key:f})),frameRate:rate,repeat:-1})};
   mk('bat_anim',['bat0','bat1'],8);mk('snail_anim',['snail0','snail1'],3);mk('batlord_anim',['batlord0','batlord1'],6);mk('fish_anim',['fish0','fish1'],5);mk('turtle_anim',['turtle0','turtle1'],3);mk('scorp_anim',['scorp0','scorp1'],6);mk('scorpking_anim',['scorpk0','scorpk1'],5);mk('sala_anim',['sala0','sala1'],5);mk('golem_anim',['golem0','golem1'],3);
   mk('harpy_anim',['harpy0','harpy1'],7);mk('wisp_anim',['wisp0','wisp1'],6);mk('eyebat_anim',['eyebat0','eyebat1'],8);mk('griffin_anim',['griffin0','griffin1'],5);
-  for(const k of NEW)mk(k+'_anim',[k+'0',k+'1'],k==='ghost'?3:k==='snowman'?2:6);
+  for(const k of NEW)mk(k+'_anim',[k+'0',k+'1'],k==='ghost'?3:k==='snowman'||k==='worm'?2:k==='bee'?12:6);
   for(const k of ['haunt','rust','mummy','shade','skull','demon']){mk(k+'_idle',['kn_'+k+'_idle0','kn_'+k+'_idle1'],2.5);mk(k+'_run',['kn_'+k+'_run0','kn_'+k+'_run1'],k==='rust'?5:7)}
 }
 
@@ -68,6 +72,9 @@ export function spawnMob(scene,d){
     e.thread=scene.add.rectangle(x,e.top,1,1,0xd8d0e8,0.7).setOrigin(0.5,0).setDepth(4);e.on('destroy',()=>e.thread.destroy())}
   if(d.t==='ghost'){e.noclip=true;e.state='float';e.cool=2+Math.random()*2}
   if(d.t==='snowman'||d.t==='bomber')e.state='walk';
+  if(d.t==='worm'){   // 아래 바닥까지 내려가 땅속에 숨음
+    let ty=d.ty;while(ty<12&&scene.tileAt(x,(ty+1)*T+8)==='.')ty++;e.home.y=(ty+1)*T-5;e.body.reset(x,e.home.y);
+    e.state='under';e.body.enable=false;e.cool=1;e.anims.stop();e.setTexture('worm1');e.alpha=0;return e}
   e.setAlpha(0);scene.tweens.add({targets:e,alpha:1,duration:M.boss?900:400});
   return e;
 }
@@ -86,6 +93,9 @@ export function updateMob(scene,e,dt){
   if(e.mob==='ghost')return updateGhost(scene,e,dt);
   if(e.mob==='snowman')return updateSnowman(scene,e,dt);
   if(e.mob==='bomber')return updateBomber(scene,e,dt);
+  if(e.mob==='hare')return updateHare(scene,e,dt);
+  if(e.mob==='bee')return updateBee(scene,e,dt);
+  if(e.mob==='worm')return updateWorm(scene,e,dt);
   if(e.mob==='harpy'&&e.state==='swoop')return updateSwoop(scene,e,dt);
   if(BATLIKE.includes(e.mob)){
     e.t0+=dt;
@@ -194,6 +204,47 @@ function updateBomber(scene,e,dt){
   const a=scene.tileAt(e.x+e.dir*10,e.body.bottom+4),floor='#-=HV'.includes(a)&&a!=='.';
   if((e.dir<0&&e.body.blocked.left)||(e.dir>0&&e.body.blocked.right)||!floor||'^LS'.includes(scene.tileAt(e.x+e.dir*10,e.body.bottom-2))){if(see){e.setVelocityX(0);return}e.dir*=-1}
   e.setVelocityX(e.dir*(see?48:18));e.setFlipX(e.dir<0);
+}
+const FLOOR=c=>c==='#'||c==='-'||c==='=';
+/* 뿔 토끼: 주인공을 보면 깡충깡충 뛰어서 덤빔 (착지할 곳이 없거나 함정이면 돌아섬) */
+function updateHare(scene,e,dt){
+  const p=scene.player;if(e.anims.isPlaying)e.anims.stop();
+  const g=onGround(e);e.setTexture(g?'hare0':'hare1');
+  if(e.stun>0){e.stun-=dt;return}if(!g)return;
+  e.setVelocityX(0);e.cool-=dt;
+  const dx=p.x-e.x,see=!p.dead&&Math.abs(dx)<140&&Math.abs(p.y-e.y)<60;
+  if(see)e.dir=Math.sign(dx)||1;e.setFlipX(e.dir<0);
+  if(e.cool>0)return;
+  const lx=e.x+e.dir*(see?40:24),land=scene.tileAt(lx,e.body.bottom+4);
+  if(!FLOOR(land)||'^LS'.includes(scene.tileAt(lx,e.body.bottom-2))||(e.dir<0?e.body.blocked.left:e.body.blocked.right)){e.dir*=-1;e.cool=0.5;return}
+  e.setVelocity(e.dir*(see?100:55),see?-230:-150);e.cool=see?0.8+Math.random()*0.4:1.3+Math.random();
+}
+/* 꿀벌: 붕붕 맴돌다 주인공을 보면 부르르 떨며 겨눈 뒤 그 방향으로 빠르게 일직선 돌격 */
+function updateBee(scene,e,dt){
+  const p=scene.player;e.t0+=dt;
+  if(e.stun>0){e.stun-=dt;e.clearTint();e.setVelocity(e.body.velocity.x*0.9,e.body.velocity.y*0.9);if(e.stun<=0)e.state='back';return}
+  const dx=p.x-e.x,dy=p.y-e.y,d=Math.hypot(dx,dy)||1;
+  if(e.state==='aim'){e.st-=dt;e.setVelocity(Math.sin(e.t0*70)*50,0);if(e.st<=0){e.clearTint();e.state='sting';e.st=0.55;e.setVelocity(e.aim.x*240,e.aim.y*240)}return}
+  if(e.state==='sting'){e.st-=dt;const b=e.body.blocked;if(e.st<=0||b.left||b.right||b.up||b.down){e.state='back';e.cool=1.4+Math.random()}return}
+  if(e.state==='back'){const hx=e.home.x-e.x,hy=e.home.y-e.y,hd=Math.hypot(hx,hy);if(hd<6)e.state='hover';else e.setVelocity(hx/hd*70,hy/hd*70);e.setFlipX(hx<0);return}
+  e.setVelocity((e.home.x+Math.sin(e.t0*2.2)*16-e.x)*3,(e.home.y+Math.sin(e.t0*4.4)*6-e.y)*3);e.setFlipX(dx<0);e.cool-=dt;
+  if(d<120&&e.cool<=0&&!p.dead){e.state='aim';e.st=0.45;e.aim={x:dx/d,y:dy/d};e.setFlipX(dx<0);e.setTint(0xff8a3a)}
+}
+/* 모래 지렁이: 땅속에서 모래 먼지만 보이며 주인공 발밑까지 따라옴 → 땅이 흔들린 뒤 솟아오름 → 잠깐 나와 있다가(이때만 때릴 수 있음) 다시 숨음 */
+function updateWorm(scene,e,dt){
+  const p=scene.player,dx=p.x-e.x,gy=e.home.y+5;e.st-=dt;
+  if(e.state==='under'){e.cool-=dt;
+    if(p.dead||Math.abs(dx)>170||Math.abs(p.y-e.y)>60)return;
+    const nx=e.x+Math.sign(dx)*Math.min(Math.abs(dx),50*dt);
+    if(FLOOR(scene.tileAt(nx,gy+4))&&scene.tileAt(nx,e.y)==='.'&&Math.abs(nx-e.home.x)<140)e.x=nx;
+    if(Math.random()<dt*14)scene.dustEm.explode(2,e.x,gy);
+    if(e.cool<=0&&Math.abs(p.x-e.x)<10){e.state='rumble';e.st=0.5}return}
+  if(e.state==='rumble'){if(Math.random()<dt*40)scene.dustEm.explode(3,e.x+Phaser.Math.Between(-6,6),gy);
+    if(e.st<=0){e.state='out';e.st=1.4;e.body.enable=true;e.body.reset(e.x,e.y);e.setAlpha(1);e.play('worm_anim');scene.dustEm.explode(14,e.x,gy);scene.shake(80,0.006);
+      const b=p.body;if(!p.dead&&b.right>e.x-10&&b.left<e.x+10&&b.bottom>gy-26&&b.top<gy)scene.hurtBy(Math.round(e.dmg*1.3),e.x,'enemy')}return}
+  e.setVelocity(0,0);if(e.stun>0)e.stun-=dt;e.setFlipX(dx<0);
+  if(e.state==='out'&&e.st<=0){e.state='dig';e.st=0.35;scene.tweens.add({targets:e,alpha:0,duration:330})}
+  if(e.state==='dig'&&e.st<=0){e.state='under';e.body.enable=false;e.anims.stop();e.setTexture('worm1');e.cool=1.6+Math.random();scene.dustEm.explode(8,e.x,gy)}
 }
 /* 번개 정령: 제자리 근처를 떠다니다 주인공을 향해 번개 구슬을 쏨 */
 function updateWisp(scene,e,dt){
