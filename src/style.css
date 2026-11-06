@@ -70,13 +70,15 @@ body.mobile .pad{display:block;touch-action:none}
 @media (orientation:portrait){
   body.mobile .wrap{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
   body.mobile #stage{flex:none}
-  body.mobile .pad{--dp:min(46vw,190px);--ab:min(20vw,80px);flex:1;position:relative;display:grid;
-    grid-template-columns:1fr auto;grid-template-rows:auto 1fr auto;align-items:center;gap:8px 12px;
+  /* 스틱·버튼은 손가락 크기에 맞게 작게, 남는 높이는 줄 사이에 고르게 나눔 (폰마다 높이가 달라서) */
+  body.mobile .pad{--dp:min(34vw,140px);--ab:min(15vw,60px);flex:1;position:relative;display:grid;
+    grid-template-columns:1fr auto;grid-template-rows:auto auto auto;align-content:space-evenly;align-items:center;gap:8px 12px;
     padding:12px max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-bottom,0px))}
-  body.mobile .sys{grid-column:1/3;grid-row:1}
+  body.mobile .sys{grid-column:1/3;grid-row:1;flex-wrap:nowrap}
+  body.mobile .slot{--sl:min(calc((100vw - 90px)/7),46px)}
   body.mobile .stickzone{grid-column:1;grid-row:2;align-self:stretch;position:relative;min-height:var(--dp)}
   body.mobile .stick{position:absolute;left:0;top:50%;margin-top:calc(var(--dp)/-2)}
-  body.mobile .act{grid-column:2;grid-row:2}
+  body.mobile .act{grid-column:2;grid-row:2;margin-right:4px}
   body.mobile .turn{grid-column:1/3;grid-row:3}
 }
 /* 가로: 게임이 화면 가득, 조작 버튼은 반투명하게 위에 겹침 (아래 HP 줄은 가리지 않게 조금 띄움) */
@@ -139,7 +141,7 @@ body.mobile .pad{display:block;touch-action:none}
 @media (orientation:portrait){
   html:has(body.mobile),body.mobile{background:#cfc9dc}
   body.mobile .wrap{background:linear-gradient(#d8d2e4,#bdb6cc)}
-  body.mobile #stage{margin:12px 12px 0;padding:14px 14px 26px;background:#4a4560;border-radius:10px 10px 34px 10px;
+  body.mobile #stage{margin:8px 8px 0;padding:10px 10px 24px;background:#4a4560;border-radius:10px 10px 34px 10px;
     box-shadow:inset 0 2px 0 #5e5878,inset 0 -2px 0 #2e2a3e,0 2px 0 #9a93ad}
   body.mobile #stage::before{content:"";position:absolute;left:4px;top:50%;width:6px;height:6px;border-radius:50%;background:#ff4a5a;box-shadow:0 0 6px #ff4a5a}
   body.mobile #stage::after{content:"SWORD RELIC";position:absolute;left:0;right:0;bottom:7px;text-align:center;font-family:var(--pix);font-size:8px;letter-spacing:.2em;color:#a9a1c4}
@@ -157,7 +159,7 @@ body.mobile .pad{display:block;touch-action:none}
   body.mobile .act .pbtn em{right:auto;left:50%;bottom:-16px;transform:translateX(-50%);font-size:9px;color:#5a5470;opacity:1}
   body.mobile .act .pbtn.on{transform:translateY(3px);box-shadow:0 1px 0 #6a1c40}
   body.mobile .act .s.on{transform:scale(.86) translateY(3px)}
-  body.mobile .act{gap:22px 14px}
+  body.mobile .act{gap:20px 10px}
   /* 스피커 구멍 */
   body.mobile .pad::after{content:"";position:absolute;right:22px;bottom:max(14px,env(safe-area-inset-bottom,0px));width:44px;height:22px;transform:skewX(-28deg);
     background:repeating-linear-gradient(90deg,#8e87a3 0 4px,transparent 4px 9px);opacity:.8;pointer-events:none}

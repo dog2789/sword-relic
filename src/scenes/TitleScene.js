@@ -22,14 +22,14 @@ export class TitleScene extends Phaser.Scene{
   create(){
     bgm('title');
     buildTextures(this);buildFonts(this);
-    if(!this.textures.exists('title_far'))this.textures.addCanvas('title_far',drawFar(W));
-    if(!this.textures.exists('title_mid'))this.textures.addCanvas('title_mid',drawMid(W));
-    if(!this.textures.exists('title_ground')){const[c,x]=cv(W,40);px(x,'#9a6a3c',0,6,W,34);px(x,'#86d652',0,0,W,2);px(x,'#62bc40',0,2,W,3);px(x,'#4a9a34',0,5,W,2);
-      for(let i=0;i<W;i+=2){if(Math.random()<.4)px(x,'#86d652',i,-1+0,1,1);if(Math.random()<.2)px(x,'#7a4e2a',i,10+Math.random()*28|0)}this.textures.addCanvas('title_ground',c)}
-    this.add.image(0,0,'title_far').setOrigin(0);
+    if(!this.textures.exists('title_far'+W))this.textures.addCanvas('title_far'+W,drawFar(W));
+    if(!this.textures.exists('title_mid'+W))this.textures.addCanvas('title_mid'+W,drawMid(W));
+    if(!this.textures.exists('title_ground'+W)){const[c,x]=cv(W,40);px(x,'#9a6a3c',0,6,W,34);px(x,'#86d652',0,0,W,2);px(x,'#62bc40',0,2,W,3);px(x,'#4a9a34',0,5,W,2);
+      for(let i=0;i<W;i+=2){if(Math.random()<.4)px(x,'#86d652',i,-1+0,1,1);if(Math.random()<.2)px(x,'#7a4e2a',i,10+Math.random()*28|0)}this.textures.addCanvas('title_ground'+W,c)}
+    this.add.image(0,0,'title_far'+W).setOrigin(0);
     this.clouds=[0,1,2].map(i=>this.add.image(40+i*110,18+i*16,'cloud'+i));
-    this.add.image(0,22,'title_mid').setOrigin(0);
-    this.add.image(0,H-34,'title_ground').setOrigin(0);
+    this.add.image(0,22,'title_mid'+W).setOrigin(0);
+    this.add.image(0,H-34,'title_ground'+W).setOrigin(0);
     paintHeroFrames(this);
     this.add.sprite(W/2,H-42,'hero_idle0').play('hero_idle');
     // 로고

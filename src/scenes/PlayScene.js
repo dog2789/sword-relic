@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import {W,H,T,HUD,ROWS,LH,SPEED,JUMP,VP,MOBILE,keyText} from '../config.js';
+import {W,H,T,HUD,ROWS,LH,SPEED,JUMP,VP,MOBILE,keyText,wideW,setW,landPad} from '../config.js';
 import {buildTextures} from '../gfx/sprites.js';
 import {buildFonts} from '../gfx/fonts.js';
 import {cv,px} from '../gfx/pixel.js';
@@ -15,7 +15,7 @@ import {MenuMixin} from './menu.js';
 import {Fx,buildFxTextures} from './fx.js';
 import {Skills} from './skills.js';
 import {bossDone,setBossDone,STATE,saveGame} from '../state.js';
-import {RS,fitCameras} from '../zoom.js';
+import {RS,fitCameras,calcScale} from '../zoom.js';
 
 import {F9,F11} from '../fonts.js';
 import {sfx} from '../sfx.js';
@@ -29,6 +29,8 @@ export class PlayScene extends Phaser.Scene{
   constructor(){super('play')}
 
   create(data={}){
+    // 폰을 돌렸으면 방을 새로 만들 때 게임 폭을 화면 비율에 맞춤 (방 안에서는 바꾸지 않음)
+    if(W!==wideW()){setW(wideW());const sc=calcScale();RS.S=sc.S;this.scale.resize(W*sc.S,H*sc.S);this.scale.setZoom(sc.css/sc.S)}
     buildTextures(this);buildFonts(this);buildFxTextures(this);this.fxEms={};
     // 이전 방의 참조 정리
     Object.assign(this,{slash:null,sword:null,chests:[],statue:null,crystal:null,tInfo:null,menu:null,pickups:[],walls:[],fallers:[],mushrooms:[],climbing:false,bounceT:0,safe:null,autoUp:false,warpObj:null,npcObjs:[],bubble:null,listm:null,dlg:null,mapv:null,warpm:null,quickUI:[],quakes:[],eshots:[],geysers:[],inSand:false,wallT:0,wallLock:0,wallDir:0});
@@ -428,7 +430,7 @@ export class PlayScene extends Phaser.Scene{
   toast(msg,ms=2400){
     msg=keyText(msg);
     const t=this.toastTxt;if(!t)return;this.tweens.killTweensOf(t);
-    t.setText(msg).setVisible(true).setAlpha(0);
+    t.setText(msg).setVisible(true).setAlpha(0).setY(landPad()?42:6);
     this.tweens.add({targets:t,alpha:1,duration:160});
     this.tweens.add({targets:t,alpha:0,delay:ms,duration:300,onComplete:()=>t.setVisible(false)});
   }
@@ -795,9 +797,9 @@ export class PlayScene extends Phaser.Scene{
     this.tweens.add({targets:t,y:y-14,alpha:{from:1,to:0},duration:900,ease:'Quad.easeOut',onComplete:()=>t.destroy()});
   }
   banner(str,tint){
-    const t=this.add.bitmapText(W/2,64,'dmg',str).setOrigin(0.5).setScrollFactor(0).setDepth(120).setTint(tint).setLetterSpacing(-2).setScale(3);
+    const y=landPad()?84:64,t=this.add.bitmapText(W/2,y,'dmg',str).setOrigin(0.5).setScrollFactor(0).setDepth(120).setTint(tint).setLetterSpacing(-2).setScale(3);
     this.tweens.add({targets:t,scale:2,duration:220,ease:'Back.easeOut'});
-    this.tweens.add({targets:t,alpha:0,y:56,delay:1300,duration:350,onComplete:()=>t.destroy()});
+    this.tweens.add({targets:t,alpha:0,y:y-8,delay:1300,duration:350,onComplete:()=>t.destroy()});
   }
 }
 
