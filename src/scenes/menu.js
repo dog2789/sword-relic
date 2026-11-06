@@ -78,12 +78,15 @@ export const MenuMixin={
     g.fillStyle(0x221a3a,1).fillRect(200,30,102,88);g.fillStyle(0x0f0b1e,1).fillRect(18,120,284,55);
     M.cells.forEach((row,r)=>{let o=M.off[r];if(r===M.r){if(M.c<o)o=M.c;if(M.c>=o+VIS)o=M.c-VIS+1}o=Math.max(0,Math.min(o,row.length-VIS));M.off[r]=o;
       M.arr[r][0].setVisible(o>0);M.arr[r][1].setVisible(o+VIS<row.length);M.arr[r].forEach(a=>{if(a.hz&&a.hz.input)a.hz.input.enabled=a.visible})});
+    let cur=null;
     M.cells.forEach((row,r)=>row.forEach((c,ci)=>{const vc=ci-M.off[r],vis=vc>=0&&vc<VIS;c.o.setVisible(vis);c.z.setVisible(vis);if(c.z.input)c.z.input.enabled=vis;if(!vis)return;
       const x=CX+vc*CW,y=RY+r*RH-1,own=STATE.bag.includes(c.id),eq=this.equip[SLOTS[r]]===c.id;c.o.setPosition(x+8,y+8);c.z.setPosition(x,y);
       g.fillStyle(own?0x2a2244:0x120e1e,1).fillRect(x,y,16,16);
       if(own)c.o.clearTint().setAlpha(1);else c.o.setTintFill(0x302a48).setAlpha(1);
       if(eq){g.lineStyle(1,0xffd34a,1).strokeRect(x+0.5,y+0.5,15,15)}
-      if(r===M.r&&ci===M.c){g.lineStyle(1,0xffffff,1).strokeRect(x-1.5,y-1.5,19,19)}}));
+      if(r===M.r&&ci===M.c)cur=[x,y]}));
+    // 고른 칸 흰 테두리는 칸들을 다 칠한 뒤에 (먼저 그리면 오른쪽·아래 칸 배경이 덮어서 잘려 보임)
+    if(cur)g.lineStyle(1,0xffffff,1).strokeRect(cur[0]-1.5,cur[1]-1.5,19,19);
     const b=this.bonus,lines=['공격 '+this.atkVal(),'방어 '+b.def,'HP '+this.mhp()];
     for(const k in SETS){const S=SETS[k],n=setProgress(this.equip,k);if(n)lines.push(S.name.replace(' 세트','')+' '+n+'/'+S.need+(n>=S.need?' ★':''))}
     M.stat.setText(lines.join('\n'));M.hero.setTexture('hero_idle0');

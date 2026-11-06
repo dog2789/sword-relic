@@ -121,6 +121,8 @@ export class PlayScene extends Phaser.Scene{
     this.combo=0;this.comboT=0;this.targetT=0;this.hpGhost=this.stats.hp;this.tGhost=0;
     this.prev=this.heldNow();this.pend={};this.frozen=false;this.leaving=false;
     this.routeCams();
+    // 카메라 나누기는 그리기 직전에 (update 중에 새로 만든 잔상·이펙트가 한 프레임 HUD 카메라에도 찍히던 것)
+    this.events.off('prerender',this.routeCams,this);this.events.on('prerender',this.routeCams,this);
     const tut=()=>this.toast(MOBILE?'스틱 이동   X 점프   Z 공격·대화   위 버튼 장비·지도':'←→ 이동   X 점프   Z 공격   ↑ 대화   I 장비   M 지도',4600);
     // 방 이벤트(컷신): 처음 들어왔을 때 한 번
     const ev=R.event&&!STATE.flags[R.event.id]?R.event:null;
@@ -517,7 +519,7 @@ export class PlayScene extends Phaser.Scene{
   }
 
   update(time,delta){
-    fitCameras(this);this.routeCams();
+    fitCameras(this);
     const dt=Math.min(delta,50)/1000,inp=this.readInput();
     if(this.dlg){this.updateDialog(dt);this.drawHud(0,time);return}
     if(this.listm){this.updateList();this.drawHud(0,time);return}
