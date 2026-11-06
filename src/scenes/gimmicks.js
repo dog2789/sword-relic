@@ -236,7 +236,7 @@ export const Gimmicks={
     // 하늘: 바닥 없는 곳으로 떨어지면 피해 + 안전한 곳으로
     if(this.R.theme==='sky'&&!this.R.exits.down&&pb.bottom>=LH-1){this.fallPit();return}
     // 상승 기류
-    for(const r of this.updrafts)if(r.contains(p.x,p.y)&&!this.climbing){p.setVelocityY(Math.max(-175,pb.velocity.y-2000*dt));this.airJumps=0;if(Math.random()<dt*10)this.dustEm.explode(1,p.x+(Math.random()-.5)*10,pb.bottom)}
+    for(const r of this.updrafts)if(!this.bossLock&&r.contains(p.x,p.y)&&!this.climbing){p.setVelocityY(Math.max(-175,pb.velocity.y-2000*dt));this.airJumps=0;if(Math.random()<dt*10)this.dustEm.explode(1,p.x+(Math.random()-.5)*10,pb.bottom)}
     this.updrafts.forEach(r=>{if(Math.random()<dt*8){const s=this.add.image(r.x+Math.random()*r.width,r.bottom,'fx_streak').setScale(0.4,1.5).setAlpha(0.45).setDepth(14).setBlendMode(Phaser.BlendModes.ADD);
       this.tweens.add({targets:s,y:r.y,alpha:0,duration:900,onComplete:()=>s.destroy()})}});
     // 바람·돌풍: 그만큼 옆으로 밀림 (발판에 서 있어도)

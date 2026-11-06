@@ -49,10 +49,13 @@ export const MOBS={
   mslime:{hp:50,dmg:12,exp:14,nm:'용암 슬라임',kb:0.4,size:[12,8],off:[1,2],tex:'mslime0'},
   tcloud:{hp:48,dmg:12,exp:14,nm:'천둥 구름',kb:0.4,size:[14,7],off:[1,1],fly:true,tex:'tcloud0'},
   mimic:{hp:90,dmg:14,exp:25,nm:'미믹',kb:0.2,size:[12,10],off:[1,1],tex:'chest0'},
+  /* 중간보스: 하늘 성채 바람 기사(돌풍으로 밀고 깃털 칼날), 마왕성 근위대장(방패로 막다가 반격, 내려찍기) */
+  windk:{hp:1500,dmg:30,exp:450,def:24,nm:'바람 기사',kb:0.04,size:[9,14],off:[12,6],scale:2,boss:true,tex:'kn_windk_idle0'},
+  gcapt:{hp:2400,dmg:36,exp:750,def:30,guard:true,nm:'근위대장',kb:0.03,size:[9,14],off:[12,6],scale:2,boss:true,tex:'kn_gcapt_idle0'},
   demon:{hp:3400,dmg:40,exp:1000,def:34,nm:'마왕',kb:0.02,size:[9,14],off:[12,6],scale:2.2,boss:true,tex:'kn_demon_idle0'}
 };
 /* 보스 순서 (뒤로 갈수록 어려움): 패턴 타이머를 1 + 0.04×단계 배 빠르게 */
-const BOSS_LV={batlord:1,rust:2,turtle:3,scorpking:4,golem:5,griffin:6,demon:7};
+const BOSS_LV={batlord:1,rust:2,turtle:3,scorpking:4,golem:5,windk:5.5,griffin:6,gcapt:6.5,demon:7};
 /* 박쥐처럼 맴도는 몬스터 (공격은 다름: 박쥐 급습, 하피 활강, 눈알 박쥐 광선 구슬) */
 const BATLIKE=['bat','harpy','eyebat','garg'];
 const NEW=['spider','ghost','snowman','bomber','hare','bee','worm','shroom','mole','garg','iwisp','vult','mslime','tcloud'];
@@ -62,7 +65,7 @@ export function makeMobAnims(scene){
   mk('bat_anim',['bat0','bat1'],8);mk('snail_anim',['snail0','snail1'],3);mk('batlord_anim',['batlord0','batlord1'],6);mk('fish_anim',['fish0','fish1'],5);mk('turtle_anim',['turtle0','turtle1'],3);mk('scorp_anim',['scorp0','scorp1'],6);mk('scorpking_anim',['scorpk0','scorpk1'],5);mk('sala_anim',['sala0','sala1'],5);mk('golem_anim',['golem0','golem1'],3);
   mk('harpy_anim',['harpy0','harpy1'],7);mk('wisp_anim',['wisp0','wisp1'],6);mk('eyebat_anim',['eyebat0','eyebat1'],8);mk('griffin_anim',['griffin0','griffin1'],5);
   for(const k of NEW)mk(k+'_anim',[k+'0',k+'1'],k==='ghost'?3:k==='snowman'||k==='worm'?2:k==='bee'?12:6);
-  for(const k of ['haunt','rust','mummy','shade','skull','demon','mantis']){mk(k+'_idle',['kn_'+k+'_idle0','kn_'+k+'_idle1'],2.5);mk(k+'_run',['kn_'+k+'_run0','kn_'+k+'_run1'],k==='rust'?5:7)}
+  for(const k of ['haunt','rust','mummy','shade','skull','demon','mantis','windk','gcapt']){mk(k+'_idle',['kn_'+k+'_idle0','kn_'+k+'_idle1'],2.5);mk(k+'_run',['kn_'+k+'_run0','kn_'+k+'_run1'],k==='rust'?5:7)}
 }
 
 export function spawnMob(scene,d){
@@ -83,6 +86,7 @@ export function spawnMob(scene,d){
     e.thread=scene.add.rectangle(x,e.top,1,1,0xd8d0e8,0.7).setOrigin(0.5,0).setDepth(4);e.on('destroy',()=>e.thread.destroy())}
   if(d.t==='ghost'){e.noclip=true;e.state='float';e.cool=2+Math.random()*2}
   if(d.t==='snowman'||d.t==='bomber'||d.t==='mslime')e.state='walk';
+  if(d.t==='gcapt'){e.baseTint=0xffb8b8;e.setTint(e.baseTint)}   // 그림자 기사 갑옷을 붉게
   if(d.t==='garg'){e.state='stone';e.anims.stop();e.setTexture('garg0')}
   if(d.t==='mimic'){e.state='sleep';e.cool=0}
   if(d.t==='mole'){   // 아래 바닥까지 내려가 구멍 속에 숨음 (지렁이처럼 숨어 있을 땐 맞지 않음)
@@ -173,6 +177,8 @@ export function updateMob(scene,e,dt){
   if(e.mob==='skull')return updateSkull(scene,e,dt);
   if(e.mob==='griffin')return updateGriffin(scene,e,dt);
   if(e.mob==='demon')return updateDemon(scene,e,dt);
+  if(e.mob==='windk')return updateWindKnight(scene,e,dt);
+  if(e.mob==='gcapt')return updateCaptain(scene,e,dt);
 }
 
 /* 하피 활강: 시작점 → 주인공 높이 → 반대편 같은 높이 (U자) */
@@ -417,6 +423,54 @@ function updateRust(scene,e,dt){
   if(e.st<=0&&Math.abs(dx)>=60&&Math.random()<dt*0.6){e.n=2;e.st=0}
   e.setVelocityX(e.dir*(rage?72:52));
   if(e.anims.currentAnim?.key!=='rust_run')e.play('rust_run');
+}
+/* 중간보스 공통: 등장 대기 → (예고 후) 앞으로 베기. 패턴은 o.pick이 고름 */
+function midSlash(scene,e,dt,k,o){
+  const p=scene.player,rage=e.hp<e.maxHp/2;
+  if(e.state==='intro'){e.st-=dt;e.setVelocityX(0);if(e.st<=0){e.state='walk';e.st=0.6}return true}
+  if(e.stun>0){e.stun-=dt;return true}
+  e.st-=dt;
+  if(e.state==='wind'){e.setVelocityX(0);if(e.st<=0){e.state='atk';e.st=0.28;e.setTexture(k+'atk');e.setVelocityX(e.dir*(rage?250:210));scene.shake(80,0.006)}return true}
+  if(e.state==='atk'){swing(scene,e,42,32,e.dmg+6);if(e.st<=0){e.state='rest';e.st=rage?0.45:0.75;e.setVelocityX(0);e.play(e.mob+'_idle')}return true}
+  if(e.state==='rest'){e.setVelocityX(e.body.velocity.x*0.85);if(e.st<=0)e.state='walk';return true}
+  if(e.state==='jump'){
+    if(e.st<-2){e.state='rest';e.st=0.5;return true}
+    if(onGround(e)&&e.st<0.6){e.state='rest';e.st=rage?0.5:0.9;e.setVelocityX(0);e.play(e.mob+'_idle');scene.shake(160,0.012);scene.dustEm.explode(14,e.x,e.body.bottom);
+      [-1,1].forEach(d=>quake(scene,e.x+d*14,e.body.bottom,d,e.dmg));if(o.onLand)o.onLand(rage)}
+    return true}
+  return false;
+}
+const wstart=(e,k,st)=>{e.st=st;e.anims.stop();e.setTexture(k+'wind');e.setVelocityX(0)};
+/* 바람 기사: 걸어와 베기 / 3번째마다 돌풍(밀어내며 깃털 칼날 부채꼴) / 분노하면 높이 뛰어 깃털 비 */
+function updateWindKnight(scene,e,dt){
+  const p=scene.player,k='kn_windk_',rage=e.hp<e.maxHp/2,dx=p.x-e.x;
+  if(midSlash(scene,e,dt,k,{onLand:r=>{for(let i=0;i<(r?7:5);i++){const s=shot(scene,'feather',e.x+(i-(r?3:2))*34,-8,{vx:0,vy:0,g:520,life:3,dmg:e.dmg-6,delay:0.3+i*0.1})}}}))return;
+  if(e.state==='gwind'){e.setVelocityX(0);e.setTint(Math.floor(e.st*14)%2?0xffffff:0x8fe3ff);if(e.st<=0){e.clearTint();
+      scene.gust(e.dir,rage?170:130,0.9);scene.toast('바람 기사가 돌풍을 일으켰다!',900);
+      const n=rage?7:5,a0=Math.atan2(p.y-e.y,dx);for(let i=0;i<n;i++){const a=a0+(i-(n-1)/2)*0.2;shot(scene,'feather',e.x,e.y-6,{vx:Math.cos(a)*170,vy:Math.sin(a)*170,life:2.4,dmg:e.dmg-8})}
+      e.state='rest';e.st=0.9;e.play('windk_idle')}return}
+  if(!onGround(e)||p.dead){e.setVelocityX(0);return}
+  e.dir=Math.sign(dx)||1;e.setFlipX(e.dir<0);
+  if(e.st<=0&&(Math.abs(dx)<60||e.n%3===2)){e.n++;
+    if(e.n%3===0){if(rage){e.state='jump';wstart(e,k,1.2);e.setVelocity(Phaser.Math.Clamp(dx*1.3,-150,150),-420)}else{e.state='gwind';wstart(e,k,0.7)}return}
+    e.state='wind';wstart(e,k,rage?0.38:0.55);return}
+  if(e.st<=0&&Math.abs(dx)>=60&&Math.random()<dt*0.7){e.n=2;e.st=0}
+  e.setVelocityX(e.dir*(rage?70:50));if(e.anims.currentAnim?.key!=='windk_run')e.play('windk_run');
+}
+/* 근위대장: 방패를 앞세우고 다가옴(앞에서 맞으면 GUARD). 막은 직후 곧바로 반격 베기 / 3번째마다 뛰어 내려찍기 / 분노하면 어둠 구슬 */
+function updateCaptain(scene,e,dt){
+  const p=scene.player,k='kn_gcapt_',rage=e.hp<e.maxHp/2,dx=p.x-e.x;
+  if(e.lastHp==null)e.lastHp=e.hp;const hit=e.hp<e.lastHp;e.lastHp=e.hp;
+  if(midSlash(scene,e,dt,k,{onLand:r=>{if(r)for(let i=0;i<3;i++)shot(scene,'darkorb',e.x,e.y-10,{vx:(i-1)*90,vy:-140,g:200,life:3,dmg:e.dmg-8,spin:true})}}))return;
+  if(!onGround(e)||p.dead){e.setVelocityX(0);return}
+  e.dir=Math.sign(dx)||1;e.setFlipX(e.dir<0);
+  // 막았으면(정면에서 맞음) 짧은 예고 뒤 반격
+  if(hit&&e.state==='walk'&&Math.abs(dx)<70){e.state='wind';wstart(e,k,rage?0.16:0.24);e.setTint(0xffffff);scene.time.delayedCall(80,()=>{if(e.active){e.clearTint();e.setTint(e.baseTint)}});return}
+  if(e.st<=0&&(Math.abs(dx)<56||e.n%3===2)){e.n++;
+    if(e.n%3===0){e.state='jump';wstart(e,k,1.2);e.setVelocity(Phaser.Math.Clamp(dx*1.3,-160,160),-400);return}
+    e.state='wind';wstart(e,k,rage?0.4:0.6);return}
+  if(e.st<=0&&Math.abs(dx)>=56&&Math.random()<dt*0.5){e.n=2;e.st=0}
+  e.setVelocityX(e.dir*(rage?56:38));if(e.anims.currentAnim?.key!=='gcapt_run')e.play('gcapt_run');
 }
 function quake(scene,x,y,d,dmg){
   const s=scene.add.image(x,y,'quake').setOrigin(0.5,1).setDepth(12).setFlipX(d<0);

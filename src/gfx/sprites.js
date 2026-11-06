@@ -251,6 +251,9 @@ export function buildTextures(sc){
   knight('shade',{style:0,hair:1,skin:4,top:6,bottom:3,shoes:0},{helm:'shade_helm',armor:'shade_armor'},{k:'#0a0610',l:'#3a2a4a',L:'#c070ff',m:'#5a1a7a',j:'#1a0a20'});
   knight('skull',{style:0,hair:3,skin:0,top:4,bottom:3,shoes:0},{helm:'skull_helm',armor:'skull_robe'},null);
   knight('demon',{style:0,hair:1,skin:4,top:6,bottom:3,shoes:0},{helm:'demon_helm',armor:'demon_armor',boots:'demon_boots'},{k:'#14040a',l:'#3a0a14',L:'#ff4a4a',m:'#ffd34a',j:'#2a0a10'});
+  // 중간보스: 바람 기사(천공 기사 갑옷 + 하늘빛 검), 근위대장(그림자 기사 갑옷 + 붉은 대검)
+  knight('windk',{style:0,hair:1,skin:0,top:5,bottom:3,shoes:0},{helm:'sky_helm',armor:'sky_armor',boots:'sky_boots'},{k:'#10203a',l:'#c8e8ff',L:'#ffffff',m:'#f0c040',j:'#2a3a5a'});
+  knight('gcapt',{style:0,hair:1,skin:4,top:6,bottom:3,shoes:0},{helm:'shade_helm',armor:'shade_armor',boots:'demon_boots'},{k:'#14040a',l:'#5a0a14',L:'#ff3a3a',m:'#c0c0c0',j:'#2a0a10'});
   add('darkorb',fromRows([".kkkk.","kpPPpk","kPWWPk","kPWWPk","kpPPpk",".kkkk."],{k:'#14041c',p:'#5a1a9a',P:'#9a3aff',W:'#f0d0ff'}));
   /* 지역마다 하나씩 더 (2차): 초원 버섯, 고목 사마귀, 동굴 두더지, 고성 가고일, 얼음 정령, 사막 독수리, 용암 슬라임, 하늘 천둥 구름, 마왕성 미믹 */
   const SHP={k:'#3a1010',r:'#d83a3a',w:'#fff0e0',s:'#f0dcb8',S:'#c8a880',e:'#2a1a10'};

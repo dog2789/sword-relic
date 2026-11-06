@@ -23,7 +23,7 @@ npm run build:single  # dist-single/index.html 한 파일 빌드 (Phaser는 CDN)
 - `src/scenes/PlayScene.js`: 본 게임. 기능별로 나눈 믹스인을 `Object.assign(PlayScene.prototype, PlayUI, Economy, Gimmicks, MenuMixin, Fx, Skills)`로 붙임.
   - `playUI.js` NPC·대화·지도·워프·퀵슬롯 / `economy.js` 골드·대장간·상점 / `gimmicks.js` 문·스위치·철문·누름판·횃불·물·용암·모래 늪, 하늘(상승 기류·바람·바닥 없는 낙하), 마왕성(어둠·저주 가시·순간이동 문)
   - `menu.js` 장비창(I) / `fx.js` 무기별 공격 이펙트 / `skills.js` 무기별 C 스킬 / `monsters.js` 몬스터·보스 AI와 지역 배율 `TIER` (지역 고유 몬스터: 동굴 거미 spider, 고성 유령 ghost(벽 통과·noclip), 얼음 눈사람 snowman, 용암 폭탄 바위 bomber, 초원 뿔 토끼 hare, 고목 꿀벌 bee, 사막 모래 지렁이 worm(땅속에선 body 꺼짐) / 2차: 초원 버섯 shroom, 고목 사마귀 mantis(updateKnight 재사용), 동굴 두더지 mole(숨으면 body 꺼짐), 고성 가고일 garg(stone 상태), 얼음 정령 iwisp(냉기 `chillT`), 사막 독수리 vult, 용암 슬라임 mslime(불길 `still` 투사체), 하늘 천둥 구름 tcloud, 마왕성 미믹 mimic(잘 땐 chest0) / 하피는 U자 활강, 눈알 박쥐는 광선 구슬)
-- `src/world/rooms.js`: 방 데이터(104개, 지역마다 13곳). 하늘 성채(s1~s13)는 고성 탑 꼭대기(k7) 봉인 위, 화염 골렘을 잡으면 열림 → 그리폰 → 마왕성(m1~m13) → 마왕(엔딩). 맵은 `build(p)` 안에서 painter로 그림 (`ground`, `block`, `plat`, `leaf`, `ladder`, `vine`, `spikes`, `water`, `sand`, `lava`, `blockA/B`, `clear`).
+- `src/world/rooms.js`: 방 데이터(104개, 지역마다 13곳). 하늘 성채(s1~s13)는 고성 탑 꼭대기(k7) 봉인 위, 화염 골렘을 잡으면 열림 → 중간보스 바람 기사(s7, windk) → 그리폰 → 마왕성(m1~m13) → 중간보스 근위대장(m6, gcapt, 정면 GUARD 후 반격) → 마왕(엔딩). 보스 싸움 중엔 상승 기류가 멈춤(bossLock). 맵은 `build(p)` 안에서 painter로 그림 (`ground`, `block`, `plat`, `leaf`, `ladder`, `vine`, `spikes`, `water`, `sand`, `lava`, `blockA/B`, `clear`).
   - 출구: `left/right`는 방 id, `up/down`은 `{to, tx}`. `grid`는 미니맵 좌표. 모든 방 높이 14줄, 타일 16px.
   - `scene.restart`로 방을 다시 만들기 때문에 `create()`에서 상태를 꼭 초기화할 것 (같은 씬 인스턴스를 재사용함).
 - `src/world/meadow.js`: 지역 테마별 타일과 배경 (meadow, treetop, cave, castle, ice, desert, lava, sky, demon), 지도 색 `THEME_COL`.
