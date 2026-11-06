@@ -126,3 +126,6 @@ ng.addEventListener('click',()=>{
 
 /* 디버그용: 브라우저 콘솔에서 SR.scene 으로 현재 장면 접근 */
 window.SR={get game(){return game},get scene(){return game&&game.scene.keys.play},get state(){return STATE},items:ITEMS};
+
+/* 홈 화면에 추가(PWA): 배포판에서만 서비스 워커를 켬 (개발 중엔 캐시가 헷갈리게 함) */
+if(import.meta.env.PROD&&'serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
