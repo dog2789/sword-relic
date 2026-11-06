@@ -36,12 +36,12 @@ export const bossDone=id=>id==='king'?!!STATE.bossDown:!!(STATE.bosses&&STATE.bo
 export function setBossDone(id){if(id==='king')STATE.bossDown=true;else(STATE.bosses||(STATE.bosses={}))[id]=true}
 
 export function hasSave(){
-  try{const v=JSON.parse(localStorage.getItem(KEY)||'null');return !!(v&&v.save)}catch(_){return false}
+  try{const v=JSON.parse(localStorage.getItem(KEY)||'null');return !!(v&&v.stats)}catch(_){return false}
 }
 export function loadGame(){
   try{
     const v=JSON.parse(localStorage.getItem(KEY)||'null');
-    if(v&&v.stats&&v.save){const f=fresh();for(const k in STATE)delete STATE[k];Object.assign(STATE,f,v);if(!STATE.bosses)STATE.bosses={};for(const k of ['wlv','keys'])if(!STATE[k])STATE[k]={};if(STATE.gold==null)STATE.gold=0;if(STATE.time==null)STATE.time=0;return true}
+    if(v&&v.stats){const f=fresh();for(const k in STATE)delete STATE[k];Object.assign(STATE,f,v);if(!STATE.bosses)STATE.bosses={};for(const k of ['wlv','keys'])if(!STATE[k])STATE[k]={};if(STATE.gold==null)STATE.gold=0;if(STATE.time==null)STATE.time=0;return true}
   }catch(_){}
   return false;
 }

@@ -35,7 +35,8 @@ export class PlayScene extends Phaser.Scene{
     // 이전 방의 참조 정리
     Object.assign(this,{slash:null,sword:null,chests:[],statue:null,crystal:null,tInfo:null,menu:null,pickups:[],walls:[],fallers:[],mushrooms:[],climbing:false,bounceT:0,safe:null,autoUp:false,warpObj:null,npcObjs:[],bubble:null,listm:null,dlg:null,mapv:null,warpm:null,quickUI:[],quakes:[],eshots:[],geysers:[],inSand:false,wallT:0,wallLock:0,wallDir:0});
     const id=data.room&&ROOMS[data.room]?data.room:(ROOMS[STATE.room]?STATE.room:'r1');
-    STATE.room=id;STATE.visited[id]=true;
+    this.entryData={room:id,entry:data.entry||'start',dx:data.dx};
+    STATE.room=id;STATE.visited[id]=true;saveGame();   // 자동 저장 (폰은 브라우저가 쉽게 닫혀서)
     this.roomId=id;this.R=ROOMS[id];bgm(this.roomSong());this.map=buildRoomMap(id);this.cols=this.R.cols;this.lw=this.cols*T;
     this.drawWorld();this.makeAnims();makeMobAnims(this);
     this.solids=[];this.oneways=[];this.buildCollision();
@@ -125,7 +126,8 @@ export class PlayScene extends Phaser.Scene{
     const ev=R.event&&!STATE.flags[R.event.id]?R.event:null;
     if(ev)this.time.delayedCall(ev.delay||500,()=>{if(this.leaving||this.overlayOpen())return;STATE.flags[ev.id]=true;this.openDialog('',ev.lines,()=>{if(data.tutorial)tut()})});
     else if(data.tutorial)tut();
-    if(!data.tutorial&&!data.quiet)this.toast(R.name,1800);
+    if(data.retry)this.toast('보스 방 입구에서 다시 도전해요',2400);
+    else if(!data.tutorial&&!data.quiet)this.toast(R.name,1800);
     if(window.onEquipChange)window.onEquipChange();
   }
 
@@ -781,6 +783,8 @@ export class PlayScene extends Phaser.Scene{
     this.banner('GAME OVER',0xff5a5a);
     this.time.delayedCall(1700,()=>{
       s.hp=this.mhp();s.mp=s.maxMp;
+      // 보스가 살아 있는 방에서 지면 그 방 입구에서 다시 (석상부터 걸어오지 않게)
+      const B=this.R.boss;if(B&&!bossDone(B.id||'king')){this.leaving=true;this.fadeCams(true,200,()=>this.scene.restart({...this.entryData,retry:true}));return}
       const room=STATE.save?STATE.save.room:'r1';
       this.leaving=true;this.fadeCams(true,200,()=>this.scene.restart({room,entry:STATE.save?'save':'start'}));
     });

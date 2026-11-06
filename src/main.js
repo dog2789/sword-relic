@@ -9,7 +9,7 @@ import {CustomizeScene} from './scenes/CustomizeScene.js';
 import {STATE,newGame} from './state.js';
 import {ITEMS} from './data/items.js';
 import {loadFonts} from './fonts.js';
-import {setMuted,isMuted} from './sfx.js';
+import {setMuted,isMuted,setVolume,getVolume} from './sfx.js';
 
 let game;
 /* 폰 화면 */
@@ -98,12 +98,23 @@ if(MOBILE){['contextmenu','selectstart','dblclick'].forEach(t=>document.addEvent
   // 조작판을 누른 손가락이 Phaser까지 가지 않게 (Phaser는 캔버스 밖 터치도 받아서, 가로 화면에서 버튼 아래 메뉴 줄이 같이 눌림)
   document.querySelector('.pad').addEventListener('touchstart',e=>{if(e.target!==e.currentTarget)e.preventDefault()},{passive:false})}
 
-/* 소리 켜기/끄기 (효과음 + 배경음악, 브라우저에 기억됨) */
-const muteBtn=document.getElementById('mute');
-const muteLabel=()=>{muteBtn.textContent=isMuted()?'소리 켜기':'소리 끄기'};muteLabel();
-muteBtn.addEventListener('click',e=>{setMuted(!isMuted());muteLabel();padMuteLabel();e.currentTarget.blur();window.focus()});
-const padMute=document.getElementById('padmute'),padMuteLabel=()=>{document.getElementById('ic-snd').src=isMuted()?SND_OFF:SND_ON;padMute.querySelector('span').textContent=isMuted()?'꺼짐':'소리';padMute.classList.toggle('off',isMuted())};padMuteLabel();
-padMute.addEventListener('pointerdown',e=>{e.preventDefault();setMuted(!isMuted());muteLabel();padMuteLabel()});
+/* 설정 창: 소리 끄기·배경음악·효과음 음량, 폰은 버튼 크기 (모두 브라우저에 기억됨). 여는 동안 게임은 멈춤 */
+const dlg=document.getElementById('setdlg'),$=id=>document.getElementById(id);
+const padMute=$('padmute'),padMuteLabel=()=>{$('ic-snd').src=isMuted()?SND_OFF:SND_ON;padMute.classList.toggle('off',isMuted())};padMuteLabel();
+const setBS=v=>{document.body.style.setProperty('--bs',v);$('set-bs').querySelectorAll('button').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.v===String(v))))};
+try{const v=parseFloat(localStorage.getItem('sr_bs'));setBS([0.85,1,1.15].includes(v)?v:1)}catch(_){setBS(1)}
+const showVol=()=>{for(const k of ['m','f']){const n=Math.round(getVolume(k)*100);$('set-'+k).value=n;$('set-'+k+'-v').textContent=n}$('set-mute').checked=isMuted()};
+const openSet=()=>{if(dlg.open)return;showVol();dlg.showModal();if(game)game.pause()};
+const closeSet=()=>{if(dlg.open)dlg.close()};
+dlg.addEventListener('close',()=>{if(game)game.resume();window.focus()});
+dlg.addEventListener('click',e=>{if(e.target===dlg)closeSet()});   // 바깥(어두운 곳) 누르면 닫힘
+dlg.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();closeSet()}});
+$('set-close').addEventListener('click',closeSet);
+$('set-mute').addEventListener('change',e=>{setMuted(e.target.checked);padMuteLabel()});
+for(const k of ['m','f'])$('set-'+k).addEventListener('input',e=>{setVolume(k,e.target.value/100);$('set-'+k+'-v').textContent=e.target.value});
+$('set-bs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;setBS(parseFloat(b.dataset.v));try{localStorage.setItem('sr_bs',b.dataset.v)}catch(_){}});
+$('mute').addEventListener('click',e=>{e.currentTarget.blur();openSet()});
+padMute.addEventListener('pointerdown',e=>{e.preventDefault();openSet()});
 
 /* 처음부터: 두 번 눌러야 실행 (실수 방지) */
 const ng=document.getElementById('newgame');let ngArm=0;

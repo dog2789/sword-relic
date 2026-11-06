@@ -55,7 +55,7 @@
   <div class="gear" role="group" aria-label="장비 미리보기">
     <span class="gear-label">테스트</span>
     <button id="testgear" class="gbtn" type="button">장비 모두 받기</button>
-    <button id="mute" class="gbtn" type="button">소리 끄기</button>
+    <button id="mute" class="gbtn" type="button">설정</button>
     <button id="newgame" class="gbtn danger" type="button">처음부터</button>
   </div>
 
@@ -73,7 +73,7 @@
       <div class="tools">
         <button class="pbtn slot tool" data-k="menu" aria-label="장비창"><img id="ic-equip" alt=""><span>장비</span></button>
         <button class="pbtn slot tool" data-k="map" aria-label="지도"><img id="ic-map" alt=""><span>지도</span></button>
-        <button class="pbtn slot tool" id="padmute" type="button" aria-label="소리"><img id="ic-snd" alt=""><span>소리</span></button>
+        <button class="pbtn slot tool" id="padmute" type="button" aria-label="설정"><img id="ic-snd" alt=""><span>설정</span></button>
       </div>
     </div>
     <div class="act">
@@ -161,6 +161,15 @@
   </section>
 </div>
 
+<dialog id="setdlg" class="setdlg" aria-labelledby="set-title">
+  <h2 id="set-title">설정</h2>
+  <label class="srow"><span>소리 끄기</span><input type="checkbox" id="set-mute"></label>
+  <label class="srow"><span>배경음악</span><input type="range" id="set-m" min="0" max="100" step="5"><output id="set-m-v"></output></label>
+  <label class="srow"><span>효과음</span><input type="range" id="set-f" min="0" max="100" step="5"><output id="set-f-v"></output></label>
+  <div class="srow mobonly"><span>버튼 크기</span><div class="seg" id="set-bs" role="radiogroup" aria-label="버튼 크기">
+    <button type="button" role="radio" data-v="0.85">작게</button><button type="button" role="radio" data-v="1">보통</button><button type="button" role="radio" data-v="1.15">크게</button></div></div>
+  <button type="button" class="gbtn sclose" id="set-close">닫기</button>
+</dialog>
 <script type="module" src="/src/main.js"></script>
 </body>
 </html>

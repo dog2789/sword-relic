@@ -5,16 +5,20 @@ let ctx=null,master=null,noiseBuf=null,musicBus=null;
 const last={};
 let muted=false;
 try{muted=localStorage.getItem('sr_mute')==='1'}catch(_){}
+// 음량 (0~1): m 배경음악, f 효과음
+const vol={m:1,f:1};
+try{const v=JSON.parse(localStorage.getItem('sr_vol')||'{}');for(const k in vol)if(typeof v[k]==='number')vol[k]=Math.min(1,Math.max(0,v[k]))}catch(_){}
+const applyVol=()=>{if(master)master.gain.value=muted?0:0.35*vol.f;if(musicBus)musicBus.gain.value=muted?0:vol.m};
 
 function init(){
   if(ctx)return ctx;
   const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;
   // 'interactive'(기본값)는 버퍼가 아주 작아서 컴퓨터가 잠깐만 바빠도 소리가 비고 지지직거림 → 조금 넉넉한 'balanced'
   try{ctx=new AC({latencyHint:'balanced'})}catch(_){ctx=new AC()}
-  master=ctx.createGain();master.gain.value=muted?0:0.35;// 마지막에 리미터: 효과음과 음악이 한꺼번에 겹쳐도 소리가 찢어지지(뿌직) 않게 눌러 줌
+  master=ctx.createGain();// 마지막에 리미터: 효과음과 음악이 한꺼번에 겹쳐도 소리가 찢어지지(뿌직) 않게 눌러 줌
   const lim=ctx.createDynamicsCompressor();lim.threshold.value=-8;lim.knee.value=4;lim.ratio.value=16;lim.attack.value=0.002;lim.release.value=0.12;lim.connect(ctx.destination);
   master.connect(lim);
-  musicBus=ctx.createGain();musicBus.gain.value=muted?0:1;musicBus.connect(lim);
+  musicBus=ctx.createGain();musicBus.connect(lim);applyVol();
   // 하얀 잡음 1초짜리를 한 번 만들어 두고 계속 재사용
   noiseBuf=ctx.createBuffer(1,ctx.sampleRate,ctx.sampleRate);
   const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
@@ -114,5 +118,7 @@ export function sfx(name,opt){
   try{SOUNDS[name]&&SOUNDS[name](opt)}catch(_){}
 }
 /* 소리 켜고 끄기 (나중에 설정 메뉴에서 쓰기용) */
-export function setMuted(v){muted=!!v;try{localStorage.setItem('sr_mute',muted?'1':'0')}catch(_){};if(master)master.gain.value=muted?0:0.35;if(musicBus)musicBus.gain.value=muted?0:1}
+export function setMuted(v){muted=!!v;try{localStorage.setItem('sr_mute',muted?'1':'0')}catch(_){};applyVol()}
+export function setVolume(k,v){vol[k]=Math.min(1,Math.max(0,v));try{localStorage.setItem('sr_vol',JSON.stringify(vol))}catch(_){};applyVol()}
+export const getVolume=k=>vol[k];
 export function isMuted(){return muted}

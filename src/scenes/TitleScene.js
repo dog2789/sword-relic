@@ -53,7 +53,7 @@ export class TitleScene extends Phaser.Scene{
     const o=this.opts[this.sel];
     this.cameras.main.fadeOut(300,0,0,0);
     this.cameras.main.once('camerafadeoutcomplete',()=>{
-      if(o==='이어하기'&&loadGame())this.scene.start('play',{room:STATE.save.room,entry:'save'});
+      if(o==='이어하기'&&loadGame())this.scene.start('play',STATE.save?{room:STATE.save.room,entry:'save'}:{room:'r1',entry:'start'});
       else{newGame();this.scene.start('custom')}
     });
   }
