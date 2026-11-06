@@ -12,6 +12,7 @@ npm run build:single  # dist-single/index.html 한 파일 빌드 (Phaser는 CDN)
 ```
 
 - `main` 브랜치에 push하면 Vercel(https://sword-relic.vercel.app/)에 자동 배포됨.
+- 일반 방문자는 제목·게임·소리 버튼만 보임. 설명·조작·지역·장비 카드와 테스트 버튼은 주소 뒤 `?dev`로 켬 (`?dev=0` 끔, localStorage `sr_dev`).
 - 바뀐 게 생기면: 수정 → `npx vite build`로 빌드 확인 → 직접 해 보기(또는 아래 헤드리스 확인) → 커밋·push.
 
 ## 구조

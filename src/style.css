@@ -163,3 +163,5 @@ body.mobile .pad{display:block;touch-action:none}
     background:repeating-linear-gradient(90deg,#8e87a3 0 4px,transparent 4px 9px);opacity:.8;pointer-events:none}
   body.mobile .slots,body.mobile .tools{border-color:#8e87a3;box-shadow:0 2px 0 #e6e1ef}
 }
+/* 일반 방문자는 제목·게임 화면·소리 버튼만 (개발자 보기는 index.html의 ?dev) */
+html:not(.dev) :is(.eyebrow,.sub,.cards,.gear-label,#testgear,#newgame){display:none}
