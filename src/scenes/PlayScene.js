@@ -152,7 +152,7 @@ export class PlayScene extends Phaser.Scene{
   makeAnims(){
     const mk=(key,frames,rate)=>{if(!this.anims.exists(key))this.anims.create({key,frames:frames.map(f=>({key:f})),frameRate:rate,repeat:-1})};
     mk('hero_idle',['hero_idle0','hero_idle1'],2.5);mk('hero_run',['hero_run0','hero_idle0','hero_run1','hero_idle0'],10);
-    mk('slime_idle',['slime0','slime1'],3);mk('king_idle',['kslime0','kslime1'],2.5);
+    mk('slime_idle',['slime0','slime1'],3);mk('slime_cave_idle',['slime_cave0','slime_cave1'],3);mk('slime_ice_idle',['slime_ice0','slime_ice1'],3);mk('king_idle',['kslime0','kslime1'],2.5);
   }
   buildCollision(){
     const m=this.map,C=this.cols,rects=[];let prev=[];
@@ -730,11 +730,11 @@ export class PlayScene extends Phaser.Scene{
     const k=!!d.king,e=this.enemies.create(d.x,d.y,k?'kslime0':'slime0');
     e.body.setSize(12,8).setOffset(1,k?5:2);if(k)e.setScale(2);
     e.setCollideWorldBounds(true).setDepth(k?6:5);
-    if(this.R.theme==='cave'&&!k){e.baseTint=0xc8a0ff;e.setTint(e.baseTint)}
-    if(this.R.theme==='ice'&&!k){e.baseTint=0xa8e0ff;e.setTint(e.baseTint)}
+    const sv=!k&&{cave:'slime_cave',ice:'slime_ice'}[this.R.theme];   // 지역 슬라임은 따로 그린 그림
+    if(sv)e.setTexture(sv+'0');
     const tr=k?1:tierOf(this),shp=k?340:Math.round(34*tr);
     Object.assign(e,{def:d,king:k,hp:shp,maxHp:shp,dmg:k?18:Math.round(8*(0.6+0.4*tr)),exp:k?50:Math.round(6*tr),arm:k?2:Math.round((tr-1)*6),nm:k?'킹슬라임':({cave:'동굴 슬라임',ice:'얼음 슬라임'}[this.R.theme]||'슬라임'),nextHop:this.time.now+800+Math.random()*1200,stun:0,wasOnG:false,lastVy:0});
-    e.play(k?'king_idle':'slime_idle');
+    e.play(k?'king_idle':sv?sv+'_idle':'slime_idle');
     e.setAlpha(0);this.tweens.add({targets:e,alpha:1,duration:400});
   }
   updateEnemies(dt,now){

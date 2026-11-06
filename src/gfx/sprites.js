@@ -86,6 +86,9 @@ export function buildTextures(sc){
   }
   for(const f in HERO_FRAMES)if(!sc.textures.exists('hero_'+f))sc.textures.createCanvas('hero_'+f,HERO_W,HERO_H);
   add('slime0',fromRows(SL0,SPAL));add('slime1',fromRows(SL1,SPAL));
+  // 지역 슬라임은 색을 곱해 칠하면 초록빛이 남아서 따로 그림: 동굴은 어둡게, 얼음은 하늘색
+  const SPAL_CAVE={k:'#05080a',g:'#36503f',G:'#1b2b22',w:'#8fb0a0'},SPAL_ICE={k:'#0e2a48',g:'#8fd8ff',G:'#3f8fd0',w:'#ffffff'};
+  add('slime_cave0',fromRows(SL0,SPAL_CAVE));add('slime_cave1',fromRows(SL1,SPAL_CAVE));add('slime_ice0',fromRows(SL0,SPAL_ICE));add('slime_ice1',fromRows(SL1,SPAL_ICE));
   add('kslime0',fromRows([...CROWN,...SL0],KPAL));add('kslime1',fromRows([...CROWN,...SL1],KPAL));
   add('wave',arcTex(10,4,-70,70,['#ffffff','#ffe27a','#ff9a3a']));
   add('spark',fromRows(["...w...","...w...","..www..","wwwwwww","..www..","...w...","...w..."],{w:'#ffffff'}));
