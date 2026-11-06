@@ -137,6 +137,8 @@ export class PlayScene extends Phaser.Scene{
   drawWorld(){
     const id=this.roomId,R=this.R,th=R.theme;
     const far={cave:drawCaveFar,castle:drawCastleFar,ice:drawIceFar,desert:drawDesertFar,lava:drawLavaFar,sky:drawSkyFar,demon:drawDemonFar}[th]||drawFar,mid={cave:drawCaveMid,treetop:drawTreetopMid,castle:drawCastleMid,ice:drawIceMid,desert:drawDesertMid,lava:drawLavaMid,sky:drawSkyMid,demon:drawDemonMid}[th]||drawMid;
+    // 지나온 방의 배경·지형 그림은 지움 (방이 149개라 다 쌓아 두면 폰 그래픽 메모리가 모자람). 다시 오면 새로 그림
+    this.textures.getTextureKeys().forEach(k=>{if(/^(far|mid|lvl)_/.test(k)&&k.slice(4)!==id)this.textures.remove(k)});
     if(!this.textures.exists('far_'+id))this.textures.addCanvas('far_'+id,far(this.lw));
     if(!this.textures.exists('mid_'+id))this.textures.addCanvas('mid_'+id,mid(this.lw));
     if(!this.textures.exists('lvl_'+id))this.textures.addCanvas('lvl_'+id,drawLevel(this.map,this.cols,R.seed,R.deco,th));
