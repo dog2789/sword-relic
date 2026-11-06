@@ -16,7 +16,8 @@ function fresh(){
     broken:{},      // 부순 벽
     warps:{},       // 등록한 워프 {워프id: 방id}
     items:{potion:2,ether:1},   // 소모품 개수
-    quick:['potion','ether',null,null], // 퀵슬롯 1~4
+    quick:['potion','ether','elixir','power'], // 퀵슬롯 1~4
+    powerT:0,       // 힘의 약 남은 시간(초)
     flags:{},       // 대화 등 이벤트 기록
     gold:0,         // 골드
     wlv:{},         // 무기 강화 단계 {무기id: 1~8}
@@ -42,7 +43,7 @@ export function hasSave(){
 export function loadGame(){
   try{
     const v=JSON.parse(localStorage.getItem(KEY)||'null');
-    if(v&&v.stats){const f=fresh();for(const k in STATE)delete STATE[k];Object.assign(STATE,f,v);if(!STATE.bosses)STATE.bosses={};for(const k of ['wlv','keys'])if(!STATE[k])STATE[k]={};if(STATE.gold==null)STATE.gold=0;if(STATE.time==null)STATE.time=0;return true}
+    if(v&&v.stats){const f=fresh();for(const k in STATE)delete STATE[k];Object.assign(STATE,f,v);if(!STATE.bosses)STATE.bosses={};if(!STATE.quick[2])STATE.quick[2]='elixir';if(!STATE.quick[3])STATE.quick[3]='power';for(const k of ['wlv','keys'])if(!STATE[k])STATE[k]={};if(STATE.gold==null)STATE.gold=0;if(STATE.time==null)STATE.time=0;return true}
   }catch(_){}
   return false;
 }

@@ -28,7 +28,7 @@ npm run build:single  # dist-single/index.html 한 파일 빌드 (Phaser는 CDN)
   - 출구: `left/right`는 방 id, `up/down`은 `{to, tx}`. `grid`는 미니맵 좌표. 모든 방 높이 14줄, 타일 16px.
   - `scene.restart`로 방을 다시 만들기 때문에 `create()`에서 상태를 꼭 초기화할 것 (같은 씬 인스턴스를 재사용함).
 - `src/world/meadow.js`: 지역 테마별 타일과 배경 (meadow, treetop, cave, castle, ice, desert, lava, sky, demon), 지도 색 `THEME_COL`.
-- `src/data/items.js`: 장비(`ITEMS`), 세트(`SETS`: 철 기사, 흑철, 청기사, 흑월, 적월, 용기사, 천공 기사, 마검사), 강화 비용.
+- `src/data/items.js`: 장비(`ITEMS`), 세트(`SETS`: 철 기사, 흑철, 청기사, 흑월, 적월, 용기사, 천공 기사, 마검사), 강화 비용. 대장간은 무기·투구·갑옷·신발 강화(`STATE.wlv`, 방어구는 `alvDef`·`alvCost`). 소모품 `CONSUMABLES`: 회복·마나 물약, 엘릭서, 힘의 약(`STATE.powerT` 30초, 공격 +30%), 귀환의 깃털(지도에서 X → 마지막 석상). 퀵슬롯 기본 1 회복 2 마나 3 엘릭서 4 힘의 약.
 - `src/gfx/hero.js`: 주인공 도트(문자열 한 글자 = 픽셀 하나, 글자 = 색 슬롯). 투구 모양 full | great | crown | horned | moon | bloodmoon | dragon | winged | demon, 갑옷 plate | heavy | spike | moon | dragon.
 - `src/gfx/sprites.js`: 아이템 아이콘, 검 모양, 몬스터 텍스처.
 - `src/state.js`: 진행 상황 저장 (localStorage `sr_save2`). 방에 들어올 때마다 자동 저장, 이어하기는 마지막 석상(없으면 r1). 보스가 살아 있는 방에서 지면 그 방 입구에서 다시. 이름 `STATE.name`(대사의 `{name}`과 말하는 사람 "나"가 이름으로 바뀜), 쓰러진 횟수 `deaths`는 마왕 엔딩 기록에 나옴.

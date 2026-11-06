@@ -200,6 +200,7 @@ export const PlayUI={
     t(302,MOBILE?30:13,'탐험률 '+this.explorePct()+'%',{color:'#8fe3ff'}).setOrigin(1,0);
     t(18,30,'방 '+ids.filter(i=>STATE.visited[i]).length+'/'+ids.length+'    보물 '+tr.got+'/'+tr.all+'    워프 '+wpOn.length+'/'+wp.length,{color:'#cfc8e4'});
     t(18,134,'현재 위치: '+this.R.name,{color:'#ffe27a'});
+    if(STATE.items.feather_ret>0)t(302,MOBILE?42:30,(MOBILE?'점프 버튼':keyText('X'))+' 귀환의 깃털 ('+STATE.items.feather_ret+')',{color:'#cfc8e4'}).setOrigin(1,0);
     // 폰: 닫기는 오른쪽 위 (아래쪽은 공격·점프 버튼에 가려짐)
     if(MOBILE)this.addCloseBtn(304,11,M.objs,()=>this.closeMap());else t(302,134,'M 닫기',{color:'#8f86ab'}).setOrigin(1,0);
     const lg=[['cur','현재'],['save','세이브'],['warp','워프'],['chest','보물'],['boss','보스']];
@@ -246,7 +247,13 @@ export const PlayUI={
     const M=this.mapv,g=M.g;g.clear();this.paintMap(g,time,null);
     M.legend.forEach(([k],i)=>{if(k==='cur')g.fillStyle(0xffe27a,1).fillRect(22+i*56,151,5,5);else this.mapMark(g,k,23+i*56,152)});
   },
-  updateMap(time){const n=this.navPress();if(n.back||n.ok){this.closeMap();return}this.drawMap(time)},
+  updateMap(time){const n=this.navPress();if(n.x&&this.useFeather())return;if(n.back||n.ok){this.closeMap();return}this.drawMap(time)},
+  /* 귀환의 깃털: 지도에서 점프 키로 마지막 세이브 석상(없으면 고향 마을)으로 */
+  useFeather(){
+    if(!(STATE.items.feather_ret>0)){this.toast('귀환의 깃털이 없어요 (잡화점에서 팔아요)',1600);return false}
+    if(this.bossLock){this.toast('보스와 싸우는 중엔 쓸 수 없어요',1600);return false}
+    STATE.items.feather_ret--;this.closeMap();this.sparkEm.explode(20,this.player.x,this.player.y);
+    const sv=STATE.save;this.goRoom(sv?sv.room:'v1',sv?'save':'start');return true},
   closeMap(){const M=this.mapv;if(!M)return;M.objs.forEach(o=>o.destroy());this.mapv=null;this.resumeWorld();this.prev=this.heldNow()},
 
   /* ---------- 퀵슬롯 ---------- */
@@ -269,11 +276,14 @@ export const PlayUI={
   useQuick(i){
     const id=STATE.quick[i],c=CONSUMABLES[id],p=this.player,s=this.stats;if(!c||p.dead||this.overlayOpen())return;
     if(!(STATE.items[id]>0)){this.popText(p.x,p.y-14,'NONE',0x8f86ab);return}
-    if(c.hp&&s.hp>=this.mhp()&&!c.mp){this.popText(p.x,p.y-14,'FULL',0x8f86ab);return}
-    if(c.mp&&s.mp>=s.maxMp&&!c.hp){this.popText(p.x,p.y-14,'FULL',0x8f86ab);return}
+    if(c.ret){this.popText(p.x,p.y-14,'지도(M)에서 써요',0xcfc8e4);return}
+    // 힘의 약: 30초 동안 공격력 +30% (STATE에 남은 시간을 둬서 방을 옮겨도 이어짐)
+    if(c.power){STATE.items[id]--;STATE.powerT=c.power;this.popText(p.x,p.y-14,'POWER UP',0xff9a3a);this.fireEm.explode(14,p.x,p.y);return}
+    const needHp=c.hp&&s.hp<this.mhp(),needMp=c.mp&&s.mp<s.maxMp;
+    if(!needHp&&!needMp){this.popText(p.x,p.y-14,'FULL',0x8f86ab);return}
     STATE.items[id]--;
-    if(c.hp){s.hp=Math.min(this.mhp(),s.hp+c.hp);this.popNum(p.x,p.y-12,c.hp,0x7cff8a,false)}
-    if(c.mp){s.mp=Math.min(s.maxMp,s.mp+c.mp);this.popNum(p.x,p.y-12,c.mp,0x8ab0ff,false)}
+    if(needHp){const h=Math.min(this.mhp()-s.hp,c.hp);s.hp+=h;this.popNum(p.x,p.y-12,Math.round(h),0x7cff8a,false)}
+    if(needMp){const m=Math.min(s.maxMp-s.mp,c.mp);s.mp+=m;this.popNum(p.x,p.y-(needHp?22:12),Math.round(m),0x8ab0ff,false)}
     this.goldEm.explode(10,p.x,p.y);
   }
 };

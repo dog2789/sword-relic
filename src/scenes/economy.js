@@ -2,13 +2,13 @@
    PlayScene에 섞어 쓰는 함수 모음 (Object.assign(PlayScene.prototype, Economy)) */
 import Phaser from 'phaser';
 import {W,H,HUD,MOBILE,keyText} from '../config.js';
-import {ITEMS,CONSUMABLES,WLV_MAX,wlvCost,wlvAtk,weaponName} from '../data/items.js';
+import {ITEMS,CONSUMABLES,WLV_MAX,wlvCost,wlvAtk,weaponName,alvDef,alvCost,UPGRADABLE,equipBonus} from '../data/items.js';
 import {STATE} from '../state.js';
 import {sfx} from '../sfx.js';
 import {F9,F11} from '../fonts.js';
 
 const fix=(o,d=210)=>o.scene.toOvl(o,d);
-const SHOP=[{id:'potion',price:30},{id:'ether',price:40}];
+const SHOP=[{id:'potion',price:30},{id:'ether',price:40},{id:'elixir',price:150},{id:'power',price:120},{id:'feather_ret',price:80}];
 
 export const Economy={
   /* 몬스터가 떨어뜨리는 골드: 값만큼 동전 1~4개로 나눠서 튀어나옴 */
@@ -71,15 +71,16 @@ export const Economy={
   },
   closeList(){const L=this.listm;if(!L)return;L.objs.forEach(o=>o.destroy());this.listm=null;this.resumeWorld();this.prev=this.heldNow()},
 
-  /* ---------- 대장장이: 가진 무기를 골드로 강화 (+1 ~ +8) ---------- */
+  /* ---------- 대장장이: 가진 무기·투구·갑옷·신발을 골드로 강화 (+1 ~ +8). 장착한 것부터 ---------- */
   openSmith(){
-    this.openList('대장간 · 무기 강화',()=>STATE.bag.filter(id=>ITEMS[id]&&ITEMS[id].slot==='weapon').map(id=>{
-      const it=ITEMS[id],lv=(STATE.wlv||{})[id]||0,max=lv>=WLV_MAX,cost=max?0:wlvCost(lv),ok=!max&&STATE.gold>=cost;
-      return{id,icon:'icon_'+id,label:weaponName(id)+(this.equip.weapon===id?'  (장착)':''),right:max?'최대':cost+' G',ok,
-        desc:max?'더 이상 강화할 수 없을 만큼 단련된 검이다.':'공격 '+((it.atk||0)+wlvAtk(lv))+' → '+((it.atk||0)+wlvAtk(lv+1))+'   '+(ok?'Z를 누르면 강화해요':'골드가 모자라요')}}),
+    const cost=(it,lv)=>it.slot==='weapon'?wlvCost(lv):alvCost(lv);
+    this.openList('대장간 · 장비 강화',()=>STATE.bag.filter(id=>ITEMS[id]&&UPGRADABLE.includes(ITEMS[id].slot)).sort((a,b)=>(this.equip[ITEMS[b].slot]===b)-(this.equip[ITEMS[a].slot]===a)||UPGRADABLE.indexOf(ITEMS[a].slot)-UPGRADABLE.indexOf(ITEMS[b].slot)).map(id=>{
+      const it=ITEMS[id],lv=(STATE.wlv||{})[id]||0,max=lv>=WLV_MAX,c=max?0:cost(it,lv),ok=!max&&STATE.gold>=c,w=it.slot==='weapon';
+      return{id,icon:'icon_'+id,label:weaponName(id)+(this.equip[it.slot]===id?'  (장착)':''),right:max?'최대':c+' G',ok,
+        desc:max?'더 이상 강화할 수 없을 만큼 단련됐다.':(w?'공격 '+((it.atk||0)+wlvAtk(lv))+' → '+((it.atk||0)+wlvAtk(lv+1)):'방어 '+((it.def||0)+alvDef(it.slot,lv))+' → '+((it.def||0)+alvDef(it.slot,lv+1)))+'   '+(ok?'Z를 누르면 강화해요':'골드가 모자라요')}}),
     (row,s)=>{
-      const lv=(STATE.wlv||{})[row.id]||0,cost=wlvCost(lv);if(STATE.gold<cost)return;
-      STATE.gold-=cost;(STATE.wlv||(STATE.wlv={}))[row.id]=lv+1;
+      const lv=(STATE.wlv||{})[row.id]||0,c=cost(ITEMS[row.id],lv);if(STATE.gold<c)return;
+      STATE.gold-=c;(STATE.wlv||(STATE.wlv={}))[row.id]=lv+1;s.bonus=equipBonus(s.equip);
       s.shake(90,0.006);s.goldEm.explode(18,s.player.x,s.player.y-6);s.sparkEm.explode(10,s.player.x,s.player.y-6);
       s.toast(weaponName(row.id)+'! 이제 조금 더 강해졌을 거야.',2400);
     },'#ffb04a');

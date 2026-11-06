@@ -137,7 +137,10 @@ export const ITEMS={
 /* 소모품 (퀵슬롯 1~4) */
 export const CONSUMABLES={
   potion:{name:'회복 물약',desc:'HP 40 회복',hp:40,col:['#ff5a6a','#a02a3a']},
-  ether:{name:'마나 물약',desc:'MP 20 회복',mp:20,col:['#5a9aff','#2a4aa0']}
+  ether:{name:'마나 물약',desc:'MP 20 회복',mp:20,col:['#5a9aff','#2a4aa0']},
+  elixir:{name:'엘릭서',desc:'HP와 MP를 모두 회복',hp:9999,mp:9999,col:['#ffe27a','#c08a1a']},
+  power:{name:'힘의 약',desc:'30초 동안 공격력 +30% (방을 옮겨도 이어짐)',power:30,col:['#ff8a2a','#a0300a']},
+  feather_ret:{name:'귀환의 깃털',desc:'지도(M)를 열고 X: 마지막 세이브 석상으로 돌아감 (보스전 중엔 못 씀)',ret:true,shape:'feather',col:['#ffffff','#9ab0c8']}
 };
 
 export const SETS={
@@ -151,11 +154,14 @@ export const SETS={
   abyss:{name:'마검사 세트',need:4,bonus:{atk:25,def:14,hp:180},desc:'공격 +25, 방어 +14, 최대 HP +180'}
 };
 
-/* 무기 강화 (대장간): +1 ~ +8, 한 단계마다 공격 +3 */
+/* 장비 강화 (대장간): +1 ~ +8. 무기는 단계마다 공격 +3, 투구·신발은 방어 +1, 갑옷은 방어 +2 (비용은 무기의 60%) */
 export const WLV_MAX=8;
 const WLV_COST=[60,120,200,320,480,700,950,1300];
 export const wlvCost=lv=>WLV_COST[Math.min(lv,WLV_COST.length-1)];
 export const wlvAtk=lv=>lv*3;
+export const alvDef=(slot,lv)=>lv*(slot==='armor'?2:1);
+export const alvCost=lv=>Math.round(wlvCost(lv)*0.6/10)*10;
+export const UPGRADABLE=['weapon','helm','armor','boots'];
 let _st=null;export const bindState=s=>{_st=s};   // state.js가 연결 (서로 import 하면 순환이 생겨서)
 export const weaponName=id=>{const lv=((_st&&_st.wlv)||{})[id]||0;return ITEMS[id].name+(lv?' +'+lv:'')};
 
@@ -170,6 +176,7 @@ export function equipBonus(equip){
   const b={atk:0,def:0,hp:0,airJumps:0,speed:0,noSand:false,fireRes:false,noSlip:false,wallCling:false,sets:[]},count={};
   for(const s of SLOTS){const it=ITEMS[equip[s]];if(!it)continue;
     b.atk+=it.atk||0;b.def+=it.def||0;b.hp+=it.hp||0;
+    if(s!=='weapon')b.def+=alvDef(s,((_st&&_st.wlv)||{})[equip[s]]||0);   // 방어구 강화
     const e=it.effects||{};b.airJumps+=e.airJumps||0;b.speed+=e.speed||0;if(e.noSlip)b.noSlip=true;if(e.noSand)b.noSand=true;if(e.fireRes)b.fireRes=true;if(e.wallCling)b.wallCling=true;if(e.windRes)b.windRes=true;if(e.guard)b.guard=true;
     if(it.set)count[it.set]=(count[it.set]||0)+1}
   for(const k in count){const S=SETS[k];if(S&&count[k]>=S.need){b.sets.push(k);b.atk+=S.bonus.atk||0;b.def+=S.bonus.def||0;b.hp+=S.bonus.hp||0}}

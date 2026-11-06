@@ -11,7 +11,7 @@
 <meta name="theme-color" content="#000000">
 <title>소드 레릭 (SWORD RELIC) - 픽셀 메트로베니아 웹게임</title>
 <!-- 검색·공유용 정보. 도메인을 바꾸면 이 블록의 https://swordrelic.com와 public/robots.txt, public/sitemap.xml을 같이 바꿀 것 -->
-<meta name="description" content="고향을 떠나 전설의 검을 찾아 나서는 픽셀 메트로베니아 웹게임. 초원부터 마왕성까지 104개의 방, 보스 8마리, 퍼즐과 무기마다 다른 스킬. 설치 없이 PC·모바일 브라우저에서 바로 플레이.">
+<meta name="description" content="고향을 떠나 전설의 검을 찾아 나서는 픽셀 메트로베니아 웹게임. 초원부터 마왕성까지 9개 지역 149개의 방, 보스 10마리, 퍼즐과 함정, 무기마다 다른 스킬. 설치 없이 PC·모바일 브라우저에서 바로 플레이.">
 <meta name="keywords" content="소드 레릭, SWORD RELIC, 웹게임, 브라우저 게임, 픽셀 게임, 도트 게임, 메트로베니아, 액션 RPG, 플랫포머, 무료 게임">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="canonical" href="https://swordrelic.com/">
@@ -20,16 +20,16 @@
 <meta property="og:locale" content="ko_KR">
 <meta property="og:url" content="https://swordrelic.com/">
 <meta property="og:title" content="소드 레릭 (SWORD RELIC) - 픽셀 메트로베니아 웹게임">
-<meta property="og:description" content="전설의 검을 찾아 떠나는 모험. 104개의 방, 보스 8마리. 브라우저에서 바로 플레이.">
+<meta property="og:description" content="전설의 검을 찾아 떠나는 모험">
 <meta property="og:image" content="https://swordrelic.com/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="소드 레릭: 초원에서 슬라임에게 검을 휘두르는 주인공">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="소드 레릭 (SWORD RELIC) - 픽셀 메트로베니아 웹게임">
-<meta name="twitter:description" content="전설의 검을 찾아 떠나는 모험. 104개의 방, 보스 8마리. 브라우저에서 바로 플레이.">
+<meta name="twitter:description" content="전설의 검을 찾아 떠나는 모험">
 <meta name="twitter:image" content="https://swordrelic.com/og.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"소드 레릭 (SWORD RELIC)","alternateName":"SWORD RELIC","url":"https://swordrelic.com/","image":"https://swordrelic.com/og.png","description":"고향을 떠나 전설의 검을 찾아 나서는 픽셀 메트로베니아 웹게임. 초원부터 마왕성까지 104개의 방, 보스 8마리, 퍼즐과 무기마다 다른 스킬. 설치 없이 PC·모바일 브라우저에서 바로 플레이.","genre":["액션","어드벤처","메트로베니아","플랫포머"],"gamePlatform":["Web browser","PC","Mobile"],"applicationCategory":"Game","operatingSystem":"Any","inLanguage":"ko","playMode":"SinglePlayer","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"소드 레릭 (SWORD RELIC)","alternateName":"SWORD RELIC","url":"https://swordrelic.com/","image":"https://swordrelic.com/og.png","description":"고향을 떠나 전설의 검을 찾아 나서는 픽셀 메트로베니아 웹게임. 초원부터 마왕성까지 9개 지역 149개의 방, 보스 10마리, 퍼즐과 함정, 무기마다 다른 스킬. 설치 없이 PC·모바일 브라우저에서 바로 플레이.","genre":["액션","어드벤처","메트로베니아","플랫포머"],"gamePlatform":["Web browser","PC","Mobile"],"applicationCategory":"Game","operatingSystem":"Any","inLanguage":"ko","playMode":"SinglePlayer","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
 <!-- 주소 하나로 모으기: vercel.app 저장 공간은 swordrelic.com과 따로라서, 들고 넘어감. 받는 쪽은 플레이 시간이 긴 세이브를 남기고 설정은 없을 때만 씀 -->
 <script>try{var H='swordrelic.com';
 if(location.hostname==='sword-relic.vercel.app'){var d={};for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k.indexOf('sr_')===0)d[k]=localStorage.getItem(k)}
@@ -64,8 +64,8 @@ else if(location.hash.indexOf('#move=')===0){var m=JSON.parse(decodeURIComponent
   <header>
     <div class="eyebrow">PROTOTYPE<span class="devonly"> · STAGE 12</span></div>
     <h1>SWORD RELIC</h1>
-    <p class="sub lead">고향을 떠나 전설의 검을 찾아 나서는 픽셀 메트로베니아. 설치 없이 브라우저에서 바로 플레이.</p>
-    <p class="sub">고향을 떠나 전설의 검을 찾아 나서는 모험. 초원·동굴·고성·얼음·사막·용암·하늘 성채·마왕성, 지역마다 13곳씩 104개 방, 보스 8마리, 퍼즐과 무기마다 다른 공격 이펙트, 그리고 마왕과의 마지막 결전까지.</p>
+    <p class="sub lead">고향을 떠나 전설의 검을 찾아 나서는 픽셀 메트로베니아. 9개 지역, 149개의 방, 보스 10마리. 설치 없이 브라우저에서 바로 플레이.</p>
+    <p class="sub">고향을 떠나 전설의 검을 찾아 나서는 모험. 초원·동굴·고성·얼음·사막·용암·하늘 성채·마왕성, 149개 방, 중간보스를 포함한 보스 10마리, 지역마다 다른 몬스터·퍼즐·함정, 무기마다 다른 공격과 스킬, 그리고 마왕과의 마지막 결전까지.</p>
   </header>
 
   <div id="stage">

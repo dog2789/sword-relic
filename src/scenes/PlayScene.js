@@ -373,7 +373,7 @@ export class PlayScene extends Phaser.Scene{
 
   /* ----- 장비 ----- */
   mhp(){return this.stats.maxHp+this.bonus.hp}
-  atkVal(){return this.stats.atk+this.bonus.atk+wlvAtk((STATE.wlv||{})[this.equip.weapon]||0)}
+  atkVal(){return Math.round((this.stats.atk+this.bonus.atk+wlvAtk((STATE.wlv||{})[this.equip.weapon]||0))*(STATE.powerT>0?1.3:1))}   // 힘의 약 +30%
   defVal(){return this.bonus.def}
   /* 점프는 최대 2단 (땅 점프 + 공중 1번) */
   maxAirJumps(){return Math.min(1,(STATE.abilities.djump?1:0)+this.bonus.airJumps)}
@@ -540,6 +540,7 @@ export class PlayScene extends Phaser.Scene{
     this.clouds.forEach((c,i)=>{c.bx+=dt*(3+i*1.5);if(c.bx>W+(this.lw-W)*0.15+60)c.bx=-60});
     if(!this.frozen){
       STATE.time=(STATE.time||0)+dt;
+      if(STATE.powerT>0){STATE.powerT-=dt;if(Math.random()<dt*8)this.fireEm.explode(1,this.player.x,this.player.y);if(STATE.powerT<=0)this.popText(this.player.x,this.player.y-14,'POWER DOWN',0x8f86ab)}
       if(!this.player.dead)this.updatePlayer(dt,inp,time);
       this.updateAttack(dt);this.updateSword();this.updateWaves(dt);this.updateSkills(dt);this.updateEnemies(dt,time);updateQuakes(this,dt);updateEShots(this,dt);
       if(!this.player.dead)this.physics.overlap(this.player,this.enemies,(pl,e)=>this.hurtPlayer(e));

@@ -75,7 +75,8 @@ function iconPal(it){
 function paintPix(x,rows,pal,ox,oy){rows.forEach((r,y)=>{for(let i=0;i<r.length;i++){const c=pal[r[i]];if(c){x.fillStyle=c;x.fillRect(ox+i,oy+y,1,1)}}})}
 export function buildTextures(sc){
   const add=(k,c)=>{if(!sc.textures.exists(k))sc.textures.addCanvas(k,c)};
-  for(const id in CONSUMABLES){const c=CONSUMABLES[id];add('icon_'+id,fromRows(POTION,{k:'#1a1020',c:'#c8a070',w:'#ffffff',r:c.col[0],R:c.col[1]}))}
+  const FEATHER=['......kk','.....krk','....krRk','...krRk.','..krRk..','.krRk...','kck.....','kk......'];
+  for(const id in CONSUMABLES){const c=CONSUMABLES[id];add('icon_'+id,fromRows(c.shape==='feather'?FEATHER:POTION,{k:'#1a1020',c:'#c8a070',w:'#ffffff',r:c.col[0],R:c.col[1]}))}
   for(const id in ITEMS){
     const it=ITEMS[id];if(it.hidden)continue;
     if(it.slot==='weapon'){
