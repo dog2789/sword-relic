@@ -5,6 +5,7 @@ const KEY='sr_save2';
 
 function fresh(){
   return{
+    name:'',        // 모험가 이름 (비면 '모험가')
     room:'r1',
     stats:{lv:1,hp:60,maxHp:60,mp:30,maxMp:30,exp:0,next:20,atk:8},
     equip:{...START_EQUIP},

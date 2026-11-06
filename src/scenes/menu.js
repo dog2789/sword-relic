@@ -51,7 +51,7 @@ export const MenuMixin={
       M.sk=M.t(22,156,'',{color:'#9ff0ff',wordWrap:{width:274},lineSpacing:0},false);
     }else{
       img(48,74,'hero_idle0').setScale(2);
-      M.t(48,96,'모험가',{color:'#ffe27a'},false).setOrigin(0.5,0);
+      M.t(48,96,STATE.name||'모험가',{color:'#ffe27a'},false).setOrigin(0.5,0);
       const s=this.stats,b=this.bonus,ex=this.explorePct?this.explorePct():0;
       M.t(90,36,['LV','HP','MP','공격','방어','EXP','골드','시간','탐험률'].join('\n'),{color:'#8f86ab',lineSpacing:1},false);
       M.t(130,36,[s.lv,Math.ceil(s.hp)+' / '+this.mhp(),Math.floor(s.mp)+' / '+s.maxMp,this.atkVal()+'  (+'+(this.atkVal()-s.atk)+')',this.defVal(),s.exp+' / '+s.next,(STATE.gold||0)+' G',hms(STATE.time),ex+'%'].join('\n'),{lineSpacing:1},false);
