@@ -2,3 +2,5 @@ User-agent: *
 Allow: /
 
 Sitemap: https://swordrelic.com/sitemap.xml
+
+#DaumWebMasterTool:9a93d787b41a809c91f94dab97d926f3224a96663fa9688f364e268ee9b3124f:fjbPToQo9CIdABBLcO2OJw==
