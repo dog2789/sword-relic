@@ -21,7 +21,7 @@ npm run build:single  # dist-single/index.html 한 파일 빌드 (Phaser는 CDN)
 ## 앱으로 감싸기 (출시 전, 보기용)
 
 - PC (Electron): `desktop/` 폴더에 따로 둠 (Vercel이 Electron을 받지 않게). 처음 한 번 `npm install --prefix desktop`, 그다음 `npm run app:pc` (빌드 후 창 띄움). `desktop/main.cjs`가 `dist`를 `app://game/index.html?app=pc`로 엶 → html에 `app app-pc` 클래스: 페이지 꾸밈 없이 게임만 창 가득, 설정은 게임 화면 왼쪽 위 ⚙ 또는 Esc (창·장비창이 열려 있으면 Esc는 그걸 닫음), 설정 창에 "전체 화면 / 게임 종료" 줄, F11 전체 화면. exe 만들기: `npm run app:exe` → `desktop/release/`에 SwordRelic-버전-portable.exe(설치 없이 실행)와 -setup.exe(설치판). 게임 파일은 exe 안 resources/game. 코드 서명이 없어서 처음 실행 때 Windows가 "PC 보호" 경고를 띄움 (추가 정보 → 실행).
-- 폰 (Capacitor 8): `capacitor.config.json`(appId com.swordrelic.game), `android/` 프로젝트. `npm run app:android` = 빌드 → `cap sync` → Android Studio 열기 (APK는 Android Studio가 있어야 빌드됨). 앱 안에서는 `window.Capacitor`가 있어 html.app, 서비스 워커 안 씀. MainActivity가 상태 표시줄 숨김·화면 안 꺼짐. 앱 세이브는 웹과 따로.
+- 폰 (Capacitor 8): `capacitor.config.json`(appId com.swordrelic.game), `android/` 프로젝트. `npm run app:android` = 빌드 → `cap sync` → Android Studio 열기 . APK는 Android Studio 없이 `npm run app:apk` (빌드 → cap sync → `android/build-apk.cmd`) → `android/app/build/outputs/apk/debug/app-debug.apk` (디버그 서명, 폰에 직접 설치용). 도구(JDK 21, Android SDK 36)는 `C:woojandroid-tools`, `android/local.properties`가 그 SDK를 가리킴(커밋 안 됨). 한글 사용자 폴더 경로 때문에 임시·Gradle 폴더도 거기로 돌림. 플레이 스토어용은 서명 키를 만들어 `bundleRelease`(AAB). 앱 안에서는 `window.Capacitor`가 있어 html.app, 서비스 워커 안 씀. MainActivity가 상태 표시줄 숨김·화면 안 꺼짐. 앱 세이브는 웹과 따로.
 
 ## 구조
 
