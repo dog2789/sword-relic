@@ -3,6 +3,7 @@
    보스: batlord 박쥐 군주(급습 + 박쥐 소환), rust 녹슨 수문장(돌진 베기 + 점프 내려찍기) */
 import Phaser from 'phaser';
 import {T,LH,RESPAWN_MS} from '../config.js';
+import {OPTS} from '../opts.js';
 
 /* 지역이 깊어질수록 일반 몬스터·함정이 강해짐 (체력·공격·방어·경험치) */
 export const TIER={meadow:1,treetop:1,cave:1.4,castle:1.9,ice:2.4,desert:2.9,lava:3.4,sky:3.9,demon:4.4};
@@ -75,7 +76,7 @@ export function spawnMob(scene,d){
   e.body.setSize(...M.size).setOffset(...M.off);
   if(M.fly)e.body.setAllowGravity(false);
   e.setCollideWorldBounds(true).setDepth(M.boss?6:5);
-  const tr=M.boss?1:tierOf(scene),hp=Math.round(M.hp*tr);
+  const tr=M.boss?1:tierOf(scene),hp=Math.max(1,Math.round(M.hp*tr*(OPTS.dmg<1?0.7:1)));   // 쉬움: 몬스터·보스 체력 70%
   Object.assign(e,{def:d,mob:d.t,hp,maxHp:hp,dmg:Math.round(M.dmg*(0.6+0.4*tr)),exp:Math.round(M.exp*tr),arm:M.def!=null?M.def:Math.round((tr-1)*6),guard:!!M.guard,nm:d.t==='bat'?({cave:'동굴 박쥐',desert:'모래 박쥐',lava:'불 박쥐',ice:'얼음 박쥐'}[scene.R.theme]||M.nm):M.nm,kb:M.kb,boss:M.boss?d.t:null,
     stun:0,home:{x,y},state:M.boss?'intro':'hover',t0:Math.random()*6,cool:1+Math.random(),dir:Math.random()<.5?-1:1,st:0,n:0});
   if(['bat','snail','batlord','fish','turtle','scorp','sala','golem','harpy','wisp','eyebat','griffin',...NEW].includes(d.t))e.play(d.t+'_anim');else if(d.t==='scorpking')e.play('scorpking_anim');

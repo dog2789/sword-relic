@@ -742,7 +742,7 @@ export class PlayScene extends Phaser.Scene{
     e.setCollideWorldBounds(true).setDepth(k?6:5);
     const sv=!k&&{cave:'slime_cave',ice:'slime_ice'}[this.R.theme];   // 지역 슬라임은 따로 그린 그림
     if(sv)e.setTexture(sv+'0');
-    const tr=k?1:tierOf(this),shp=k?340:Math.round(34*tr);
+    const tr=k?1:tierOf(this),shp=Math.round((k?340:34*tr)*(OPTS.dmg<1?0.7:1));
     Object.assign(e,{def:d,king:k,hp:shp,maxHp:shp,dmg:k?18:Math.round(8*(0.6+0.4*tr)),exp:k?50:Math.round(6*tr),arm:k?2:Math.round((tr-1)*6),nm:k?'킹슬라임':({cave:'동굴 슬라임',ice:'얼음 슬라임'}[this.R.theme]||'슬라임'),nextHop:this.time.now+800+Math.random()*1200,stun:0,wasOnG:false,lastVy:0});
     e.play(k?'king_idle':sv?sv+'_idle':'slime_idle');
     e.setAlpha(0);this.tweens.add({targets:e,alpha:1,duration:400});
