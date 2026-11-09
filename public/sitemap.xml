@@ -2,4 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://swordrelic.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>https://swordrelic.com/play/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://swordrelic.com/download/</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://swordrelic.com/save/</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://swordrelic.com/journal/</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://swordrelic.com/guide/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://swordrelic.com/guide/beginner/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://swordrelic.com/guide/combat/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://swordrelic.com/guide/growth/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://swordrelic.com/guide/world/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://swordrelic.com/guide/puzzles/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://swordrelic.com/news/</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://swordrelic.com/about/</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://swordrelic.com/privacy/</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 </urlset>
