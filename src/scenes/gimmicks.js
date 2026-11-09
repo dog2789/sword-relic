@@ -6,6 +6,7 @@ import {T,LH,ROWS} from '../config.js';
 import {KEYS} from '../data/items.js';
 import {STATE,bossDone} from '../state.js';
 import {sfx} from '../sfx.js';
+import {dmgTaken} from '../opts.js';
 import {cv,px} from '../gfx/pixel.js';
 import {surfaceY} from '../world/rooms.js';
 
@@ -209,7 +210,7 @@ export const Gimmicks={
       if(w&&Math.random()<dt*2.5)this.bubbleEm.explode(1,p.x+this.facing*3,p.y-6);
       const under=this.tileAt(p.x,p.y-6)==='~';
       if(under&&!p.dead){this.breath=Math.max(0,this.breath-dt/8);
-        if(this.breath<=0){this.drownT-=dt;if(this.drownT<=0){this.drownT=1;const s=this.stats,d=this.trap(8);s.hp=Math.max(0,s.hp-d);
+        if(this.breath<=0){this.drownT-=dt;if(this.drownT<=0){this.drownT=1;const s=this.stats,d=dmgTaken(this.trap(8));s.hp=Math.max(0,s.hp-d);
           this.popNum(p.x,p.y-12,d,0x8ab0ff,false);p.setTintFill(0x6a9aff);this.time.delayedCall(90,()=>{if(!p.dead)p.clearTint()});if(s.hp<=0)this.die();else if(this.breathMsg!==1){this.breathMsg=1;this.toast('숨이 막혀요! 물 밖으로 나가세요',1800)}}}}
       else{this.breath=Math.min(1,this.breath+dt*1.2);this.drownT=0;this.breathMsg=0}}
     // 숨 방울: 숨이 줄었을 때만 머리 위에 표시 (5칸)
@@ -232,7 +233,7 @@ export const Gimmicks={
       if(this.bonus.noSand){const tx=Math.floor(p.x/T);let ty=Math.floor((pb.bottom-3)/T);while(ty>0&&this.map[ty-1][tx]==='S')ty--;const top=ty*T;
         if(pb.bottom>top){p.y-=pb.bottom-top;if(pb.velocity.y>0)p.setVelocityY(0);this.coyote=0.09;this.airJumps=0}}
       else{if(pb.velocity.y>20)p.setVelocityY(20);if(Math.random()<dt*6)this.dustEm.explode(1,p.x,pb.bottom-4);
-        if(this.tileAt(p.x,p.y-6)==='S'){this.sandT-=dt;if(this.sandT<=0){this.sandT=0.8;const s=this.stats,d=this.trap(6);s.hp=Math.max(0,s.hp-d);this.popNum(p.x,p.y-12,d,0xe0b070,false);if(s.hp<=0)this.die()}}}}
+        if(this.tileAt(p.x,p.y-6)==='S'){this.sandT-=dt;if(this.sandT<=0){this.sandT=0.8;const s=this.stats,d=dmgTaken(this.trap(6));s.hp=Math.max(0,s.hp-d);this.popNum(p.x,p.y-12,d,0xe0b070,false);if(s.hp<=0)this.die()}}}}
     // 하늘: 바닥 없는 곳으로 떨어지면 피해 + 안전한 곳으로
     if(this.R.theme==='sky'&&!this.R.exits.down&&pb.bottom>=LH-1){this.fallPit();return}
     // 상승 기류

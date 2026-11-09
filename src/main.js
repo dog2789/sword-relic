@@ -11,6 +11,7 @@ import {ITEMS} from './data/items.js';
 import {loadFonts} from './fonts.js';
 import {setMuted,isMuted,setVolume,getVolume} from './sfx.js';
 import {ACTIONS,getBinds,setBinds,captureKey,keyName} from './input.js';
+import {OPTS,setOpt} from './opts.js';
 
 let game;
 /* 폰 화면 */
@@ -116,6 +117,9 @@ $('set-close').addEventListener('click',closeSet);
 $('set-mute').addEventListener('change',e=>{setMuted(e.target.checked);padMuteLabel()});
 for(const k of ['m','f'])$('set-'+k).addEventListener('input',e=>{setVolume(k,e.target.value/100);$('set-'+k+'-v').textContent=e.target.value});
 $('set-bs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;setBS(parseFloat(b.dataset.v));try{localStorage.setItem('sr_bs',b.dataset.v)}catch(_){}});
+// 난이도(받는 피해 ×0.5/1/1.5)·화면 흔들림(끔/약하게/보통)
+for(const k of ['dmg','shake']){const seg=$('set-'+k),mark=()=>seg.querySelectorAll('button').forEach(b=>b.setAttribute('aria-checked',String(parseFloat(b.dataset.v)===OPTS[k])));mark();
+  seg.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;setOpt(k,parseFloat(b.dataset.v));mark()})}
 $('mute').addEventListener('click',e=>{e.currentTarget.blur();openSet()});
 
 /* 키 설정 (PC): 칸을 누르면 다음 키 하나를 받음. 같은 키를 쓰던 다른 동작은 기본 키로 돌아감 */

@@ -62,7 +62,7 @@ export const Economy={
       r.b.setText(it.right||'').setColor(it.ok===false?'#8a5a6a':'#ffd34a')});
     const cur=L.items[L.sel];L.desc.setText(keyText(cur?cur.desc||'':''));
   },
-  listPick(){const L=this.listm,it=L.items[L.sel];if(!it)return;if(it.ok===false){this.cameras.main.shake(60,0.002);return}L.pick(it,this);if(this.listm)this.drawList()},
+  listPick(){const L=this.listm,it=L.items[L.sel];if(!it)return;if(it.ok===false){this.shake(60,0.002);return}L.pick(it,this);if(this.listm)this.drawList()},
   updateList(){
     const L=this.listm,n=this.navPress(),k=L.items.length||1;
     if(n.up){L.sel=(L.sel+k-1)%k;this.drawList()}

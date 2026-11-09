@@ -19,6 +19,7 @@ import {RS,fitCameras,calcScale} from '../zoom.js';
 
 import {F9,F11} from '../fonts.js';
 import {sfx} from '../sfx.js';
+import {OPTS,dmgTaken} from '../opts.js';
 import {bgm,bgmStop} from '../bgm.js';
 import {isDown,edges} from '../input.js';
 const CLIMB_SPEED=70;
@@ -715,7 +716,7 @@ export class PlayScene extends Phaser.Scene{
     if(e.hp<=0)this.killEnemy(e);
   }
   /* 화면 흔들림: 고해상도 카메라는 배율(S)만큼 세게 흔들려서 원래 세기로 나눠줌 */
-  shake(ms,i){this.cameras.main.shake(ms,i/RS.S)}
+  shake(ms,i){if(OPTS.shake)this.cameras.main.shake(ms,i*OPTS.shake/RS.S)}
   hitstop(ms){if(this.frozen)return;this.frozen=true;this.physics.world.pause();this.time.delayedCall(ms,()=>{this.frozen=false;if(!this.menu)this.physics.world.resume()})}
   killEnemy(e){
     const k=e.king||!!e.boss,d=e.def;
@@ -781,7 +782,7 @@ export class PlayScene extends Phaser.Scene{
     const p=this.player,s=this.stats;if(p.inv>0||p.dead)return;
     if(this.bonus.guard&&kind==='enemy'&&fromX!=null&&Math.sign(fromX-p.x)===this.facing)raw*=0.7;   // 근위대장의 문장: 바라보는 쪽 적 공격 막음
     // 방어력은 비율로 피해를 줄임 (방어 40이면 절반) — 방어구를 많이 껴도 아예 안 아프진 않게
-    const d=Math.max(1,Math.round(raw*40/(40+this.defVal())));s.hp=Math.max(0,s.hp-d);
+    const d=dmgTaken(raw*40/(40+this.defVal()));s.hp=Math.max(0,s.hp-d);
     this.popNum(p.x,p.y-12,d,0xff5a5a,false);p.inv=1.1;p.hurtT=0.28;sfx('hurt');
     if(this.climbing)this.stopClimb();
     let kx=(Math.sign(p.x-fromX)||1)*150;if((p.x<28&&kx<0)||(p.x>this.lw-28&&kx>0))kx=0;   // 맞고 밀려서 방 밖으로 나가지 않게
