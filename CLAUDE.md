@@ -18,6 +18,11 @@ npm run build:single  # dist-single/index.html 한 파일 빌드 (Phaser는 CDN)
 - 검색·공유: index.html 머리의 description·og·twitter·JSON-LD, 썸네일 `public/og.png`(1200×630), `public/robots.txt`, `public/sitemap.xml`. 도메인을 바꾸면 이 세 곳의 swordrelic.com을 같이 바꿀 것.
 - 바뀐 게 생기면: 수정 → `npx vite build`로 빌드 확인 → 직접 해 보기(또는 아래 헤드리스 확인) → 커밋·push.
 
+## 앱으로 감싸기 (출시 전, 보기용)
+
+- PC (Electron): `desktop/` 폴더에 따로 둠 (Vercel이 Electron을 받지 않게). 처음 한 번 `npm install --prefix desktop`, 그다음 `npm run app:pc` (빌드 후 창 띄움). `desktop/main.cjs`가 `dist`를 `app://game/index.html?app=pc`로 엶 → html에 `app app-pc` 클래스: 페이지 꾸밈 없이 게임만 창 가득, 설정은 게임 화면 왼쪽 위 ⚙ 또는 Esc (창·장비창이 열려 있으면 Esc는 그걸 닫음), 설정 창에 "전체 화면 / 게임 종료" 줄, F11 전체 화면.
+- 폰 (Capacitor 8): `capacitor.config.json`(appId com.swordrelic.game), `android/` 프로젝트. `npm run app:android` = 빌드 → `cap sync` → Android Studio 열기 (APK는 Android Studio가 있어야 빌드됨). 앱 안에서는 `window.Capacitor`가 있어 html.app, 서비스 워커 안 씀. MainActivity가 상태 표시줄 숨김·화면 안 꺼짐. 앱 세이브는 웹과 따로.
+
 ## 구조
 
 - `src/scenes/PlayScene.js`: 본 게임. 기능별로 나눈 믹스인을 `Object.assign(PlayScene.prototype, PlayUI, Economy, Gimmicks, MenuMixin, Fx, Skills)`로 붙임.

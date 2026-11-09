@@ -10,7 +10,7 @@ export function calcScale(){
   const st=document.getElementById('stage');
   let w=Math.max(160,st.clientWidth-32),maxH=window.innerHeight*0.72;
   // 폰: 가로면 화면 전체, 세로면 위쪽을 가로폭 가득 (아래는 조작 버튼)
-  if(document.fullscreenElement===st){w=window.innerWidth;maxH=window.innerHeight}   // PC 전체 화면 버튼
+  if(document.fullscreenElement===st||document.documentElement.classList.contains('app-pc')){w=window.innerWidth;maxH=window.innerHeight}   // PC 전체 화면 버튼
   else if(MOBILE){const vw=window.innerWidth,vh=window.innerHeight;w=vw>vh?vw:vw-36;maxH=vw>vh?vh:vh*0.52}   // 세로는 게임기 화면 테두리만큼 뺌
   const css=Math.max(0.5,Math.min(w/W,maxH/H));
   // 폰은 그래픽 메모리가 적어서 렌더 해상도를 2배 밀도까지만 (도트라 티가 거의 안 남)

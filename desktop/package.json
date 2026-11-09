@@ -1,0 +1,16 @@
+{
+  "name": "sword-relic-desktop",
+  "private": true,
+  "version": "0.1.0",
+  "description": "소드 레릭 PC 앱 (Electron 껍데기). 게임은 ../dist를 그대로 씀",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^45.2.3"
+  },
+  "dependencies": {
+    "sword-relic": "file:.."
+  }
+}

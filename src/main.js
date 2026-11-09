@@ -112,7 +112,7 @@ const openSet=()=>{if(dlg.open)return;showVol();dlg.showModal();if(game)game.pau
 const closeSet=()=>{if(dlg.open)dlg.close()};
 dlg.addEventListener('close',()=>{if(game)game.resume();window.focus()});
 dlg.addEventListener('click',e=>{if(e.target===dlg)closeSet()});   // 바깥(어두운 곳) 누르면 닫힘
-dlg.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();closeSet()}});
+dlg.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();closeSet()}});   // stopPropagation: PC 앱에서 닫은 Esc가 창의 Esc 처리로 가서 다시 열지 않게
 $('set-close').addEventListener('click',closeSet);
 $('set-mute').addEventListener('change',e=>{setMuted(e.target.checked);padMuteLabel()});
 for(const k of ['m','f'])$('set-'+k).addEventListener('input',e=>{setVolume(k,e.target.value/100);$('set-'+k+'-v').textContent=e.target.value});
@@ -141,6 +141,16 @@ if(!document.documentElement.requestFullscreen)fsBtn.hidden=true;
 fsBtn.addEventListener('click',e=>{e.currentTarget.blur();window.focus();document.fullscreenElement?document.exitFullscreen():$('stage').requestFullscreen().catch(()=>{})});
 document.addEventListener('fullscreenchange',()=>{fsBtn.textContent=document.fullscreenElement?'전체 화면 끄기':'전체 화면';onResize()});
 
+/* PC 앱: 설정은 게임 화면 안 ⚙ 버튼이나 Esc (창·장비창 등이 열려 있으면 Esc는 그걸 닫는 데 씀) */
+if(document.documentElement.classList.contains('app-pc')){
+  $('appset').addEventListener('click',e=>{e.currentTarget.blur();openSet()});
+  window.addEventListener('keydown',e=>{if(e.code!=='Escape'||e.repeat||dlg.open||!game)return;const keys=game.scene.getScenes(true).map(s=>s.scene.key);
+    if(keys.includes('intro'))return;const p=game.scene.keys.play;if(keys.includes('play')&&p.overlayOpen&&p.overlayOpen())return;openSet()});
+  const fsLabel=()=>{$('set-fs').textContent=document.fullscreenElement?'창 모드':'전체 화면'};fsLabel();
+  $('set-fs').addEventListener('click',()=>{(document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()).catch(()=>{})});
+  document.addEventListener('fullscreenchange',fsLabel);
+  $('set-quit').addEventListener('click',()=>window.close())}
+
 /* 안드로이드 크롬이 저절로 띄우는 "앱 설치" 알림 막기 (원하면 브라우저 메뉴 → 홈 화면에 추가로 설치 가능) */
 window.addEventListener('beforeinstallprompt',e=>e.preventDefault());
 padMute.addEventListener('pointerdown',e=>{e.preventDefault();openSet()});
@@ -157,4 +167,4 @@ ng.addEventListener('click',()=>{
 window.SR={get game(){return game},get scene(){return game&&game.scene.keys.play},get state(){return STATE},items:ITEMS};
 
 /* 홈 화면에 추가(PWA): 배포판에서만 서비스 워커를 켬 (개발 중엔 캐시가 헷갈리게 함) */
-if(import.meta.env.PROD&&'serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+if(import.meta.env.PROD&&!document.documentElement.classList.contains('app')&&'serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));

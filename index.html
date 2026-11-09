@@ -47,6 +47,8 @@ else if(location.hash.indexOf('#move=')===0){var m=JSON.parse(decodeURIComponent
       if(k==='sr_save2'&&localStorage.getItem(k))localStorage.setItem('sr_save2_old',localStorage.getItem(k));   // 덮어쓰기 전 예전 세이브 백업
       localStorage.setItem(k,m[k])}}
   history.replaceState(null,'',location.pathname+location.search)}}catch(e){}</script>
+<!-- 앱으로 감싸서 실행 중: 폰(Capacitor)은 html.app, PC(Electron, 주소 뒤 ?app=pc)는 html.app.app-pc → 페이지 꾸밈 없이 게임만 -->
+<script>try{if(window.Capacitor)document.documentElement.classList.add('app');if(/[?&]app=pc/.test(location.search))document.documentElement.classList.add('app','app-pc')}catch(e){}</script>
 <!-- 개발자 보기: 주소 뒤 ?dev 로 켜고 ?dev=0 으로 끔 (이 브라우저에만 기억). 끄면 설명·테스트 칸이 숨음 -->
 <script>try{var q=new URLSearchParams(location.search).get('dev');if(q!==null)localStorage.setItem('sr_dev',q==='0'?'':'1');if(localStorage.getItem('sr_dev'))document.documentElement.classList.add('dev')}catch(e){}</script>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -70,6 +72,7 @@ else if(location.hash.indexOf('#move=')===0){var m=JSON.parse(decodeURIComponent
 
   <div id="stage">
     <div id="game"></div>
+    <button id="appset" type="button" aria-label="설정 (Esc)" title="설정 (Esc)">⚙</button>
     <button id="start" type="button"><span><b class="go">▶ 클릭해서 시작</b><i class="keys"><kbd>Z</kbd>공격 <kbd>X</kbd>점프 <kbd>C</kbd>스킬</i></span></button>
   </div>
 
@@ -194,6 +197,7 @@ else if(location.hash.indexOf('#move=')===0){var m=JSON.parse(decodeURIComponent
     <button type="button" role="radio" data-v="0">끔</button><button type="button" role="radio" data-v="0.5">약하게</button><button type="button" role="radio" data-v="1">보통</button></div></div>
   <div class="srow mobonly"><span>버튼 크기</span><div class="seg" id="set-bs" role="radiogroup" aria-label="버튼 크기">
     <button type="button" role="radio" data-v="0.85">작게</button><button type="button" role="radio" data-v="1">보통</button><button type="button" role="radio" data-v="1.15">크게</button></div></div>
+  <div class="srow apponly"><span>화면</span><div class="seg"><button type="button" id="set-fs">전체 화면</button><button type="button" id="set-quit">게임 종료</button></div></div>
   <div class="pconly" id="set-keys"><h3>키 설정 <small>칸을 누르고 키를 누르세요 (Esc 취소)</small></h3><div class="kgrid"></div><button type="button" class="kreset" id="set-kreset">기본값으로</button></div>
   <button type="button" class="gbtn sclose" id="set-close">닫기</button>
 </dialog>
