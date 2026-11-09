@@ -16,6 +16,7 @@ npm run build:single  # dist-single/index.html 한 파일 빌드 (Phaser는 CDN)
 - 소개 페이지 `/` (`index.html`, 스크린샷 `public/shots/*.png`, 검색·공유 정보의 주인공)와 게임 페이지 `/play/` (`play/index.html`). vite `rollupOptions.input`에 둘 다. 홈 화면 앱(standalone)·폰 앱(Capacitor)은 소개에서 바로 `/play/`로 넘김, 매니페스트 `start_url`도 `/play/`. 주소 이전 스크립트는 두 페이지가 같이 쓰는 `public/move.js`. 스크린샷 다시 찍기: `node tools/site-shots.mjs [이름,…]` (preview 4220 필요) — 주인공을 단단한 땅(가시·물·용암·사다리·스위치 블록 제외, 위 3칸 빔) 위에 세우고 적월/흑월 세트, 가까운 몬스터 치움, 게임 UI 카메라(`uiCam`) 숨기고 씬을 멈춘 뒤 HUD 아래를 잘라 찍음.
 - 게임 페이지 일반 방문자는 제목·게임·소리 버튼만 보임. 설명·조작·지역·장비 카드와 테스트 버튼은 주소 뒤 `?dev`로 켬 (`?dev=0` 끔, localStorage `sr_dev`).
 - 홈 화면에 추가(PWA): `public/manifest.webmanifest`, 아이콘 `icon-192/512.png`, 서비스 워커 `public/sw.js` (새 파일 먼저 받고 끊기면 저장본, 배포판에서만 등록).
+- 구글 애드센스(ca-pub-8021140742740790, 2026-11-09 신청): 소개 페이지는 머리에 스크립트를 그대로, 나머지 사이트 페이지는 앱(Capacitor·`app:`)이 아닐 때만 넣는 짧은 스크립트, **게임 페이지 /play/에는 넣지 않음**(앱 안 애드센스는 정책 위반, 게임 조작 옆 광고는 실수 클릭 위험). `public/ads.txt`. 새 사이트 페이지를 만들면 같은 스크립트를 머리에.
 - 방문자 통계: Cloudflare Web Analytics (Pages 프로젝트 설정에서 켬, 코드 없음, 쿠키 없음). 보는 곳은 Cloudflare 대시보드.
 - 검색·공유: index.html 머리의 description·og·twitter·JSON-LD, 썸네일 `public/og.png`(1200×630), `public/robots.txt`, `public/sitemap.xml`. 도메인을 바꾸면 이 세 곳의 swordrelic.com을 같이 바꿀 것.
 - 바뀐 게 생기면: 수정 → `npx vite build`로 빌드 확인 → 직접 해 보기(또는 아래 헤드리스 확인) → 커밋·push.
