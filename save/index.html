@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05030b">
+<title>세이브 옮기기 - 소드 레릭</title>
+<meta name="description" content="소드 레릭 진행 상황을 코드나 파일로 내보내고, 다른 기기·앱에서 불러오기">
+<link rel="canonical" href="https://swordrelic.com/save/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="소드 레릭">
+<meta property="og:url" content="https://swordrelic.com/save/">
+<meta property="og:title" content="세이브 옮기기 - 소드 레릭">
+<meta property="og:description" content="소드 레릭 진행 상황을 코드나 파일로 내보내고, 다른 기기·앱에서 불러오기">
+<meta property="og:image" content="https://swordrelic.com/og.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/src/site.css">
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<nav class="topnav" aria-label="사이트 메뉴">
+  <a class="logo" href="/">SWORD RELIC</a>
+  <div class="links">
+    <a href="/download/">다운로드</a><a href="/save/" aria-current="page">세이브 옮기기</a><a href="/journal/">모험 수첩</a>
+    <a class="go" href="/play/">▶ 플레이</a>
+  </div>
+</nav>
+<main>
+<header class="phead">
+  <h1>세이브 옮기기</h1>
+  <p>진행 상황을 코드나 파일로 내보내고, 다른 브라우저·PC 앱·폰 앱에서 불러올 수 있어요. 백업용으로도 좋아요.</p>
+</header>
+
+<section class="panel" aria-labelledby="sv-now">
+  <h2 id="sv-now">이 기기의 세이브</h2>
+  <div id="sum"></div>
+  <div class="btns">
+    <button class="btn gold" id="copy" type="button">코드 복사</button>
+    <button class="btn" id="file" type="button">파일로 저장</button>
+    <button class="btn danger" id="undo" type="button" hidden>불러오기 전 세이브로 되돌리기</button>
+  </div>
+  <p class="msg" id="msg1" role="status"></p>
+</section>
+
+<section class="panel" aria-labelledby="sv-in">
+  <h2 id="sv-in">세이브 불러오기</h2>
+  <p class="muted">복사한 코드를 붙여 넣거나, 저장해 둔 파일을 골라요.</p>
+  <textarea id="code" placeholder="SR1:..." aria-label="세이브 코드" spellcheck="false"></textarea>
+  <div class="btns">
+    <button class="btn" id="check" type="button">코드 확인</button>
+    <label class="btn" for="pick">파일 고르기</label><input id="pick" type="file" accept=".json,.txt,application/json,text/plain" hidden>
+  </div>
+  <div id="preview" hidden>
+    <h3>불러올 세이브</h3>
+    <div id="sum2"></div>
+    <p class="warn">불러오면 지금 이 기기의 세이브를 덮어써요. 지금 세이브는 한 번 되돌릴 수 있게 따로 보관해 둬요.</p>
+    <div class="btns"><button class="btn gold" id="apply" type="button">이 세이브로 덮어쓰기</button><button class="btn" id="cancel" type="button">취소</button></div>
+  </div>
+  <p class="msg" id="msg2" role="status"></p>
+</section>
+
+<section class="panel" aria-labelledby="sv-how">
+  <h2 id="sv-how">이렇게 옮겨요</h2>
+  <ol class="steps">
+    <li>원래 하던 곳(예: 웹)에서 이 페이지를 열고 <b>코드 복사</b>.</li>
+    <li>카톡 나에게 보내기 같은 걸로 코드를 옮겨요.</li>
+    <li>새로 할 곳(예: 폰 앱)에서 게임 <b>설정 → 세이브 옮기기</b>를 열고 붙여 넣은 뒤 <b>덮어쓰기</b>.</li>
+  </ol>
+</section>
+</main>
+<footer><p><a href="/download/">다운로드</a><a href="/save/">세이브 옮기기</a><a href="/journal/">모험 수첩</a></p><p>© 2026 SWORD RELIC</p></footer>
+<script type="module" src="/src/pages/save.js"></script>
+</body>
+</html>

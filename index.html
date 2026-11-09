@@ -27,19 +27,27 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"소드 레릭 (SWORD RELIC)","alternateName":"SWORD RELIC","url":"https://swordrelic.com/","image":"https://swordrelic.com/og.png","description":"고향을 떠나 전설의 검을 찾아 나서는 픽셀 메트로베니아 웹게임. 초원부터 마왕성까지 9개 지역 149개의 방, 보스 10마리, 퍼즐과 함정, 무기마다 다른 스킬. 설치 없이 PC·모바일 브라우저에서 바로 플레이.","genre":["액션","어드벤처","메트로베니아","플랫포머"],"gamePlatform":["Web browser","PC","Mobile"],"applicationCategory":"Game","operatingSystem":"Any","inLanguage":"ko","playMode":"SinglePlayer","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
 <script src="/move.js"></script>
 <!-- 홈 화면에 추가한 앱(예전 주소 '/'로 설치된 것 포함)과 폰 앱(Capacitor)은 소개 없이 바로 게임으로 -->
-<script>try{if(window.Capacitor||matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone)location.replace('/play/'+location.search+location.hash)}catch(e){}</script>
+<script>try{if(window.Capacitor||location.protocol==='app:'||matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone)location.replace('/play/'+location.search+location.hash)}catch(e){}</script>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Sans+KR:wght@400;600&display=swap">
-<link rel="stylesheet" href="/src/landing.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/src/site.css">
 <!-- 방문자 통계 (Vercel Web Analytics) -->
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)}</script>
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
+<nav class="topnav" aria-label="사이트 메뉴">
+  <a class="logo" href="/">SWORD RELIC</a>
+  <div class="links">
+    <a href="/download/">다운로드</a><a href="/save/">세이브 옮기기</a><a href="/journal/">모험 수첩</a>
+    <a class="go" href="/play/">▶ 플레이</a>
+  </div>
+</nav>
 
 <header class="hero">
   <img class="hero-bg" src="/shots/meadow.png" alt="" aria-hidden="true">
@@ -125,6 +133,6 @@
   </section>
 </main>
 
-<footer>© 2026 SWORD RELIC</footer>
+<footer><p><a href="/download/">다운로드</a><a href="/save/">세이브 옮기기</a><a href="/journal/">모험 수첩</a></p><p>© 2026 SWORD RELIC</p></footer>
 </body>
 </html>

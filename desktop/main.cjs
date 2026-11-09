@@ -8,8 +8,9 @@ app.whenReady().then(()=>{
   protocol.handle('app',req=>{
     const p=path.normalize(path.join(DIST,decodeURIComponent(new URL(req.url).pathname)));
     if(!p.startsWith(DIST))return new Response('',{status:403});   // dist 밖은 못 읽게
-    if(!fs.existsSync(p)||fs.statSync(p).isDirectory())return new Response('',{status:404});   // 웹 전용 파일(방문자 통계 등)은 없음
-    return net.fetch(pathToFileURL(p).toString());
+    const f=fs.existsSync(p)&&fs.statSync(p).isDirectory()?path.join(p,'index.html'):p;   // /save/ 같은 폴더 주소는 그 안의 index.html
+    if(!fs.existsSync(f))return new Response('',{status:404});   // 웹 전용 파일(방문자 통계 등)은 없음
+    return net.fetch(pathToFileURL(f).toString());
   });
   Menu.setApplicationMenu(null);
   const win=new BrowserWindow({width:1280,height:780,minWidth:640,minHeight:400,backgroundColor:'#000000',title:'소드 레릭',

@@ -39,10 +39,10 @@
       "icon": "../public/icon-512.png"
     },
     "portable": {
-      "artifactName": "SwordRelic-${version}-portable.exe"
+      "artifactName": "SwordRelic-portable.exe"
     },
     "nsis": {
-      "artifactName": "SwordRelic-${version}-setup.exe",
+      "artifactName": "SwordRelic-setup.exe",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "shortcutName": "소드 레릭"
