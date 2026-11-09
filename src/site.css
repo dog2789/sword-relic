@@ -1,6 +1,7 @@
 /* 사이트 페이지 공통 (소개 / 다운로드 / 세이브 / 모험 수첩) — 게임 페이지와 같은 색
    글꼴: 제목은 한글 도트 글꼴 갈무리(Galmuri11 Bold, OFL), 본문은 Pretendard, 영문 로고는 Press Start 2P */
-@font-face{font-family:"Galmuri11";font-weight:700;font-display:swap;src:url('../node_modules/galmuri/dist/Galmuri11-Bold.woff2') format('woff2')}
+/* 페이지를 옮길 때 대체 글꼴로 잠깐 그렸다가 바뀌며 메뉴 글자 크기가 출렁이지 않게: 고정 주소로 미리 받고(preload) 다 받을 때까지 기다렸다 그림(block) */
+@font-face{font-family:"Galmuri11";font-weight:700;font-display:block;src:url('/fonts/Galmuri11-Bold.woff2') format('woff2')}
 :root{
   --bg:#0e0b18; --deep:#05030b; --panel:#171228; --panel2:#1e1735; --line:#2c2346; --ink:#ece7f7; --muted:#9a91b8;
   --gold:#e8c04a; --cyan:#8fe3ff; --red:#ff6070; --green:#7cff8a;
