@@ -1,7 +1,8 @@
 // 소드 레릭 PC 앱: 웹 빌드(../dist)를 app:// 주소로 띄움 (파일 주소면 /assets/... 같은 절대 경로가 깨져서)
 const {app,BrowserWindow,protocol,net,Menu}=require('electron');
 const path=require('path'),fs=require('fs');const {pathToFileURL}=require('url');
-const DIST=path.resolve(process.env.SR_DIST||path.join(__dirname,'..','dist'));
+// exe로 묶었을 땐 resources/game, 개발 중엔 ../dist
+const DIST=path.resolve(process.env.SR_DIST||(app.isPackaged?path.join(process.resourcesPath,'game'):path.join(__dirname,'..','dist')));
 protocol.registerSchemesAsPrivileged([{scheme:'app',privileges:{standard:true,secure:true,supportFetchAPI:true}}]);
 app.whenReady().then(()=>{
   protocol.handle('app',req=>{

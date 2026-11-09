@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "build:single": "node tools/build-single.mjs",
     "app:pc": "vite build && npm --prefix desktop start",
-    "app:android": "vite build && cap sync android && cap open android"
+    "app:android": "vite build && cap sync android && cap open android",
+    "app:exe": "vite build && npm --prefix desktop run dist"
   },
   "dependencies": {
     "galmuri": "^2.40.3",

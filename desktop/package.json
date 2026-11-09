@@ -5,12 +5,51 @@
   "description": "소드 레릭 PC 앱 (Electron 껍데기). 게임은 ../dist를 그대로 씀",
   "main": "main.cjs",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dist": "electron-builder --win portable nsis"
   },
   "devDependencies": {
-    "electron": "^45.2.3"
+    "electron": "^45.2.3",
+    "electron-builder": "^26.18.0"
   },
   "dependencies": {
     "sword-relic": "file:.."
+  },
+  "author": "woojae",
+  "build": {
+    "appId": "com.swordrelic.game",
+    "productName": "SwordRelic",
+    "copyright": "SWORD RELIC",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.cjs",
+      "package.json",
+      "!node_modules/**",
+      "!release/**"
+    ],
+    "extraResources": [
+      {
+        "from": "../dist",
+        "to": "game"
+      }
+    ],
+    "win": {
+      "icon": "../public/icon-512.png"
+    },
+    "portable": {
+      "artifactName": "SwordRelic-${version}-portable.exe"
+    },
+    "nsis": {
+      "artifactName": "SwordRelic-${version}-setup.exe",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "소드 레릭"
+    },
+    "electronLanguages": [
+      "ko",
+      "en-US"
+    ]
   }
 }
