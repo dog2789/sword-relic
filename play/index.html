@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<!-- 홈 화면에 추가하면 주소창 없이 전체 화면 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="소드 레릭">
+<meta name="theme-color" content="#000000">
+<title>소드 레릭 - 플레이</title>
+<!-- 게임 페이지(/play/). 검색·공유 정보는 소개 페이지(/index.html)가 주인공. 도메인을 바꾸면 이 블록의 https://swordrelic.com와 public/robots.txt, public/sitemap.xml을 같이 바꿀 것 -->
+<meta name="description" content="고향을 떠나 전설의 검을 찾아 나서는 픽셀 메트로베니아 웹게임. 초원부터 마왕성까지 9개 지역 149개의 방, 보스 10마리, 퍼즐과 함정, 무기마다 다른 스킬. 설치 없이 PC·모바일 브라우저에서 바로 플레이.">
+<meta name="keywords" content="소드 레릭, SWORD RELIC, 웹게임, 브라우저 게임, 픽셀 게임, 도트 게임, 메트로베니아, 액션 RPG, 플랫포머, 무료 게임">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://swordrelic.com/play/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="소드 레릭">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:url" content="https://swordrelic.com/play/">
+<meta property="og:title" content="소드 레릭 (SWORD RELIC) - 픽셀 메트로베니아 웹게임">
+<meta property="og:description" content="전설의 검을 찾아 떠나는 모험">
+<meta property="og:image" content="https://swordrelic.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="소드 레릭: 초원에서 슬라임에게 검을 휘두르는 주인공">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="소드 레릭 (SWORD RELIC) - 픽셀 메트로베니아 웹게임">
+<meta name="twitter:description" content="전설의 검을 찾아 떠나는 모험">
+<meta name="twitter:image" content="https://swordrelic.com/og.png">
+<script src="/move.js"></script>
+<!-- 앱으로 감싸서 실행 중: 폰(Capacitor)은 html.app, PC(Electron, 주소 뒤 ?app=pc)는 html.app.app-pc → 페이지 꾸밈 없이 게임만 -->
+<script>try{if(window.Capacitor)document.documentElement.classList.add('app');if(/[?&]app=pc/.test(location.search))document.documentElement.classList.add('app','app-pc')}catch(e){}</script>
+<!-- 개발자 보기: 주소 뒤 ?dev 로 켜고 ?dev=0 으로 끔 (이 브라우저에만 기억). 끄면 설명·테스트 칸이 숨음 -->
+<script>try{var q=new URLSearchParams(location.search).get('dev');if(q!==null)localStorage.setItem('sr_dev',q==='0'?'':'1');if(localStorage.getItem('sr_dev'))document.documentElement.classList.add('dev')}catch(e){}</script>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Sans+KR:wght@400;600&display=swap">
+<!-- 방문자 통계 (Vercel Web Analytics, 배포판에서만 동작. 로컬에선 404라 그냥 무시됨) -->
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">PROTOTYPE<span class="devonly"> · STAGE 12</span></div>
+    <h1><a href="/" class="home">SWORD RELIC</a></h1>
+    <p class="sub lead">고향을 떠나 전설의 검을 찾아 나서는 픽셀 메트로베니아. 설치 없이 브라우저에서 바로 플레이.</p>
+    <p class="sub">고향을 떠나 전설의 검을 찾아 나서는 모험. 초원·동굴·고성·얼음·사막·용암·하늘 성채·마왕성, 149개 방, 중간보스를 포함한 보스 10마리, 지역마다 다른 몬스터·퍼즐·함정, 무기마다 다른 공격과 스킬, 그리고 마왕과의 마지막 결전까지.</p>
+  </header>
+
+  <div id="stage">
+    <div id="game"></div>
+    <button id="appset" type="button" aria-label="설정 (Esc)" title="설정 (Esc)">⚙</button>
+    <button id="start" type="button"><span><b class="go">▶ 클릭해서 시작</b><i class="keys"><kbd>Z</kbd>공격 <kbd>X</kbd>점프 <kbd>C</kbd>스킬</i></span></button>
+  </div>
+
+  <div class="gear" role="group" aria-label="장비 미리보기">
+    <span class="gear-label">테스트</span>
+    <button id="testgear" class="gbtn" type="button">장비 모두 받기</button>
+    <button id="mute" class="gbtn" type="button">설정</button>
+    <button id="fs" class="gbtn pconly" type="button">전체 화면</button>
+    <button id="newgame" class="gbtn danger" type="button">처음부터</button>
+  </div>
+
+  <div class="pad" aria-label="터치 조작">
+    <!-- 아날로그 스틱: 손가락을 미끄러뜨린 방향으로 (대각선 쉽게) -->
+    <!-- 스틱 영역: 이 안 아무 데나 엄지를 대면 그 자리에 스틱이 생김 (평소엔 흐리게) -->
+    <div class="stickzone" id="stickzone"><div class="stick" id="stick" role="group" aria-label="이동 스틱"><div class="knob"></div></div></div>
+    <div class="sys">
+      <div class="slots">
+        <button class="pbtn slot" data-k="q0" aria-label="퀵슬롯 1"><i>1</i><img alt=""><b></b></button>
+        <button class="pbtn slot" data-k="q1" aria-label="퀵슬롯 2"><i>2</i><img alt=""><b></b></button>
+        <button class="pbtn slot" data-k="q2" aria-label="퀵슬롯 3"><i>3</i><img alt=""><b></b></button>
+        <button class="pbtn slot" data-k="q3" aria-label="퀵슬롯 4"><i>4</i><img alt=""><b></b></button>
+      </div>
+      <div class="tools">
+        <button class="pbtn slot tool" data-k="menu" aria-label="장비창"><img id="ic-equip" alt=""><span>장비</span></button>
+        <button class="pbtn slot tool" data-k="map" aria-label="지도"><img id="ic-map" alt=""><span>지도</span></button>
+        <button class="pbtn slot tool" id="padmute" type="button" aria-label="설정"><img id="ic-snd" alt=""><span>설정</span></button>
+      </div>
+    </div>
+    <div class="act">
+      <button class="pbtn s" data-k="skill" aria-label="스킬"><img id="ic-skill" alt=""><em>C</em></button>
+      <button class="pbtn a" data-k="attack" aria-label="공격"><img id="ic-atk" alt=""><em>Z</em></button>
+      <button class="pbtn j" data-k="jump" aria-label="점프"><img id="ic-jump" alt=""><em>X</em></button>
+    </div>
+    <p class="turn">가로로 돌리면 화면이 더 커져요</p>
+  </div>
+
+  <section class="cards">
+    <div class="card">
+      <h2>조작</h2>
+      <dl class="keys">
+        <dt><kbd>←</kbd><kbd>→</kbd></dt><dd>이동 (화면 끝으로 가면 다음 방)</dd>
+        <dt><kbd>↑</kbd><kbd>↓</kbd></dt><dd>사다리·덩굴 타기</dd>
+        <dt><kbd>X</kbd><kbd>SPACE</kbd></dt><dd>점프, 공중에서 한 번 더 누르면 2단 점프</dd>
+        <dt><kbd>→</kbd>+<kbd>X</kbd></dt><dd>벽에 붙어서 반대쪽으로 벽 점프 (박쥐 망토)</dd>
+        <dt><kbd>↓</kbd>+<kbd>X</kbd></dt><dd>발판 아래로 내려가기</dd>
+        <dt><kbd>Z</kbd></dt><dd>공격, 상자 열기, 금 간 벽 부수기, 스위치 치기</dd>
+        <dt><kbd>↓</kbd>+<kbd>Z</kbd></dt><dd>공중에서 하단 찌르기 (적을 밟으면 튀어 오름)</dd>
+        <dt><kbd>C</kbd></dt><dd>무기마다 다른 스킬 (MP 소모, 장비창에서 확인)</dd>
+        <dt><kbd>↑</kbd></dt><dd>NPC와 대화, 워프 받침대 사용</dd>
+        <dt><kbd>1</kbd>~<kbd>4</kbd></dt><dd>퀵슬롯 (회복 물약, 마나 물약)</dd>
+        <dt><kbd>I</kbd></dt><dd>장비창 (방향키로 고르고 Z로 장착, C로 상태창)</dd>
+        <dt><kbd>M</kbd></dt><dd>전체 지도와 탐험률</dd>
+      </dl>
+    </div>
+    <div class="card">
+      <h2>지역</h2>
+      <ul>
+        <li>마을 뒷산 · 들꽃 언덕 · 버섯 숲 <span>· 상자 밀기 퍼즐, 숨은 벽, 버섯 점프, 도토리 부적</span></li>
+        <li>고향 마을 <span>· 엄마, 대장간(무기 강화), 잡화점, 세이브, 워프</span></li>
+        <li>시작의 들판 <span>· 세이브, 워프, 촌장</span></li>
+        <li>바람 언덕 <span>· 구멍 아래 이끼 동굴, 높은 곳에 생명의 결정</span></li>
+        <li>이끼 동굴 <span>· 가시, 떨어지는 발판, 점프 버섯, 금 간 벽, 상자</span></li>
+        <li>땅속 개울 <span>· 움직이는 발판, 사다리로 숲길에 올라감, 오른쪽은 깊은 동굴</span></li>
+        <li>수정 동굴 <span>· 세이브, 워프, 가시 구덩이, 생명의 결정</span></li>
+        <li>박쥐 군주의 둥지 <span>· 보스 박쥐 군주 (박쥐 망토)</span></li>
+        <li>지하 호수 <span>· 수정 동굴의 푸른 문 아래, 헤엄치기, 가시 물고기</span></li>
+        <li>얼음 동굴 · 서리 신전 <span>· 미끄러운 빙판, 고드름, 스위치 블록, 서리 장화</span></li>
+        <li>얼어붙은 왕좌 <span>· 보스 서리 거북 (서리검)</span></li>
+        <li>고목 가지 길 · 새 둥지 <span>· 시간 다리, 새털 장식</span></li>
+        <li>수정 갱도 · 광산 승강기 · 무너진 갱도 <span>· 박쥐 군주 둥지 너머, 위아래 승강기, 기사단 무기고로 이어지는 사다리</span></li>
+        <li>버섯 동굴 · 잊혀진 지하실 · 가라앉은 사원 <span>· 횃불 퍼즐, 시간 스위치 다리, 물속 미로</span></li>
+        <li>왕실 회랑 · 종탑 · 보물고 · 기사 훈련장 <span>· 수문장 너머, 횃불 4개, 왕관 투구, 누름판 2개 퍼즐</span></li>
+        <li>눈보라 고개 ~ 얼음 감옥 (7곳) <span>· 서리 거북 너머, 스위치 미로, 얼음 위 미끄러지는 상자</span></li>
+        <li>작은 숲길 <span>· 상자</span></li>
+        <li>고목 쉼터 <span>· 세이브, 워프, 떠돌이 상인, 덩굴 타고 고목 꼭대기로</span></li>
+        <li>고목 꼭대기 <span>· 잎 발판, 상자</span></li>
+        <li>슬라임 둥지 <span>· 킹슬라임 (무기 + 2단 점프), 오른쪽 높은 벽 너머 고성</span></li>
+        <li>고성 입구 <span>· 워프, 세이브, 유령 기사</span></li>
+        <li>폭포 회랑 <span>· 여러 층 구조, 레드 링</span></li>
+        <li>높은 탑 <span>· 바람의 반지, 벽 점프로만 오르는 굴뚝</span></li>
+        <li>탑 꼭대기 <span>· 숨겨진 방, 청기사 장화, 생명의 결정</span></li>
+        <li>기사단 무기고 <span>· 세이브, 워프, 망령 갑옷, 청기사 투구</span></li>
+        <li>어둠의 회랑 <span>· 가시 함정, 청기사 갑옷</span></li>
+        <li>왕좌의 방 <span>· 보스 녹슨 수문장 (청기사의 검)</span></li>
+        <li>새로 열린 곳 (18곳) <span>· 풍차 언덕(덩굴 위), 울리는 동굴·종유석 굴(잊혀진 지하실 왼쪽), 성벽 통로·망루(보물고 오른쪽), 눈사태 비탈·얼음 첨탑·빙결의 정원(빙하 동굴 오른쪽), 모래 동굴·독수리 절벽·신전 지붕·모래시계 방·사막의 감옥, 마그마 웅덩이·재의 계곡·유황 동굴·흑요석 광산·불의 시련장</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>장비</h2>
+      <ul>
+        <li>무기 · 투구 · 갑옷 · 신발 · 장신구 5칸 <span>· 상자와 보스에서만 획득, 장비창에서 도감처럼 모아 보기</span></li>
+        <li>무기 강화 <span>· 몬스터가 떨어뜨린 골드로 대장간에서 +1 ~ +8 (단계마다 공격 +3)</span></li>
+        <li>무기별 C 스킬 <span>· 여행자 검기, 슬라임 폭탄, 불꽃 세 갈래, 성검 검기, 얼음 송곳, 독 부메랑, 용암 분출, 초승달 베기(HP 흡수), 핏빛 돌진(무적), 용의 숨결, 성광</span></li>
+        <li>무기별 능력 <span>· 슬라임 블레이드 3단 베기 폭발, 화염검 화상, 서리검 둔화, 청기사의 검 치명타와 큰 검기</span></li>
+        <li>퍼즐 장치 <span>· 나무 상자(3번 치면 제자리), 누름판과 철문, 횃불, 시간 스위치, 색깔 블록</span></li>
+        <li>사막 (13곳) <span>· 들꽃 언덕의 노란 문 너머. 모래 늪, 선인장, 전갈·미라, 보스 전갈왕(사막의 곡도: 독)</span></li>
+        <li>용암 동굴 (13곳) <span>· 봉인의 방 아래. 용암, 화염 분출구, 불도롱뇽, 보스 화염 골렘(용암검), 전설의 제단</span></li>
+        <li>열쇠 <span>· 붉은·푸른·노란 열쇠로 같은 색 문을 엶 (노란 열쇠는 얼음 감옥)</span></li>
+        <li>물속 <span>· 머리까지 잠기면 숨 게이지가 줄고, 다 떨어지면 피해</span></li>
+        <li>철 기사 세트 <span>· 투구+갑옷+장화 3개 모으면 공격 +3, 방어 +2, HP +20</span></li>
+        <li>슬라임 블레이드 <span>· 킹슬라임 드롭, 공격 +6</span></li>
+        <li>청기사 세트 <span>· 검+투구+갑옷+장화 4개 모으면 공격 +6, 방어 +4, HP +40. 갑옷엔 방패가 딸려 있음</span></li>
+        <li>흑월 세트 <span>· 고성 끝과 얼음 지역(성벽 통로·망루·얼음 첨탑·빙결의 정원). 흑월검은 벤 피해의 일부를 HP로 흡수. 4개: 공격 +9, 방어 +5, HP +60</span></li>
+        <li>적월 세트 <span>· 사막(모래 동굴·독수리 절벽·신전 지붕·모래시계 방). 적월검은 출혈과 높은 치명타. 4개: 공격 +12, 방어 +7, HP +80</span></li>
+        <li>용기사 세트 <span>· 용암(마그마 웅덩이·재의 계곡·유황 동굴·흑요석 광산). 용기사의 검은 화상과 3단 베기 화염 폭발, 갑옷은 용암 피해 절반. 4개: 공격 +16, 방어 +10, HP +120</span></li>
+        <li>레드 링, 바람의 반지 <span>· 장신구. 바람의 반지는 이동 속도 +15%</span></li>
+        <li>새 장신구 4개 <span>· 네잎클로버 부적(풍차 언덕), 메아리 반지(종유석 굴), 풍뎅이 반지(사막의 감옥), 불사조 반지(불의 시련장)</span></li>
+        <li>박쥐 망토 <span>· 장신구. 벽에 붙어 미끄러지다 벽 점프</span></li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<dialog id="setdlg" class="setdlg" aria-labelledby="set-title">
+  <h2 id="set-title">설정</h2>
+  <label class="srow"><span>소리 끄기</span><input type="checkbox" id="set-mute"></label>
+  <label class="srow"><span>배경음악</span><input type="range" id="set-m" min="0" max="100" step="5"><output id="set-m-v"></output></label>
+  <label class="srow"><span>효과음</span><input type="range" id="set-f" min="0" max="100" step="5"><output id="set-f-v"></output></label>
+  <div class="srow"><span>난이도</span><div class="seg" id="set-dmg" role="radiogroup" aria-label="난이도">
+    <button type="button" role="radio" data-v="0.5">쉬움</button><button type="button" role="radio" data-v="1">보통</button><button type="button" role="radio" data-v="1.5">어려움</button></div></div>
+  <div class="srow"><span>화면 흔들림</span><div class="seg" id="set-shake" role="radiogroup" aria-label="화면 흔들림">
+    <button type="button" role="radio" data-v="0">끔</button><button type="button" role="radio" data-v="0.5">약하게</button><button type="button" role="radio" data-v="1">보통</button></div></div>
+  <div class="srow mobonly"><span>버튼 크기</span><div class="seg" id="set-bs" role="radiogroup" aria-label="버튼 크기">
+    <button type="button" role="radio" data-v="0.85">작게</button><button type="button" role="radio" data-v="1">보통</button><button type="button" role="radio" data-v="1.15">크게</button></div></div>
+  <div class="srow apponly"><span>화면</span><div class="seg"><button type="button" id="set-fs">전체 화면</button><button type="button" id="set-quit">게임 종료</button></div></div>
+  <div class="pconly" id="set-keys"><h3>키 설정 <small>칸을 누르고 키를 누르세요 (Esc 취소)</small></h3><div class="kgrid"></div><button type="button" class="kreset" id="set-kreset">기본값으로</button></div>
+  <button type="button" class="gbtn sclose" id="set-close">닫기</button>
+</dialog>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

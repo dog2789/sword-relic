@@ -22,7 +22,7 @@ const res = await build({
 const js = res.outputFiles.find(f => f.path.endsWith('.js')).text;
 const css = res.outputFiles.find(f => f.path.endsWith('.css'))?.text || '';
 
-const html = readFileSync('index.html', 'utf8');
+const html = readFileSync('play/index.html', 'utf8');
 const title = html.match(/<title>(.*?)<\/title>/)[1];
 const fonts = html.match(/<link rel="stylesheet" href="https:\/\/fonts[^>]*>/)[0];
 const body = html.match(/<body>([\s\S]*?)<script type="module"/)[1];

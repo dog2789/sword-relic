@@ -1,0 +1,65 @@
+/* 소개 페이지 (/) — 게임 페이지와 같은 색·글꼴 */
+:root{
+  --bg:#0e0b18; --deep:#05030b; --panel:#171228; --line:#2c2346; --ink:#ece7f7; --muted:#9a91b8;
+  --gold:#e8c04a; --cyan:#8fe3ff;
+  --pix:"Press Start 2P", ui-monospace, monospace;
+  --kr:"IBM Plex Sans KR", system-ui, -apple-system, "Malgun Gothic", sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--deep)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 var(--kr);word-break:keep-all}
+img{display:block;max-width:100%;image-rendering:pixelated}
+h2{margin:0 0 20px;font:600 22px/1.4 var(--kr);color:var(--gold);letter-spacing:.06em}
+h3{margin:14px 0 6px;font-size:18px}
+p{margin:0}
+
+/* 첫 화면: 게임 장면 위에 제목 */
+.hero{position:relative;min-height:min(92vh,760px);display:grid;place-items:center;overflow:hidden;background:var(--deep);
+  border-bottom:4px solid var(--line)}
+.hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.45}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(5,3,11,.2),rgba(5,3,11,.55) 60%,var(--bg))}
+.hero-in{position:relative;z-index:1;text-align:center;padding:48px 16px}
+.eyebrow{font:400 10px var(--pix);color:var(--cyan);letter-spacing:.2em}
+.hero h1{margin:18px 0 0;font:400 clamp(30px,8vw,72px)/1.1 var(--pix);color:var(--gold);
+  text-shadow:4px 4px 0 #000,0 0 32px rgba(232,192,74,.35)}
+.kname{margin-top:14px;font-size:20px;font-weight:600;letter-spacing:.3em}
+.tag{margin-top:10px;font-size:clamp(16px,2.6vw,20px);color:var(--ink);text-shadow:0 2px 6px #000}
+.play{display:inline-block;margin-top:34px;padding:16px 30px;font:400 14px var(--pix);color:#1a1206;text-decoration:none;
+  background:var(--gold);border:3px solid #000;box-shadow:0 0 0 3px var(--gold),6px 6px 0 3px #000;transition:transform .08s}
+.play:hover{transform:translate(-2px,-2px);box-shadow:0 0 0 3px var(--gold),8px 8px 0 3px #000}
+.play:active{transform:translate(3px,3px);box-shadow:0 0 0 3px var(--gold),2px 2px 0 3px #000}
+.play:focus-visible{outline:3px solid var(--cyan);outline-offset:6px}
+.note{margin-top:18px;font-size:14px;color:var(--muted)}
+
+main{max-width:1040px;margin:0 auto;padding:0 16px}
+section{padding:72px 0 0}
+
+.story{max-width:640px;margin:0 auto;text-align:center}
+.story p+p{margin-top:12px}
+.story p{color:#cfc7e6}
+.story b{color:var(--gold)}
+
+/* 특징: 그림 + 설명 4칸 */
+.feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:28px}
+.feats article{background:var(--panel);border:2px solid var(--line);padding:12px 12px 20px}
+.feats img{width:100%;aspect-ratio:16/9;object-fit:cover;border:2px solid #000}
+.feats h3,.feats p{padding:0 6px}
+.feats p{color:var(--muted);font-size:15px}
+
+.gallery .shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:12px}
+.gallery img{width:100%;aspect-ratio:16/9;object-fit:cover;border:2px solid var(--line)}
+
+.howto .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px}
+.howto h3{margin-top:0;color:var(--cyan);font-size:17px}
+.howto ul{margin:12px 0;padding-left:18px}
+.howto li{margin:4px 0}
+.howto p{color:var(--muted);font-size:14px}
+kbd{display:inline-block;min-width:22px;padding:0 5px;margin:0 2px;font:400 9px/20px var(--pix);text-align:center;color:var(--ink);
+  background:var(--deep);border:2px solid var(--line);border-bottom-width:3px}
+
+.cta{text-align:center;padding-bottom:24px}
+.cta p{font-size:18px;color:#cfc7e6}
+
+footer{margin-top:72px;padding:28px 16px;text-align:center;font:400 9px var(--pix);color:var(--muted);border-top:2px solid var(--line);background:var(--deep)}
+
+@media (prefers-reduced-motion:reduce){.play{transition:none}}

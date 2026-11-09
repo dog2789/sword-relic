@@ -12,7 +12,8 @@ npm run build:single  # dist-single/index.html 한 파일 빌드 (Phaser는 CDN)
 ```
 
 - `main` 브랜치에 push하면 Vercel에 자동 배포됨. 주소 https://swordrelic.com (www는 여기로 넘김, sword-relic.vercel.app은 index.html 맨 위 스크립트가 localStorage `sr_*`를 주소 `#move=`에 담아 swordrelic.com으로 넘김. 받는 쪽은 플레이 시간 `time`이 긴 세이브를 남기고, 설정은 없을 때만 씀. vercel.app으로 홈 화면에 추가한 앱(standalone)은 넘기지 않고 위에 "swordrelic.com 열기" 안내 줄만 띄움).
-- 일반 방문자는 제목·게임·소리 버튼만 보임. 설명·조작·지역·장비 카드와 테스트 버튼은 주소 뒤 `?dev`로 켬 (`?dev=0` 끔, localStorage `sr_dev`).
+- 페이지 둘: 소개 페이지 `/` (`index.html` + `src/landing.css`, 스크린샷 `public/shots/*.png`, 검색·공유 정보의 주인공)와 게임 페이지 `/play/` (`play/index.html`). vite `rollupOptions.input`에 둘 다. 홈 화면 앱(standalone)·폰 앱(Capacitor)은 소개에서 바로 `/play/`로 넘김, 매니페스트 `start_url`도 `/play/`. 주소 이전 스크립트는 두 페이지가 같이 쓰는 `public/move.js`. 스크린샷 다시 찍기: 게임 UI 카메라(`uiCam`)를 숨기고 씬을 멈춘 뒤 HUD 아래를 잘라 찍음.
+- 게임 페이지 일반 방문자는 제목·게임·소리 버튼만 보임. 설명·조작·지역·장비 카드와 테스트 버튼은 주소 뒤 `?dev`로 켬 (`?dev=0` 끔, localStorage `sr_dev`).
 - 홈 화면에 추가(PWA): `public/manifest.webmanifest`, 아이콘 `icon-192/512.png`, 서비스 워커 `public/sw.js` (새 파일 먼저 받고 끊기면 저장본, 배포판에서만 등록).
 - 방문자 통계: Vercel Web Analytics, index.html 머리의 `/_vercel/insights/script.js` (서비스 워커는 `/_vercel/`을 건드리지 않음). 보는 곳은 Vercel 대시보드 Analytics 탭.
 - 검색·공유: index.html 머리의 description·og·twitter·JSON-LD, 썸네일 `public/og.png`(1200×630), `public/robots.txt`, `public/sitemap.xml`. 도메인을 바꾸면 이 세 곳의 swordrelic.com을 같이 바꿀 것.

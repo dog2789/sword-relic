@@ -14,7 +14,7 @@ app.whenReady().then(()=>{
   Menu.setApplicationMenu(null);
   const win=new BrowserWindow({width:1280,height:780,minWidth:640,minHeight:400,backgroundColor:'#000000',title:'소드 레릭',
     icon:path.join(DIST,'icon-512.png'),autoHideMenuBar:true,webPreferences:{contextIsolation:true,sandbox:true}});
-  win.loadURL('app://game/index.html?app=pc');
+  win.loadURL('app://game/play/index.html?app=pc');
   win.webContents.setWindowOpenHandler(()=>({action:'deny'}));   // 링크로 새 창 안 띄움
   win.webContents.on('before-input-event',(e,i)=>{if(i.type==='keyDown'&&i.key==='F11'){win.setFullScreen(!win.isFullScreen());e.preventDefault()}});
 });

@@ -3,7 +3,7 @@
   "short_name": "소드 레릭",
   "description": "고향을 떠나 전설의 검을 찾아 나서는 픽셀 메트로베니아",
   "lang": "ko",
-  "start_url": "/",
+  "start_url": "/play/",
   "scope": "/",
   "display": "fullscreen",
   "orientation": "any",
