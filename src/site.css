@@ -191,3 +191,6 @@ textarea:focus{border-color:var(--cyan);outline:none}
 @media (max-width:560px){.topnav .links{flex-wrap:wrap;overflow:visible;gap:4px}.topnav .links a{padding:3px 7px;font-size:13px}}
 footer a{display:inline-block;white-space:nowrap;margin:2px 8px}
 @media (max-width:560px){.topnav .links a.go{position:absolute;top:8px;right:16px}}
+/* 다운로드 페이지 받기 버튼: 금색 대신 차분한 하늘색 */
+.btn.dl-main{color:#06202a;background:var(--cyan);border-color:#000}
+.btn.dl-main:hover{color:#06202a;background:#b4eeff;border-color:#000}
