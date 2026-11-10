@@ -227,7 +227,7 @@ footer a{display:inline-block;white-space:nowrap;margin:2px 8px}
 .world b{display:block;margin-bottom:2px;font:700 18px var(--dot);color:var(--gold)}
 .world .beyond{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:16px;background:var(--deep)}
 .world .beyond p{padding:0 0 16px}
-.worldwrap button{position:absolute;z-index:2;top:calc(4px + var(--cw)/4 - 22px);display:grid;place-items:center;width:44px;height:44px;padding:0;color:#1a1206;background:var(--gold);border:2px solid #000;box-shadow:3px 3px 0 #000;cursor:pointer}
+.worldwrap button{position:absolute;z-index:2;top:calc(50% - 32px);display:grid;place-items:center;width:44px;height:44px;padding:0;color:#1a1206;background:var(--gold);border:2px solid #000;box-shadow:3px 3px 0 #000;cursor:pointer}
 .worldwrap button svg{display:block;width:20px;height:20px}
 .worldwrap button:hover{filter:brightness(1.1)}
 .worldwrap button:active{translate:2px 2px;box-shadow:1px 1px 0 #000}
