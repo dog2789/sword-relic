@@ -1,7 +1,7 @@
 {
   "name": "sword-relic",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,7 @@
     "build:single": "node tools/build-single.mjs",
     "app:pc": "vite build && npm --prefix desktop start",
     "app:android": "vite build && cap sync android && cap open android",
-    "app:exe": "vite build && npm --prefix desktop run dist",
+    "app:exe": "vite build && node tools/exe.mjs",
     "app:apk": "vite build && cap sync android && android\\build-apk.cmd"
   },
   "dependencies": {

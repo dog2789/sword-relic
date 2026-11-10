@@ -7,7 +7,7 @@ img{max-width:100%}
   --bg:#0e0b18; --panel:#171228; --line:#2c2346; --ink:#ece7f7; --muted:#9a91b8;
   --gold:#e8c04a; --cyan:#8fe3ff; --red:#e0404f;
   --pix:"Press Start 2P", ui-monospace, monospace;
-  --kr:"IBM Plex Sans KR", system-ui, -apple-system, "Malgun Gothic", sans-serif;
+  --kr:"Pretendard Variable", Pretendard, system-ui, -apple-system, "Malgun Gothic", sans-serif;
   color-scheme:dark;
 }
 html,body{background:var(--bg);color:var(--ink)}
@@ -216,3 +216,7 @@ html.app-pc #appset:hover{opacity:1;color:var(--gold)}
 html.app-pc .srow.apponly{display:grid}
 h1 .home{color:inherit;text-decoration:none}
 .sfoot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px}.sfoot .sclose{margin:0}.sfoot a.gbtn{text-decoration:none}
+
+/* 사이트 메뉴가 제목 구실을 해서, 일반 방문자에겐 머리글을 화면에서만 숨김 (검색·화면 낭독기에는 남김) */
+html:not(.dev) header{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+body.mobile .topnav,html.app .topnav{display:none}

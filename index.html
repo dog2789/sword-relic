@@ -28,7 +28,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"소드 레릭 (SWORD RELIC)","alternateName":"SWORD RELIC","url":"https://swordrelic.com/","image":"https://swordrelic.com/og.png","description":"고향을 떠나 전설의 검을 찾아 나서는 픽셀 메트로베니아 웹게임. 초원부터 마왕성까지 9개 지역 149개의 방, 보스 10마리, 퍼즐과 함정, 무기마다 다른 스킬. 설치 없이 PC·모바일 브라우저에서 바로 플레이.","genre":["액션","어드벤처","메트로베니아","플랫포머"],"gamePlatform":["Web browser","PC","Mobile"],"applicationCategory":"Game","operatingSystem":"Any","inLanguage":"ko","playMode":"SinglePlayer","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
 <script src="/move.js"></script>
 <!-- 홈 화면에 추가한 앱(예전 주소 '/'로 설치된 것 포함)과 폰 앱(Capacitor)은 소개 없이 바로 게임으로 -->
-<script>try{if(window.Capacitor||location.protocol==='app:'||matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone)location.replace('/play/'+location.search+location.hash)}catch(e){}</script>
+<script>try{if(window.Capacitor||location.protocol==='app:'||matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone)location.replace('/play/index.html'+location.search+location.hash)}catch(e){}</script>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
@@ -51,15 +51,24 @@
 </nav>
 
 <header class="hero">
-  <img class="hero-bg" src="/shots/meadow.png" alt="" aria-hidden="true">
+  <div class="hero-bg" aria-hidden="true">
+    <img src="/shots/meadow.png" alt="">
+    <img src="/shots/treetop.png" alt="" style="--i:1">
+    <img src="/shots/cave.png" alt="" style="--i:2">
+    <img src="/shots/castle.png" alt="" style="--i:3">
+    <img src="/shots/ice.png" alt="" style="--i:4">
+    <img src="/shots/desert.png" alt="" style="--i:5">
+    <img src="/shots/lava.png" alt="" style="--i:6">
+  </div>
   <div class="hero-in">
-    <p class="eyebrow">PIXEL METROIDVANIA</p>
     <h1>SWORD RELIC</h1>
     <p class="kname">소드 레릭</p>
     <p class="tag">전설의 검을 찾아 떠나는 모험</p>
     <a class="play" href="/play/">▶ 지금 플레이</a>
-    <p class="note">무료 · 설치 없이 PC와 모바일 브라우저에서 바로</p>
+    <p class="note">무료예요. 설치 없이 브라우저에서 바로 시작해요. <a href="/download/">PC·안드로이드 앱도 있어요</a></p>
   </div>
+  <!-- 게임 화면 아래 줄의 방 이름표처럼: 배경이 바뀔 때 지역 이름도 같이 바뀜 -->
+  <p class="place" aria-hidden="true"><span style="--i:0">초원</span><span style="--i:1">고목 숲</span><span style="--i:2">동굴</span><span style="--i:3">고성</span><span style="--i:4">얼음 지대</span><span style="--i:5">사막</span><span style="--i:6">용암 지대</span></p>
 </header>
 
 <main>
@@ -70,37 +79,36 @@
     <p>작은 마을 아르덴의 소년은 할아버지가 남긴 낡은 지도 한 장을 펼친다. 지도 끝에 그려진 검의 표식. 이제, 전설의 검을 찾아 떠날 시간이다.</p>
   </section>
 
-  <section class="feats" aria-label="게임 특징">
-    <article>
-      <img src="/shots/cave.png" alt="어두운 동굴 속을 탐험하는 주인공" loading="lazy">
-      <h3>이어진 세계를 탐험</h3>
-      <p>초원과 고목 숲에서 시작해 동굴, 고성, 얼음 지대, 사막, 용암 지대를 지나 더 먼 곳까지. 방마다 다른 지형과 숨겨진 길이 기다립니다.</p>
-    </article>
-    <article>
-      <img src="/shots/castle.png" alt="왕좌의 방에서 녹슨 수문장과 맞서는 장면" loading="lazy">
-      <h3>보스와 한판 승부</h3>
-      <p>지역마다 기다리는 보스는 저마다 다른 패턴으로 싸웁니다. 움직임을 읽고, 피하고, 빈틈을 노리세요.</p>
-    </article>
-    <article>
-      <img src="/shots/lava.png" alt="용암 지대의 흑요석 회랑" loading="lazy">
-      <h3>장비를 모으고 강화</h3>
-      <p>보물 상자와 보스에게서 얻는 무기·방어구·장신구. 무기마다 다른 스킬과 세트 효과, 대장간 강화로 나만의 조합을 만드세요.</p>
-    </article>
-    <article>
-      <img src="/shots/ice.png" alt="얼음 지대에서 미끄러운 빙판을 건너는 장면" loading="lazy">
-      <h3>퍼즐과 함정</h3>
-      <p>상자를 밀어 누름판을 누르고, 횃불을 밝히고, 시간 스위치가 꺼지기 전에 달리세요. 가시와 무너지는 발판도 조심!</p>
-    </article>
+  <section class="worldsec" aria-labelledby="world-h">
+    <h2 id="world-h">하나로 이어진 세계</h2>
+    <p class="lede">방에서 방으로, 지역에서 지역으로 걸어서 넘어가요. 새 능력을 얻으면 예전에 지나친 길이 열려요.</p>
+    <ul class="world" tabindex="0" aria-label="지역 둘러보기 (옆으로 넘겨 보세요)">
+      <li><figure><img src="/shots/meadow.png" alt="초원 지역의 게임 화면" loading="lazy"><figcaption><b>초원</b>슬라임이 뛰노는 들판에서 첫걸음을 떼요.</figcaption></figure></li>
+      <li><figure><img src="/shots/treetop.png" alt="고목 숲 지역의 게임 화면" loading="lazy"><figcaption><b>고목 숲</b>거대한 나무의 가지와 잎을 밟고 하늘 가까이 올라가요.</figcaption></figure></li>
+      <li><figure><img src="/shots/cave.png" alt="동굴 지역의 게임 화면" loading="lazy"><figcaption><b>동굴</b>가시와 무너지는 발판, 어둠 속의 물길을 지나요.</figcaption></figure></li>
+      <li><figure><img src="/shots/castle.png" alt="고성 지역의 게임 화면" loading="lazy"><figcaption><b>고성</b>옛 기사들이 지키던 성. 횃불을 밝혀 길을 열어요.</figcaption></figure></li>
+      <li><figure><img src="/shots/ice.png" alt="얼음 지대 지역의 게임 화면" loading="lazy"><figcaption><b>얼음 지대</b>미끄러운 빙판 위로 고드름이 떨어져요.</figcaption></figure></li>
+      <li><figure><img src="/shots/desert.png" alt="사막 지역의 게임 화면" loading="lazy"><figcaption><b>사막</b>모래 늪과 피라미드, 하늘에서 노리는 독수리.</figcaption></figure></li>
+      <li><figure><img src="/shots/lava.png" alt="용암 지대 지역의 게임 화면" loading="lazy"><figcaption><b>용암 지대</b>끓는 용암과 불길 사이로 길을 찾아요.</figcaption></figure></li>
+      <li class="beyond"><p><b>그 너머</b>용암 지대 뒤에도 길은 이어져요. 어떤 곳인지는 직접 확인해 보세요.</p><a class="btn gold" href="/play/">▶ 떠나기</a></li>
+    </ul>
   </section>
 
-  <section class="gallery" aria-label="스크린샷">
-    <h2>스크린샷</h2>
-    <div class="shots">
-      <img src="/shots/treetop.png" alt="고목 가지 위를 건너는 장면" loading="lazy">
-      <img src="/shots/desert.png" alt="사막의 피라미드 꼭대기" loading="lazy">
-      <img src="/shots/sky.png" alt="구름 위 하늘 성채" loading="lazy">
-      <img src="/shots/village.png" alt="고향 마을 아르덴" loading="lazy">
+  <section class="feats" aria-label="게임 특징">
+    <article><h3>보스와 한판 승부</h3><p>지역마다 기다리는 보스는 저마다 다른 리듬으로 싸워요. 예고 동작을 읽고, 피하고, 빈틈을 노리세요.</p></article>
+    <article><h3>무기마다 다른 스킬</h3><p>멀리 나는 검기, 세 갈래 불꽃, 체력을 빨아들이는 베기. 무기를 바꾸면 싸우는 방식이 달라져요.</p></article>
+    <article><h3>장비 수집과 강화</h3><p>장비는 보물 상자와 보스에게서만 나와요. 세트를 맞추고 대장간에서 강화해 나만의 조합을 만드세요.</p></article>
+    <article><h3>퍼즐과 함정</h3><p>상자를 밀어 누름판을 누르고, 횃불을 밝히고, 시간 스위치가 꺼지기 전에 달리세요.</p></article>
+  </section>
+
+  <section class="more" aria-labelledby="more-h">
+    <h2 id="more-h">모험을 돕는 것들</h2>
+    <div class="morelist">
+      <a href="/guide/"><h3>가이드</h3><p>스포일러 없이, 막혔을 때 떠올리면 좋은 요령만 모았어요.</p></a>
+      <a href="/journal/"><h3>모험 수첩</h3><p>내가 가 본 지도, 모은 장비, 쓰러뜨린 보스를 한눈에 봐요.</p></a>
+      <a href="/save/"><h3>세이브 옮기기</h3><p>하던 모험을 코드 한 줄로 다른 기기나 앱에 옮겨요.</p></a>
     </div>
+    <p class="newsline"><a href="/news/">업데이트 소식</a> 새 지역, 새 기능이 생기면 여기에 적어요.</p>
   </section>
 
   <section class="howto">
@@ -109,10 +117,10 @@
       <div>
         <h3>PC</h3>
         <ul>
-          <li><kbd>←</kbd><kbd>→</kbd> 이동 · <kbd>↑</kbd><kbd>↓</kbd> 사다리</li>
-          <li><kbd>Z</kbd> 공격 · <kbd>X</kbd> 점프 (2단 점프)</li>
-          <li><kbd>C</kbd> 무기 스킬 · <kbd>1</kbd>~<kbd>4</kbd> 물약</li>
-          <li><kbd>I</kbd> 장비창 · <kbd>M</kbd> 지도</li>
+          <li><kbd>←</kbd><kbd>→</kbd> 이동, <kbd>↑</kbd><kbd>↓</kbd> 사다리</li>
+          <li><kbd>Z</kbd> 공격, <kbd>X</kbd> 점프 (2단 점프)</li>
+          <li><kbd>C</kbd> 무기 스킬, <kbd>1</kbd>~<kbd>4</kbd> 물약</li>
+          <li><kbd>I</kbd> 장비창, <kbd>M</kbd> 지도</li>
         </ul>
         <p>키는 게임 안 설정에서 바꿀 수 있어요.</p>
       </div>
@@ -120,7 +128,7 @@
         <h3>모바일</h3>
         <ul>
           <li>왼쪽 스틱으로 이동</li>
-          <li>오른쪽 버튼으로 공격 · 점프 · 스킬</li>
+          <li>오른쪽 버튼으로 공격, 점프, 스킬</li>
           <li>세로로 들면 게임기처럼, 가로로 돌리면 화면 가득</li>
         </ul>
         <p>홈 화면에 추가하면 앱처럼 전체 화면으로 즐길 수 있어요.</p>

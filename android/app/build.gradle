@@ -7,8 +7,11 @@ android {
         applicationId "com.swordrelic.game"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        // 버전은 맨 위 package.json 한 곳에서 (0.1.1 → versionCode 101)
+        def appVer = new groovy.json.JsonSlurper().parse(file('../../package.json')).version
+        def (vMaj, vMin, vPat) = appVer.tokenize('.').collect { it as int }
+        versionCode vMaj * 10000 + vMin * 100 + vPat
+        versionName appVer
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

@@ -39,12 +39,23 @@
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Sans+KR:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=block">
+<link rel="preload" href="/fonts/Galmuri11-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/src/nav.css">
 </head>
 <body>
+<!-- 사이트 메뉴: 웹 PC 화면에서만 (폰·앱에서는 게임이 화면을 다 씀) -->
+<nav class="topnav" aria-label="사이트 메뉴">
+  <a class="logo" href="/">SWORD RELIC</a>
+  <div class="links">
+    <a href="/guide/">가이드</a><a href="/download/">다운로드</a><a href="/save/">세이브 옮기기</a><a href="/journal/">모험 수첩</a>
+    <a class="go" href="/play/">▶ 플레이</a>
+  </div>
+</nav>
 <div class="wrap">
   <header>
-    <div class="eyebrow">PROTOTYPE<span class="devonly"> · STAGE 12</span></div>
+    <div class="eyebrow devonly">STAGE 12</div>
     <h1><a href="/" class="home">SWORD RELIC</a></h1>
     <p class="sub lead">고향을 떠나 전설의 검을 찾아 나서는 픽셀 메트로베니아. 설치 없이 브라우저에서 바로 플레이.</p>
     <p class="sub">고향을 떠나 전설의 검을 찾아 나서는 모험. 초원·동굴·고성·얼음·사막·용암·하늘 성채·마왕성, 149개 방, 중간보스를 포함한 보스 10마리, 지역마다 다른 몬스터·퍼즐·함정, 무기마다 다른 공격과 스킬, 그리고 마왕과의 마지막 결전까지.</p>
