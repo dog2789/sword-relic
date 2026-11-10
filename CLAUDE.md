@@ -20,7 +20,7 @@ npm run build:single  # dist-single/index.html 한 파일 빌드 (Phaser는 CDN)
 - 홈 화면에 추가(PWA): `public/manifest.webmanifest`, 아이콘 `icon-192/512.png`, 서비스 워커 `public/sw.js` (새 파일 먼저 받고 끊기면 저장본, 배포판에서만 등록).
 - 구글 애드센스(ca-pub-8021140742740790, 2026-11-09 신청): 소개 페이지는 머리에 스크립트를 그대로, 나머지 사이트 페이지는 앱(Capacitor·`app:`)이 아닐 때만 넣는 짧은 스크립트, **게임 페이지 /play/에는 넣지 않음**(앱 안 애드센스는 정책 위반, 게임 조작 옆 광고는 실수 클릭 위험). `public/ads.txt`. 새 사이트 페이지를 만들면 같은 스크립트를 머리에.
 - 방문자 통계: Cloudflare Web Analytics (Pages 프로젝트 설정에서 켬, 코드 없음, 쿠키 없음). 보는 곳은 Cloudflare 대시보드.
-- 검색·공유: index.html 머리의 description·og·twitter·JSON-LD, 썸네일 `public/og.png`(1200×630), `public/robots.txt`, `public/sitemap.xml`. 도메인을 바꾸면 이 세 곳의 swordrelic.com을 같이 바꿀 것.
+- 검색·공유: index.html 머리의 description·og·twitter·JSON-LD, 썸네일 `public/og.png`(1200×630, `node tools/og.mjs`로 다시 만듦: 초원에서 적월 세트로 슬라임을 베는 장면 + 제목), `public/robots.txt`, `public/sitemap.xml`. 도메인을 바꾸면 이 세 곳의 swordrelic.com을 같이 바꿀 것.
 - 바뀐 게 생기면: 수정 → `npx vite build`로 빌드 확인 → 직접 해 보기(또는 아래 헤드리스 확인) → 커밋·push.
 
 ## 앱으로 감싸기 (출시 전, 보기용)

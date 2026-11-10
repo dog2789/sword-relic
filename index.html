@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://swordrelic.com/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="소드 레릭: 초원에서 슬라임에게 검을 휘두르는 주인공">
+<meta property="og:image:alt" content="소드 레릭: 초원에서 붉은 갑옷의 주인공이 슬라임에게 검을 휘두르는 장면">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="소드 레릭 (SWORD RELIC) - 픽셀 메트로베니아 웹게임">
 <meta name="twitter:description" content="전설의 검을 찾아 떠나는 모험">
@@ -82,6 +82,8 @@
   <section class="worldsec" aria-labelledby="world-h">
     <h2 id="world-h">하나로 이어진 세계</h2>
     <p class="lede">방에서 방으로, 지역에서 지역으로 걸어서 넘어가요. 새 능력을 얻으면 예전에 지나친 길이 열려요.</p>
+    <div class="worldwrap">
+    <button type="button" class="prev" aria-label="이전 지역" disabled>‹</button><button type="button" class="next" aria-label="다음 지역">›</button>
     <ul class="world" tabindex="0" aria-label="지역 둘러보기 (옆으로 넘겨 보세요)">
       <li><figure><img src="/shots/meadow.png" alt="초원 지역의 게임 화면" loading="lazy"><figcaption><b>초원</b>슬라임이 뛰노는 들판에서 첫걸음을 떼요.</figcaption></figure></li>
       <li><figure><img src="/shots/treetop.png" alt="고목 숲 지역의 게임 화면" loading="lazy"><figcaption><b>고목 숲</b>거대한 나무의 가지와 잎을 밟고 하늘 가까이 올라가요.</figcaption></figure></li>
@@ -92,6 +94,7 @@
       <li><figure><img src="/shots/lava.png" alt="용암 지대 지역의 게임 화면" loading="lazy"><figcaption><b>용암 지대</b>끓는 용암과 불길 사이로 길을 찾아요.</figcaption></figure></li>
       <li class="beyond"><p><b>그 너머</b>용암 지대 뒤에도 길은 이어져요. 어떤 곳인지는 직접 확인해 보세요.</p><a class="btn gold" href="/play/">▶ 떠나기</a></li>
     </ul>
+    </div>
   </section>
 
   <section class="feats" aria-label="게임 특징">
@@ -142,6 +145,20 @@
   </section>
 </main>
 
+<script>
+/* 지역 띠: 화살표로 한 칸씩, 마우스로 끌어서 넘기기 (손가락 스와이프는 브라우저가 알아서) */
+(function(){var w=document.querySelector('.world'),p=document.querySelector('.worldwrap .prev'),n=document.querySelector('.worldwrap .next');if(!w)return;
+  var step=function(){return w.querySelector('li').getBoundingClientRect().width+16};
+  var sync=function(){p.disabled=w.scrollLeft<8;n.disabled=w.scrollLeft>w.scrollWidth-w.clientWidth-8};
+  p.onclick=function(){w.scrollBy({left:-step(),behavior:'smooth'})};n.onclick=function(){w.scrollBy({left:step(),behavior:'smooth'})};
+  w.addEventListener('scroll',sync,{passive:true});sync();
+  var x0=null,s0=0,moved=0;
+  w.addEventListener('pointerdown',function(e){if(e.pointerType!=='mouse'||e.button)return;x0=e.clientX;s0=w.scrollLeft;moved=0});
+  addEventListener('pointermove',function(e){if(x0===null)return;moved=Math.abs(e.clientX-x0);if(moved>4)w.classList.add('drag');w.scrollLeft=s0-(e.clientX-x0)});
+  addEventListener('pointerup',function(){if(x0===null)return;x0=null;w.classList.remove('drag')});
+  w.addEventListener('click',function(e){if(moved>4){e.preventDefault();e.stopPropagation()}},true);   // 끌다가 놓을 때 링크가 눌리지 않게
+})();
+</script>
 <footer>
   <p><a href="/guide/">가이드</a><a href="/news/">업데이트 소식</a><a href="/download/">다운로드</a><a href="/save/">세이브 옮기기</a><a href="/journal/">모험 수첩</a></p>
   <p><a href="/about/">소개·문의</a><a href="/privacy/">개인정보처리방침</a></p>

@@ -11,6 +11,11 @@
 .topnav .links a:hover{color:var(--ink)}
 .topnav .links a[aria-current=page]{color:var(--gold);border-color:var(--line);background:var(--panel)}
 .topnav .links a.go{color:#1a1206;background:var(--gold);border-color:#000}
-@media (max-width:560px){.topnav{flex-wrap:wrap;gap:6px}.topnav .links{margin-left:0;width:100%}.topnav .links a{padding:4px 8px;font-size:13px}}
-@media (max-width:560px){.topnav .links{flex-wrap:wrap;overflow:visible;gap:4px}.topnav .links a{padding:3px 7px;font-size:13px}}
-@media (max-width:560px){.topnav .links a.go{position:absolute;top:8px;right:16px}}
+/* 폰: 첫 줄에 로고와 ▶ 플레이, 둘째 줄에 나머지 메뉴 (.links를 풀어서 한 flex 안에 놓음) */
+@media (max-width:560px){
+  .topnav{flex-wrap:wrap;gap:6px 6px}
+  .topnav .links{display:contents}
+  .topnav .logo{flex:1 0 calc(100% - 100px)}
+  .topnav .links a{order:3;padding:3px 7px;font-size:13px}
+  .topnav .links a.go{order:2}
+}

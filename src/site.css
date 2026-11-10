@@ -208,5 +208,28 @@ footer a{display:inline-block;white-space:nowrap;margin:2px 8px}
 .newsline a{margin-right:8px;font:700 15px var(--dot)}
 /* 첫 그림도 차례가 지나면 사라져야 다음 지역과 겹쳐 보이지 않음 (처음엔 바로 보이게 따로 시작) */
 .hero-bg img:first-child{animation:pass0 35s infinite}
-@keyframes pass0{0%,14.3%{opacity:.38}17.3%,97%{opacity:0}100%{opacity:.38}}
+@keyframes pass0{0%,14.3%{opacity:var(--on)}17.3%,97%{opacity:0}100%{opacity:var(--on)}}
 @media (prefers-reduced-motion:reduce){.hero-bg img:first-child{animation:none}}
+
+/* 지역 띠: 스크롤 막대 없이 손가락으로 넘기고, 마우스는 끌거나 양옆 화살표 */
+.world{scrollbar-width:none;cursor:grab}
+.world::-webkit-scrollbar{display:none}
+.world.drag{cursor:grabbing;scroll-snap-type:none;user-select:none}
+.world img{-webkit-user-drag:none;user-select:none}
+.worldwrap{position:relative}
+.worldwrap button{position:absolute;top:calc(50% - 30px);z-index:2;width:44px;height:44px;padding:0;font:700 22px var(--dot);color:#1a1206;background:var(--gold);border:2px solid #000;box-shadow:3px 3px 0 #000;cursor:pointer}
+.worldwrap button:disabled{opacity:0;pointer-events:none}
+.worldwrap .prev{left:-12px}.worldwrap .next{right:-12px}
+@media (hover:none),(max-width:560px){.worldwrap button{display:none}}
+
+/* 폰 첫 화면: 가로로 긴 게임 화면이 양옆으로 잘리지 않게 위쪽에 통째로 놓고, 글은 그 아래로 (빈 높이도 줄임) */
+@media (max-width:560px){
+  .hero{min-height:0;display:block}
+  .hero-bg{position:relative;width:100%;height:48.7vw}
+  .hero-bg img{object-fit:contain;--on:.9}
+  .hero-bg img:first-child{opacity:.9}
+  .hero::after{background:linear-gradient(transparent 32vw,var(--bg) 48.7vw)}
+  .hero-in{margin-top:-3vw;padding:0 16px 76px}
+  .hero h1{font-size:7.6vw}
+  .place{bottom:20px}
+}
