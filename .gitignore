@@ -4,3 +4,5 @@ dist
 .vercel
 *.log
 dist-single
+.claude/
+.idea/
