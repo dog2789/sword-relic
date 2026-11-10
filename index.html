@@ -83,7 +83,7 @@
     <h2 id="world-h">하나로 이어진 세계</h2>
     <p class="lede">방에서 방으로, 지역에서 지역으로 걸어서 넘어가요. 새 능력을 얻으면 예전에 지나친 길이 열려요.</p>
     <div class="worldwrap">
-    <button type="button" class="prev" aria-label="이전 지역" disabled>‹</button><button type="button" class="next" aria-label="다음 지역">›</button>
+    <button type="button" class="w-prev" aria-label="이전 지역" disabled><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M13 3 L6 10 L13 17" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="square"/></svg></button><button type="button" class="w-next" aria-label="다음 지역"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 3 L14 10 L7 17" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="square"/></svg></button>
     <ul class="world" tabindex="0" aria-label="지역 둘러보기 (옆으로 넘겨 보세요)">
       <li><figure><img src="/shots/meadow.png" alt="초원 지역의 게임 화면" loading="lazy"><figcaption><b>초원</b>슬라임이 뛰노는 들판에서 첫걸음을 떼요.</figcaption></figure></li>
       <li><figure><img src="/shots/treetop.png" alt="고목 숲 지역의 게임 화면" loading="lazy"><figcaption><b>고목 숲</b>거대한 나무의 가지와 잎을 밟고 하늘 가까이 올라가요.</figcaption></figure></li>
@@ -146,17 +146,22 @@
 </main>
 
 <script>
-/* 지역 띠: 화살표로 한 칸씩, 마우스로 끌어서 넘기기 (손가락 스와이프는 브라우저가 알아서) */
-(function(){var w=document.querySelector('.world'),p=document.querySelector('.worldwrap .prev'),n=document.querySelector('.worldwrap .next');if(!w)return;
-  var step=function(){return w.querySelector('li').getBoundingClientRect().width+16};
-  var sync=function(){p.disabled=w.scrollLeft<8;n.disabled=w.scrollLeft>w.scrollWidth-w.clientWidth-8};
-  p.onclick=function(){w.scrollBy({left:-step(),behavior:'smooth'})};n.onclick=function(){w.scrollBy({left:step(),behavior:'smooth'})};
-  w.addEventListener('scroll',sync,{passive:true});sync();
-  var x0=null,s0=0,moved=0;
-  w.addEventListener('pointerdown',function(e){if(e.pointerType!=='mouse'||e.button)return;x0=e.clientX;s0=w.scrollLeft;moved=0});
-  addEventListener('pointermove',function(e){if(x0===null)return;moved=Math.abs(e.clientX-x0);if(moved>4)w.classList.add('drag');w.scrollLeft=s0-(e.clientX-x0)});
-  addEventListener('pointerup',function(){if(x0===null)return;x0=null;w.classList.remove('drag')});
-  w.addEventListener('click',function(e){if(moved>4){e.preventDefault();e.stopPropagation()}},true);   // 끌다가 놓을 때 링크가 눌리지 않게
+/* 지역 띠: 한 칸씩 넘김. 화살표·마우스 끌기 (손가락 스와이프는 브라우저의 스크롤 스냅이 처리) */
+(function(){var w=document.querySelector('.world'),p=document.querySelector('.worldwrap .w-prev'),n=document.querySelector('.worldwrap .w-next');if(!w)return;
+  var step=function(){return w.children[1].offsetLeft-w.children[0].offsetLeft},max=function(){return w.scrollWidth-w.clientWidth};
+  var cur=function(){return Math.round(w.scrollLeft/step())},last=function(){return Math.ceil(max()/step())};
+  var go=function(i){i=Math.max(0,Math.min(last(),i));w.scrollTo({left:Math.min(max(),i*step()),behavior:'smooth'})};
+  var sync=function(){p.disabled=w.scrollLeft<4;n.disabled=w.scrollLeft>max()-4};
+  p.onclick=function(){go(cur()-1)};n.onclick=function(){go(w.scrollLeft>=max()-4?last():cur()+1)};
+  w.addEventListener('scroll',sync,{passive:true});addEventListener('resize',sync);sync();
+  // 마우스 끌기: 끄는 동안은 스냅을 끄고, 놓으면 끈 방향의 칸으로 부드럽게 간 뒤 스냅을 다시 켬
+  var x0=null,s0=0,i0=0,dx=0,t;
+  w.addEventListener('pointerdown',function(e){if(e.pointerType!=='mouse'||e.button)return;clearTimeout(t);x0=e.clientX;s0=w.scrollLeft;i0=cur();dx=0});
+  addEventListener('pointermove',function(e){if(x0===null)return;dx=e.clientX-x0;if(Math.abs(dx)>4)w.classList.add('drag');w.scrollLeft=s0-dx});
+  addEventListener('pointerup',function(){if(x0===null)return;x0=null;if(Math.abs(dx)<=4){w.classList.remove('drag');return}
+    go(Math.abs(dx)>50?i0+(dx<0?Math.max(1,Math.round(-dx/step())):-Math.max(1,Math.round(dx/step()))):i0);t=setTimeout(function(){w.classList.remove('drag')},600)});
+  w.addEventListener('click',function(e){if(Math.abs(dx)>4){e.preventDefault();e.stopPropagation()}},true);   // 끌다가 놓을 때 링크가 눌리지 않게
+  w.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){e.preventDefault();go(cur()+1)}if(e.key==='ArrowLeft'){e.preventDefault();go(cur()-1)}});
 })();
 </script>
 <footer>
