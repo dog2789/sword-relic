@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { execSync } from 'node:child_process';
 
 // 버전은 package.json 한 곳에서: html의 %VITE_APP_VERSION%, PC 앱(tools/exe.mjs), 안드로이드(build.gradle)가 같이 읽음
 process.env.VITE_APP_VERSION = JSON.parse(readFileSync('package.json', 'utf8')).version;
@@ -8,6 +9,23 @@ process.env.VITE_APP_VERSION = JSON.parse(readFileSync('package.json', 'utf8')).
 const PAGES = ['play', 'download', 'save', 'journal', 'guide', 'guide/beginner', 'guide/combat', 'guide/growth', 'guide/world', 'guide/puzzles', 'news', 'about', 'privacy'];
 // 영어판 페이지 (en/ 아래, 소식(news)은 한국어만)
 const EN_PAGES = ['en', ...PAGES.filter(p => p !== 'news').map(p => 'en/' + p)];
+
+/* sitemap의 lastmod: 빌드 때 페이지마다 그 html이 마지막으로 커밋된 날짜로 (게임 페이지는 src 변경도 포함).
+   git을 못 쓰면 오늘 날짜. public/sitemap.xml의 날짜는 자리만 잡아 둔 것 */
+function sitemapDates() {
+  const today = new Date().toISOString().slice(0, 10);
+  const date = files => { try { return execSync(`git log -1 --format=%cs -- ${files}`, { encoding: 'utf8' }).trim() || today; } catch (_) { return today; } };
+  return {
+    name: 'sr-sitemap', apply: 'build',
+    closeBundle() {
+      const f = 'dist/sitemap.xml'; if (!existsSync(f)) return;
+      writeFileSync(f, readFileSync(f, 'utf8').replace(/<loc>https:\/\/[^/]+\/([^<]*)<\/loc><lastmod>[^<]*<\/lastmod>/g, (m, p) => {
+        const src = p + 'index.html';
+        return m.replace(/<lastmod>[^<]*/, '<lastmod>' + date(/(^|\/)play\/$/.test(p) ? `${src} src` : src));
+      }));
+    }
+  };
+}
 
 /* 영어판: src/i18n/en.tsv (한국어<TAB>영어) 로 src 코드 안의 한국어 글자를 빌드 때 바꿈.
    따옴표째 같은 글자만 바꾸고('나' → 'Me'), ~로 시작하는 줄은 따옴표 없이 그 부분만 바꿈 (페이지 스크립트의 긴 템플릿용).
@@ -42,7 +60,7 @@ function en() {
 
 export default defineConfig(({ mode }) => ({
   base: './',
-  plugins: mode === 'en' ? [en()] : [],
+  plugins: mode === 'en' ? [en()] : [sitemapDates()],
   build: {
     // Phaser 자체가 커서 경고 기준을 올려둠
     chunkSizeWarningLimit: 2000,
