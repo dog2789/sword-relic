@@ -1,0 +1,728 @@
+공격(Z) 버튼	Attack (Z) button
+스틱 ↓	stick ↓
+$1번 칸	slot $1
+장비 버튼	Gear button
+무기	Weapon
+투구	Helmet
+갑옷	Armor
+신발	Boots
+장신구	Trinket
+여행자의 검	Traveler's Sword
+고향에서 들고 나온 낡은 검. 특별한 힘은 없지만 손에 익었다	An old sword brought from home. Nothing special, but it fits your hand
+슬라임 블레이드	Slime Blade
+킹슬라임의 핵으로 벼린 검. 3단 베기에 슬라임 폭발이 터진다	Forged from the King Slime's core. The 3rd slash bursts into slime
+철 투구	Iron Helm
+얼굴을 다 덮는 단단한 철 투구	A sturdy iron helm that covers the whole face
+철 갑옷	Iron Armor
+붉은 휘장을 두른 견습 기사의 철 갑옷	A squire's iron armor with a red tabard
+철 장화	Iron Boots
+무겁지만 든든한 장화	Heavy but reliable boots
+청기사의 검	Blue Knight's Sword
+푸른 기사단장의 장검. 치명타가 잘 나고, 검기가 커져 적을 꿰뚫는다	The Blue Captain's longsword. High crit, and a bigger sword wave that pierces foes
+청기사 투구	Blue Knight Helm
+푸른 깃털이 달린 기사단 투구	An order helm with a blue plume
+청기사 갑옷	Blue Knight Armor
+푸른 휘장과 십자 방패가 딸린 판금 갑옷	Plate armor with a blue tabard and a cross shield
+청기사 장화	Blue Knight Boots
+푸른 테를 두른 강철 장화	Steel boots trimmed in blue
+화염검	Flame Sword
+붉게 달아오른 검. 베인 적이 불타며 계속 피해를 입는다	A red-hot blade. Foes it cuts keep burning
+서리검	Frost Sword
+얼음 거북의 등껍질로 만든 검. 베인 적이 얼어붙어 느려진다	Made from a frost turtle's shell. Foes it cuts freeze and slow down
+서리 장화	Frost Boots
+바닥에 징이 박힌 장화. 빙판에서 미끄러지지 않는다	Studded boots. No slipping on ice
+레드 링	Red Ring
+붉은 보석이 박힌 반지. 몸에 힘이 솟는다	A ring set with a red jewel. Strength wells up
+바람의 반지	Wind Ring
+바람을 두른 반지. 발걸음이 가벼워진다	A ring wrapped in wind. Your steps feel lighter
+박쥐 망토	Bat Cloak
+박쥐 군주의 날개로 만든 망토. 벽에 붙어 미끄러지다 X로 벽 점프	A cloak made from the Bat Lord's wings. Slide down walls and wall-jump with X
+도토리 부적	Acorn Charm
+들꽃 언덕 꼭대기에서 찾은 부적. 마음이 든든해진다	A charm found atop Wildflower Hill. It steadies the heart
+새털 장식	Feather Ornament
+큰 새의 둥지에서 찾은 깃털. 몸이 가벼워진다	A feather from a great bird's nest. Your body feels lighter
+반딧불 반지	Firefly Ring
+버섯 동굴의 빛을 담은 반지	A ring holding the light of the Mushroom Cave
+기사의 인장	Knight's Seal
+종탑 꼭대기에 잠들어 있던 기사단의 인장 반지	The order's signet ring, asleep atop the bell tower
+눈꽃 반지	Snowflake Ring
+눈꽃 신전 제단에 바쳐져 있던 반지	A ring offered at the Snowflake Shrine altar
+왕관 투구	Crown Helm
+보물고 깊숙이 있던 금빛 투구. 왕실 근위대장의 것	A golden helm from deep in the treasury. Once the royal guard captain's
+뿔 투구	Horned Helm
+기사 훈련장 교관의 투구. 두 뿔이 위압감을 준다	The training-ground instructor's helm. Its two horns look menacing
+흑철 갑옷	Black Iron Armor
+가시 어깨받이가 달린 검은 갑옷과 붉은 망토	Black armor with spiked pauldrons and a red cape
+사막의 곡도	Desert Scimitar
+전갈왕의 독침으로 담금질한 곡도. 베인 적이 독에 걸린다	Tempered with the Scorpion King's stinger. Foes it cuts are poisoned
+용암검	Lava Sword
+화염 골렘의 심장으로 만든 검. 화상이 훨씬 오래간다	Made from the Fire Golem's heart. Burns last much longer
+모래 장화	Sand Boots
+바닥이 넓은 장화. 모래 늪에 빠지지 않고 위를 걸을 수 있다	Wide-soled boots. Walk on top of quicksand without sinking
+신기루 반지	Mirage Ring
+피라미드 꼭대기에 잠들어 있던 반지	A ring asleep atop the pyramid
+불꽃 갑옷	Flame Armor
+용암에서 건진 흑요석 갑옷. 용암에 데어도 피해가 절반	Obsidian armor pulled from lava. Lava damage is halved
+네잎클로버 부적	Four-Leaf Charm
+풍차 언덕에서 찾은 행운의 부적	A lucky charm found on Windmill Hill
+메아리 반지	Echo Ring
+종유석 굴 깊은 곳에서 울리던 반지	A ring that echoed deep in the stalactite cave
+풍뎅이 반지	Scarab Ring
+사막의 감옥에 갇혀 있던 왕의 반지	A king's ring locked in the desert prison
+불사조 반지	Phoenix Ring
+불의 시련을 이겨낸 자의 반지	The ring of one who passed the trial of fire
+흑월검	Black Moon Sword
+달 없는 밤에 벼린 검은 검. 벤 피해의 일부를 HP로 빨아들인다	A black blade forged on a moonless night. Drains part of the damage as HP
+흑월 투구	Black Moon Helm
+이마에 은빛 초승달이 솟은 검은 대투구	A black great helm with a silver crescent on the brow
+흑월 갑옷	Black Moon Armor
+초승달 어깨받이와 밤하늘빛 망토가 달린 검은 판금 갑옷	Black plate with crescent pauldrons and a night-sky cape
+흑월 장화	Black Moon Boots
+소리 없이 걷는 검은 강철 장화	Black steel boots that walk without a sound
+적월검	Red Moon Sword
+붉은 달빛을 머금은 검. 치명타가 잘 나고 베인 적이 피를 흘린다	A blade steeped in red moonlight. High crit, and foes it cuts bleed
+적월 투구	Red Moon Helm
+붉은 초승달과 금 테가 둘린 진홍 대투구	A crimson great helm with a red crescent and gold trim
+적월 갑옷	Red Moon Armor
+금 테를 두른 진홍 판금과 검붉은 망토	Crimson plate with gold trim and a blood-red cape
+적월 장화	Red Moon Boots
+금 징이 박힌 진홍 장화	Crimson boots with gold studs
+용기사의 검	Dragon Knight's Sword
+용의 송곳니로 만든 대검. 불태우고, 3단 베기에 화염이 터진다	A greatsword made from a dragon's fang. Burns, and the 3rd slash bursts into flame
+용기사 투구	Dragon Knight Helm
+양옆으로 용의 날개가 펼쳐진 금빛 투구	A golden helm with dragon wings spread on both sides
+용기사 갑옷	Dragon Knight Armor
+붉은 용 비늘을 엮은 금빛 갑옷과 날개 같은 망토	Golden armor of red dragon scales and a wing-like cape
+용기사 장화	Dragon Knight Boots
+용의 발톱이 달린 금빛 장화	Golden boots with dragon claws
+천공검	Sky Sword
+폭풍 그리폰의 깃털로 벼린 검. 베면 번개가 옆의 적에게 옮겨붙는다	Forged from the Storm Griffin's feathers. Lightning jumps to nearby foes
+천공 기사 투구	Sky Knight Helm
+양옆에 흰 날개가 돋은 금빛 테의 투구	A gold-rimmed helm with white wings on both sides
+천공 기사 갑옷	Sky Knight Armor
+구름빛 판금에 금 테를 두르고 하늘색 망토를 걸친 갑옷	Cloud-white plate with gold trim and a sky-blue cape
+천공 기사 장화	Sky Knight Boots
+깃털처럼 가벼운 흰 장화	White boots light as a feather
+폭풍의 반지	Storm Ring
+구름 정원에 떨어져 있던 반지. 바람이 몸을 밀어 준다	A ring dropped in the Cloud Garden. The wind pushes you along
+마검 아비스	Abyss, the Demon Blade
+마왕성 무덤에 잠든 검은 검. 벤 피해를 빨아들이고, 3단 베기에 어둠이 터진다	A black blade asleep in the castle tomb. Drains damage, and the 3rd slash bursts into darkness
+마검사 투구	Spellblade Helm
+뿔과 검은 왕관이 솟은 대투구	A great helm crowned with horns and a black crown
+마검사 갑옷	Spellblade Armor
+가시 어깨받이의 검보라 판금과 핏빛 안감 망토	Dark violet plate with spiked pauldrons and a blood-lined cape
+마검사 장화	Spellblade Boots
+보라 불꽃이 새겨진 검은 강철 장화	Black steel boots engraved with violet flames
+심연의 반지	Abyss Ring
+저주받은 예배당 제단의 반지. 검은 힘이 솟는다	A ring from the cursed chapel altar. Dark power wells up
+바람 기사의 깃털	Wind Knight's Feather
+바람 기사의 투구에 꽂혀 있던 깃털. 바람과 돌풍에 밀리지 않는다	A feather from the Wind Knight's helm. Wind and gusts can't push you
+근위대장의 문장	Guard Captain's Crest
+마왕 근위대장의 방패 문장. 바라보는 쪽에서 오는 적의 공격을 막아 준다	The crest from the Demon Guard Captain's shield. Blocks enemy attacks from the side you face
+전설의 검	Legendary Sword
+할아버지가 찾아 헤매던 전설의 검. 빛의 검기가 모든 것을 꿰뚫는다	The legendary sword Grandpa searched for. Its sword of light pierces everything
+회복 물약	Healing Potion
+HP 40 회복	Restores 40 HP
+마나 물약	Mana Potion
+MP 20 회복	Restores 20 MP
+엘릭서	Elixir
+HP와 MP를 모두 회복	Fully restores HP and MP
+힘의 약	Power Tonic
+30초 동안 공격력 +30% (방을 옮겨도 이어짐)	+30% attack for 30 seconds (lasts across rooms)
+귀환의 깃털	Return Feather
+지도(M)를 열고 X: 마지막 세이브 석상으로 돌아감 (보스전 중엔 못 씀)	Open the map (M) and press X: return to the last save statue (not during boss fights)
+철 기사 세트	Iron Knight Set
+공격 +3, 방어 +2, 최대 HP +20	ATK +3, DEF +2, Max HP +20
+흑철 세트	Black Iron Set
+공격 +5, 방어 +2, 최대 HP +10	ATK +5, DEF +2, Max HP +10
+청기사 세트	Blue Knight Set
+공격 +6, 방어 +4, 최대 HP +40	ATK +6, DEF +4, Max HP +40
+흑월 세트	Black Moon Set
+공격 +9, 방어 +5, 최대 HP +60	ATK +9, DEF +5, Max HP +60
+적월 세트	Red Moon Set
+공격 +12, 방어 +7, 최대 HP +80	ATK +12, DEF +7, Max HP +80
+용기사 세트	Dragon Knight Set
+공격 +16, 방어 +10, 최대 HP +120	ATK +16, DEF +10, Max HP +120
+천공 기사 세트	Sky Knight Set
+공격 +20, 방어 +12, 최대 HP +150	ATK +20, DEF +12, Max HP +150
+마검사 세트	Spellblade Set
+공격 +25, 방어 +14, 최대 HP +180	ATK +25, DEF +14, Max HP +180
+붉은 열쇠	Red Key
+푸른 열쇠	Blue Key
+노란 열쇠	Yellow Key
+공격 +	ATK +
+방어 +	DEF +
+공중 점프 +	Air jump +
+이동 속도 +	Move speed +
+빙판 미끄럼 방지	No slipping on ice
+모래 늪 위를 걸음	Walk on quicksand
+용암 피해 절반	Half lava damage
+벽 붙기	Wall cling
+바람에 안 밀림	Not pushed by wind
+앞쪽 피해 -30%	Frontal damage -30%
+능력치 없음	No stats
+기본	Basic
+삐죽머리	Spiky
+단발	Bob
+긴머리	Long
+포니테일	Ponytail
+갈색	Brown
+검정	Black
+금발	Blond
+은발	Silver
+빨강	Red
+파랑	Blue
+분홍	Pink
+밝은	Light
+보통	Medium
+구릿빛	Tan
+짙은	Dark
+초록	Green
+황토	Ochre
+보라	Purple
+흰색	White
+남색	Navy
+회색	Gray
+베이지	Beige
+왼쪽	Left
+오른쪽	Right
+위	Up
+아래	Down
+공격	Attack
+점프	Jump
+스킬	Skill
+장비	Gear
+지도	Map
+▶ 터치해서 시작	▶ Tap to start
+오류가 났어요: 	Something went wrong:
+  (화면을 누르면 다시 불러옴)	  (tap the screen to reload)
+그래픽 메모리가 부족해서 화면이 끊겼어요	Out of graphics memory, the screen stopped
+키 입력…	Press a key…
+전체 화면 끄기	Exit full screen
+전체 화면	Full screen
+창 모드	Windowed
+한 번 더 누르면 초기화	Press again to reset
+처음부터	New game
+이름	Name
+머리 모양	Hair
+머리색	Hair color
+피부	Skin
+상의	Top
+하의	Pants
+무작위	Random
+모험 시작	Start adventure
+캐릭터 만들기	Create Character
+◀ ▶ 눌러 바꾸기 · 이름 줄 눌러 입력	Tap ◀ ▶ to change · tap the name row to type
+↑↓ 고르기 · ←→ 바꾸기 · Z 결정	↑↓ Select · ←→ Change · Z Confirm
+모험가의 이름 (8자까지)	Adventurer's name (up to 8 letters)
+모험가	Adventurer
+아주 먼 옛날, 세상을 지키던 한 자루의 검이 있었다.\n사람들은 그 검을 \'소드 레릭\'이라 불렀다.	Long ago, a sword protected the world.\nPeople called it the Sword Relic.
+어느 날 검은 빛을 잃고 사라졌다.\n그 뒤로 들판과 숲에는 마물이 들끓기 시작했다.	One day, the sword lost its light and vanished.\nThen monsters swarmed the fields and forests.
+작은 마을 아르덴.\n소년은 할아버지가 남긴 낡은 지도 한 장을 펼쳤다.	The small village of Arden.\nA boy unfolded an old map from his grandfather.
+지도 끝에 그려진 검의 표식.\n이제, 전설의 검을 찾아 떠날 시간이다.	At the map's edge, the mark of a sword.\nNow it is time to seek the legendary sword.
+건너뛰기 ▶▶	Skip ▶▶
+스틱 이동   X 점프   Z 공격·대화   위 버튼 장비·지도	Stick Move   X Jump   Z Attack/Talk   Top buttons Gear/Map
+←→ 이동   X 점프   Z 공격   ↑ 대화   I 장비   M 지도	←→ Move   X Jump   Z Attack   ↑ Talk   I Gear   M Map
+보스 방 입구에서 다시 도전해요	Try again from the boss room entrance
+슬라임 둥지의 주인이 나타났다!	The master of the Slime Nest appears!
+기록했어요. HP와 MP가 모두 회복됐어요	Saved. HP and MP fully restored
+나	Me
+이게... 할아버지가 평생 찾아 헤매던 전설의 검.	This is... the legendary sword Grandpa spent his whole life searching for.
+할아버지의 목소리	Grandpa's Voice
+...잘 해냈구나, {name}. 고향을 떠나 여기까지 온 네가 자랑스럽다.	...Well done, {name}. I'm proud of you for leaving home and coming all this way.
+그 검은 이제 네 것이다. 네가 지키고 싶은 것을 위해 휘두르거라.	That sword is yours now. Swing it for what you want to protect.
+고마워요, 할아버지. 이제 집으로 돌아가요. 엄마가 기다리고 있을 거예요.	Thank you, Grandpa. I'm going home now. Mom will be waiting.
+...그런데 고성 탑 꼭대기의 봉인이 풀린 것 같구나. 하늘 위, 마왕의 성으로 가는 길이...	...But it seems the seal atop the castle tower has broken. The path to the sky, to the Demon King's castle...
+- 소드 레릭 1부 끝 -   (고성 탑 꼭대기에서 2부가 이어져요)	- SWORD RELIC Part 1 End -  (Part 2 starts atop the castle tower)
+을	
+를	
+ 얻었다!  	 obtained!
+  (I 키로 장착)	  (equip with the I key)
+ 완성!  	 complete!
+생명의 결정! 최대 HP +20	Life Crystal! Max HP +20
+2단 점프를 얻었다! 공중에서 점프를 한 번 더 누르세요	Double jump acquired! Press jump again in midair
+바람 언덕 높은 곳에서 뭔가 빛나던데...	Something was shining high up on Windy Hill...
+벽이 무너지고 길이 열렸다!	The wall crumbled and a path opened!
+의 기록	's Record
+킹슬라임	King Slime
+동굴 슬라임	Cave Slime
+얼음 슬라임	Ice Slime
+슬라임	Slime
+킹슬라임이 부하를 불렀다!	The King Slime called its minions!
+플레이 시간 	Play time
+    레벨 	    Level
+\n쓰러진 횟수 	\nDeaths
+번    보물 상자 	    Chests
+쓰러졌다… 보스 방 입구에서 다시 도전합니다	You fell… Try again from the boss room entrance
+쓰러졌다… 마지막 석상에서 다시 시작합니다 (골드·장비는 그대로)	You fell… Restarting at the last statue (gold and gear are kept)
+쓰러졌다… 처음 장소에서 다시 시작합니다 (석상에 저장하세요)	You fell… Restarting at the first spot (save at a statue)
+전설의 검을 찾아서	In Search of the Legendary Sword
+이어하기	Continue
+새로 시작	New Game
+화면을 눌러 선택	Tap to select
+Z 또는 화면을 눌러 선택	Press Z or tap to select
+Z 선택   X 나가기	Z Select   X Leave
+대장간 · 장비 강화	Blacksmith · Upgrade Gear
+  (장착)	  (equipped)
+최대	MAX
+더 이상 강화할 수 없을 만큼 단련됐다.	It's been tempered as far as it can go.
+공격 	ATK
+방어 	DEF
+Z를 누르면 강화해요	Press Z to upgrade
+골드가 모자라요	Not enough gold
+! 이제 조금 더 강해졌을 거야.	! It should be a bit stronger now.
+잡화점	General Store
+  (가진 개수 	  (owned:
+Z를 누르면 1개 사요	Press Z to buy 1
+ 1개를 샀어요	 x1 purchased
+↑ 키로 순간이동 문에 들어갈 수 있어요	Press the ↑ key to enter the teleport door
+를 얻었다! 같은 색 문을 열 수 있어요	 obtained! It opens doors of the same color
+상자가 처음 자리로 돌아갔어요	The crate returned to its starting spot
+남은 횃불 	Torches left:
+개	
+횃불이 모두 켜지자 철문이 열렸다!	All torches lit, and the iron gate opened!
+초 안에 지나가세요!	s! Hurry across!
+너무 가벼워서 눌리지 않아요. 상자를 올려 보자	Too light to press it down. Try putting a crate on it
+안쪽에서 빗장을 풀었다	Unbarred it from the inside
+로 문을 열었다!	 opened the door!
+가 있어야 열 수 있는 문이에요	 is needed to open this door
+숨이 막혀요! 물 밖으로 나가세요	Can't breathe! Get out of the water
+바람이 분다 →	The wind blows →
+← 바람이 분다	← The wind blows
+상태	Status
+C 다음 칸	C Next tab
+C 탭   I 닫기	C Tab   I Close
+방어	Defense
+골드	Gold
+시간	Time
+탐험률	Explored
+능력	Abilities
+2단 점프	Double jump
+벽 점프	Wall jump
+빙판 걷기	Ice walking
+열쇠	Keys
+쓰러뜨린 보스  	Bosses defeated
+ 세트	 Set
+아직 얻지 못한 장비예요. 상자나 보스에게서 찾아보세요.	Not found yet. Look in chests or defeat bosses.
+  (장착 중)	  (equipped)
+다시 눌러 벗기	Tap again to unequip
+Z 벗기	Z Unequip
+다시 눌러 장착	Tap again to equip
+Z 장착	Z Equip
+C 스킬	C Skill
+박쥐	Bat
+가시 달팽이	Spike Snail
+망령 갑옷	Haunted Armor
+박쥐 군주	Bat Lord
+가시 물고기	Spike Fish
+서리 거북	Frost Turtle
+사막 전갈	Desert Scorpion
+미라	Mummy
+불도롱뇽	Fire Salamander
+전갈왕	Scorpion King
+화염 골렘	Fire Golem
+녹슨 수문장	Rusted Gatekeeper
+하피	Harpy
+번개 정령	Thunder Wisp
+폭풍 그리폰	Storm Griffin
+동굴 거미	Cave Spider
+떠도는 유령	Wandering Ghost
+눈사람	Snowman
+폭탄 바위	Bomb Rock
+뿔 토끼	Horned Hare
+꿀벌	Bee
+모래 지렁이	Sand Worm
+눈알 박쥐	Eye Bat
+그림자 기사	Shadow Knight
+해골 마법사	Skeleton Mage
+버섯 도깨비	Mushroom Goblin
+사마귀	Mantis
+두더지	Mole
+가고일	Gargoyle
+얼음 정령	Ice Wisp
+독수리	Vulture
+용암 슬라임	Magma Slime
+천둥 구름	Thundercloud
+미믹	Mimic
+바람 기사	Wind Knight
+근위대장	Guard Captain
+마왕	Demon King
+동굴 박쥐	Cave Bat
+모래 박쥐	Sand Bat
+불 박쥐	Fire Bat
+얼음 박쥐	Ice Bat
+그리폰의 날갯짓에 몸이 밀린다!	The griffin's wingbeats push you back!
+마왕이 진짜 힘을 드러냈다!	The Demon King reveals his true power!
+마왕이 마지막 힘을 쥐어짠다!	The Demon King summons his last strength!
+수문장이 돌진한다!	The Gatekeeper charges!
+바람 기사가 돌풍을 일으켰다!	The Wind Knight whips up a gust!
+전갈왕이 부하를 불렀다!	The Scorpion King called its minions!
+불비가 쏟아진다!	A rain of fire pours down!
+{name}, 정말 떠나는구나. 할아버지를 꼭 닮았어.	{name}, so you're really leaving. You look just like your grandfather.
+길을 가다 지치면 석상에 손을 얹거라. 기운이 돌아올 게다.	If you grow tired on the road, lay your hand on a statue. Your strength will return.
+들판 바닥의 사다리 구멍은 땅속 동굴로 이어진단다. 그 위에서 ↓ 키를 눌러 보거라.	The ladder holes in the field lead to caves underground. Stand on one and press the ↓ key.
+동쪽 끝 슬라임 둥지 너머엔 옛 고성이 있다고 하더구나.	They say an old castle lies past the Slime Nest at the far east.
+오오, 하늘을 두 번 딛는 힘을 얻었구나!	Oho, you've gained the power to step on the sky twice!
+슬라임 둥지 오른쪽의 높은 벽, 이제는 넘을 수 있을 게다.	The high wall right of the Slime Nest, you should be able to get over it now.
+그 너머 고성에 전설의 검에 대한 단서가 있을지도 모르지.	There may be a clue about the legendary sword in the castle beyond.
+허허, 이런 곳에서 손님을 다 만나네.	Heh heh, fancy meeting a customer in a place like this.
+고목 꼭대기에서 반짝이는 걸 봤다네. 나무 덩굴을 타고 ↑ 로 올라가 보게.	I saw something shining atop the old tree. Climb the vines with the ↑ key.
+옛다, 회복 물약 두 병일세. 숫자 1 키로 마실 수 있다네.	Here, two healing potions. You can drink one with the 1 key.
+물약은 아껴 쓰게. 몬스터가 가끔 떨어뜨리기도 하지.	Save your potions. Monsters drop them now and then.
+워프 받침대는 한 번 밟아두면 그 위에서 ↑ 키로 오갈 수 있다네.	Once you step on a warp pedestal, you can travel from it with the ↑ key.
+돌아왔구나! 얼굴 보니 다행이다.	You're back! I'm so glad to see your face.
+무리하지 말고, 힘들면 언제든 집에 들르렴.	Don't push yourself. Come home any time it gets hard.
+{name}, 정말 떠나는 거구나... 할아버지가 쓰시던 그 검, 잘 챙겼지?	{name}, you're really going... You have Grandpa's sword with you, right?
+전설의 검은 동쪽 고성 어딘가에 잠들어 있다고들 하더라.	They say the legendary sword sleeps somewhere in the castle to the east.
+몸조심하렴. 대장간 아저씨한테 검도 손봐 달라고 하고.	Take care of yourself. And ask the blacksmith to look after your sword.
+어서 오게! 골드만 있으면 자네 검을 더 단단하게 두드려 주지.	Welcome! Bring me gold and I'll hammer that sword of yours even tougher.
+어서 오세요~ 먼 길 떠나려면 물약은 넉넉히 챙겨야죠.	Welcome~ If you're going far, stock up on potions.
+{name} 형! 고성의 녹슨 수문장을 쓰러뜨렸다며? 진짜 멋있다!	{name}! I heard you beat the Rusted Gatekeeper in the castle! So cool!
+형, 몬스터를 쓰러뜨리면 반짝이는 골드가 나온대!	Hey, monsters drop shiny gold when you beat them!
+골드를 모으면 대장간에서 검을 강화할 수 있어. 나도 크면 기사가 될 거야!	Save up gold and the blacksmith can upgrade your sword. I'll be a knight when I grow up!
+고향에 돌아가면 어머니께 안부 전해 다오.	When you get home, give my regards to your mother.
+그리고... 남은 보물도 찾아보거라. 세상은 아직 넓단다.	And... look for the remaining treasures too. The world is still wide.
+...드디어 왔구나, 내 손주 {name}.	...You've finally come, my grandchild {name}.
+제단 위의 검을 집어 보거라. 그것이 네가 찾던 전설의 검이란다.	Take the sword on the altar. That is the legendary sword you've been seeking.
+...여기까지 왔는가, 젊은 검사 {name}.	...So you've come this far, young swordsman {name}.
+나는 이 성을 지키던 청기사단의 기사였다. 마왕의 군세에 성은 무너지고 말았지.	I was a knight of the Blue Order that guarded this castle. It fell to the Demon King's army.
+폭포 회랑 너머 무기고와 어둠의 회랑에 우리 청기사단의 갑옷이 남아 있다.	Our Blue Order's armor remains in the armory past the Waterfall Hall and in the Dark Corridor.
+왕좌의 방은 녹슨 수문장이 지키고 있다. 내려찍기의 충격파는 뛰어서 피하거라.	The Rusted Gatekeeper guards the Throne Room. Jump to dodge the shockwave of its slam.
+높은 탑의 좁은 굴뚝은 벽을 딛고 오르는 자만 지날 수 있다. 땅속 깊은 곳 박쥐 군주의 망토라면 혹시...	Only those who climb by kicking off walls can pass the narrow chimney of the High Tower. Perhaps the cloak of the Bat Lord, deep underground...
+워프 포인트 등록! 받침대 위에서 ↑ 키를 누르면 이동할 수 있어요	Warp point registered! Press the ↑ key on the pedestal to travel
+✕ 닫기	✕ Close
+ESC 건너뛰기	ESC Skip
+다른 워프 포인트를 찾아 등록하면 순간이동할 수 있어요	Find and register other warp points to teleport
+워프	Warp
+방향키 고르기   Z 이동   M 닫기	Arrows Select   Z Go   M Close
+등록한 워프 	Warps registered:
+곳	
+  (여기)	  (here)
+지금 있는 곳이에요	You are here
+한 번 더 누르면 이곳으로 순간이동해요	Tap again to teleport here
+Z를 누르면 이곳으로 순간이동해요	Press Z to teleport here
+탐험률 	Explored
+방 	Rooms
+    보물 	    Treasure
+    워프 	    Warps
+현재 위치: 	Location:
+점프 버튼	Jump button
+ 귀환의 깃털 (	 Return Feather (
+M 닫기	M Close
+현재	You
+세이브	Save
+보물	Treasure
+보스	Boss
+귀환의 깃털이 없어요 (잡화점에서 팔아요)	No Return Feather (sold at the General Store)
+보스와 싸우는 중엔 쓸 수 없어요	Can't use it during a boss fight
+지도(M)에서 써요	Use it from the map (M)
+검기	Sword Wave
+앞으로 날아가는 검기	A sword wave that flies forward
+슬라임 폭탄	Slime Bomb
+통통 튀다 터지는 슬라임을 던짐. 주변 적에게 폭발 피해	Throw a bouncing slime that bursts. Explosion damages nearby foes
+불꽃 세 갈래	Triple Flame
+불덩이 세 개를 부채꼴로 쏨. 맞은 적은 불탐	Fire three fireballs in a fan. Foes hit catch fire
+성검 검기	Holy Sword Wave
+적을 꿰뚫는 커다란 빛의 검기	A huge wave of light that pierces foes
+얼음 송곳	Ice Spikes
+앞쪽 땅에서 얼음 송곳이 차례로 솟아 적을 얼림	Ice spikes rise from the ground ahead one by one, freezing foes
+독 부메랑	Poison Boomerang
+곡도를 던지면 빙글빙글 돌다 돌아옴. 갈 때 올 때 모두 독	Throw the scimitar; it spins and comes back. Poisons both ways
+용암 분출	Lava Burst
+앞쪽 땅에서 용암 기둥이 차례로 솟구침	Lava pillars erupt from the ground ahead one by one
+초승달 베기	Crescent Slash
+적을 꿰뚫는 초승달을 날림. 벤 피해의 30%를 HP로 흡수	Fire a piercing crescent. Drains 30% of damage dealt as HP
+핏빛 돌진	Blood Rush
+앞으로 순식간에 돌진하며 지나간 적을 모두 벰. 돌진 중엔 무적	Dash forward in a flash, cutting every foe you pass. Invincible while dashing
+용의 숨결	Dragon Breath
+앞으로 불길을 내뿜어 닿는 적을 계속 태움	Breathe fire forward, burning foes it touches
+성광	Holy Light
+거대한 빛의 검기와 함께 앞쪽에 빛의 기둥이 내리꽂힘	A giant wave of light, plus a pillar of light striking ahead
+천둥	Thunder
+앞쪽 땅에 번개가 다섯 번 차례로 내리꽂힘	Lightning strikes the ground ahead five times in a row
+심연 베기	Abyss Slash
+적을 꿰뚫는 커다란 검은 초승달을 날림. 벤 피해의 20%를 HP로 흡수	Fire a huge piercing black crescent. Drains 20% of damage dealt as HP
+고향 마을	Home Village
+엄마	Mom
+대장장이	Blacksmith
+꼬마	Kid
+잡화점 누나	Shopkeeper
+{name}, 드디어 떠나는구나... 할아버지 검은 잘 챙겼니?	{name}, you're finally leaving... Did you bring Grandpa's sword?
+응. 할아버지가 말한 전설의 검, 꼭 찾아서 돌아올게.	Yeah. I'll find the legendary sword Grandpa talked about and come back.
+대장간 아저씨한테 들러 보렴. 골드만 있으면 검을 더 강하게 두드려 주신대.	Stop by the blacksmith. He says with enough gold he can make your sword stronger.
+그리고... 꼭 무사히 돌아와야 해.	And... you have to come back safe.
+시작의 들판	Starting Field
+촌장 할아버지	Village Elder
+바람 언덕	Windy Hill
+작은 숲길	Forest Path
+고목 쉼터	Old Tree Rest
+떠돌이 상인	Wandering Merchant
+고목 꼭대기	Old Treetop
+이끼 동굴	Mossy Cave
+땅속 개울	Underground Stream
+슬라임 둥지	Slime Nest
+고성 입구	Castle Gate
+유령 기사	Ghost Knight
+...거기 누구냐. 살아 있는 자가 이 성에 발을 들이다니.	...Who goes there? A living soul setting foot in this castle...
+전설의 검을 찾고 있어요. 할아버지가 남긴 이야기를 따라왔어요.	I'm looking for the legendary sword. I followed the story my grandpa left.
+...그렇다면 내 이야기를 들어라. 가까이 와서 ↑ 키로 말을 걸거라.	...Then hear my tale. Come close and talk to me with the ↑ key.
+폭포 회랑	Waterfall Hall
+높은 탑	High Tower
+탑 꼭대기	Tower Top
+수정 동굴	Crystal Cave
+박쥐 군주의 둥지	Bat Lord's Nest
+땅속 깊은 곳의 박쥐 군주가 날개를 펼쳤다!	The Bat Lord of the deep spread its wings!
+기사단 무기고	Order Armory
+어둠의 회랑	Dark Corridor
+왕좌의 방	Throne Room
+왕좌를 지키던 녹슨 수문장이 깨어났다!	The Rusted Gatekeeper guarding the throne awakens!
+...해냈구나. 수문장의 저주가 풀리고 성에 빛이 돌아왔다.	...You did it. The Gatekeeper's curse is lifted, and light returns to the castle.
+전설의 검은 이 성보다 더 깊은 곳, 얼어붙은 땅 아래에 봉인되어 있다고 전해진다.	It is said the legendary sword is sealed deeper than this castle, beneath the frozen land.
+얼어붙은 땅... 수정 동굴의 푸른 문 너머일지도 몰라.	Frozen land... Maybe past the blue door in the Crystal Cave.
+지하 호수	Underground Lake
+얼음 동굴	Ice Cave
+바닥이 꽁꽁 얼어 있어... 발이 미끄러져서 멈추기가 힘들어.	The floor is frozen solid... My feet keep slipping, it's hard to stop.
+빙판에서도 버틸 수 있는 장화가 있으면 좋을 텐데.	I wish I had boots that could grip the ice.
+서리 신전	Frost Shrine
+얼어붙은 왕좌	Frozen Throne
+얼음 속에 잠들어 있던 서리 거북이 깨어났다!	The Frost Turtle asleep in the ice awakens!
+이 냉기... 아직 더 깊은 곳이 있는 것 같아.	This chill... There must be somewhere even deeper.
+전설의 검이 가까워지고 있어. 조금만 더 가 보자.	The legendary sword is getting close. Just a little further.
+마을 뒷산	Village Hill
+길을 철문이 막고 있네. 바닥에 누름판이 있어...	An iron gate blocks the way. There's a pressure plate on the floor...
+저 나무 상자를 밀어서 누름판 위에 올려 두면 열릴지도 몰라.	Maybe if I push that wooden crate onto the plate, it'll open.
+들꽃 언덕	Wildflower Hill
+버섯 숲	Mushroom Woods
+고목 가지 길	Branch Path
+새 둥지	Bird's Nest
+수정 갱도	Crystal Mine
+광산 승강기	Mine Lift
+무너진 갱도	Collapsed Mine
+버섯 동굴	Mushroom Cave
+꺼진 횃불이 여기저기 있어. 칼로 쳐서 불을 붙여 볼까?	Unlit torches all over. Maybe I can light them by hitting them with my sword?
+잊혀진 지하실	Forgotten Cellar
+가시 위에 다리를 놓는 스위치 같은데... 시간이 지나면 사라지려나?	Looks like a switch that makes a bridge over the spikes... Will it vanish after a while?
+가라앉은 사원	Sunken Temple
+왕실 회랑	Royal Hall
+종탑	Bell Tower
+보물고	Treasury
+기사 훈련장	Knight Training Ground
+누름판이 두 개야. 둘 다 눌러야 위쪽 철문이 열리는 것 같아.	Two pressure plates. I think both must be pressed to open the gate above.
+눈보라 고개	Blizzard Pass
+얼음 미로	Ice Maze
+빨간 벽과 파란 벽... 스위치를 칠 때마다 서로 바뀌는구나.	Red walls and blue walls... They swap every time I hit the switch.
+어느 쪽을 열어 둘지 잘 생각해야겠어.	I'd better think about which ones to leave open.
+빙하 동굴	Glacier Cave
+얼어붙은 호수	Frozen Lake
+고드름 회랑	Icicle Hall
+눈꽃 신전	Snowflake Shrine
+얼음 감옥	Ice Prison
+얼음 위에서는 상자가 미끄러져서 벽에 닿아야 멈추겠는걸.	On ice, the crate will slide until it hits a wall.
+모래 언덕 입구	Dune Gate
+뜨거운 모래바람... 저 모래 웅덩이는 발이 푹푹 빠지는 늪이야.	Scorching sandstorm... That sand pool is quicksand that swallows your feet.
+빠지면 X를 연타해서 빠져나와야겠어. 머리까지 잠기면 위험해.	If I sink, I'll have to mash X to climb out. It's dangerous if it reaches my head.
+모래 바다	Sea of Sand
+신기루 오아시스	Mirage Oasis
+피라미드 꼭대기	Pyramid Top
+모래 신전	Sand Temple
+전갈왕의 둥지	Scorpion King's Nest
+사막의 지배자, 전갈왕이 모래 속에서 솟아올랐다!	The ruler of the desert, the Scorpion King, bursts from the sand!
+해냈다... 전갈왕이 지키던 건 지하 무덤 깊은 곳의 봉인이었을까?	Done... Was the Scorpion King guarding the seal deep in the catacombs?
+봉인의 방 철문이 열렸을지도 몰라.	The gate of the Seal Chamber might be open now.
+지하 무덤	Catacombs
+봉인의 방	Seal Chamber
+오른쪽 철문 너머로 뜨거운 바람이 불어와... 아래에 뭔가 있어.	Hot wind is blowing past the iron gate on the right... Something's down there.
+문에 전갈 문양이 새겨져 있네. 전갈왕을 쓰러뜨려야 열리는 걸까?	A scorpion crest is carved on the door. Do I have to beat the Scorpion King to open it?
+용암 동굴 입구	Lava Cave Gate
+용암이다... 빠지면 크게 데겠어. 발 디딜 곳을 잘 봐야 해.	Lava... I'd get badly burned if I fell in. I need to watch my footing.
+불꽃 다리	Flame Bridge
+마그마 채석장	Magma Quarry
+용암 폭포	Lava Falls
+흑요석 회랑	Obsidian Hall
+용암 승강장	Lava Lift
+화염 골렘의 심장	Heart of the Fire Golem
+용암 깊은 곳의 화염 골렘이 깨어났다!	The Fire Golem deep in the lava awakens!
+골렘이 지키던 위쪽 철문이 열렸어. 저 위에서 따뜻한 빛이 새어 나와...	The upper gate the golem guarded is open. A warm light is spilling from above...
+전설의 제단	Legendary Altar
+할아버지의 혼	Grandpa's Spirit
+풍차 언덕	Windmill Hill
+울리는 동굴	Echo Cave
+종유석 굴	Stalactite Cave
+성벽 통로	Rampart Walk
+망루	Watchtower
+눈사태 비탈	Avalanche Slope
+얼음 첨탑	Ice Spire
+빙결의 정원	Frozen Garden
+모래 동굴	Sand Cave
+독수리 절벽	Vulture Cliff
+신전 지붕	Temple Roof
+모래시계 방	Hourglass Room
+사막의 감옥	Desert Prison
+마그마 웅덩이	Magma Pool
+재의 계곡	Ash Valley
+유황 동굴	Sulfur Cave
+왼쪽 철문 너머에서 열기가 느껴져. 누름판에 상자를 올려야겠어.	I feel heat past the left gate. I need to put a crate on the plate.
+흑요석 광산	Obsidian Mine
+불의 시련장	Trial of Fire
+구름 계단	Cloud Stairs
+여기가... 구름 위? 탑 꼭대기 봉인 너머에 이런 곳이 있었다니.	This is... above the clouds? There was a place like this past the seal atop the tower...
+발밑을 조심해야겠어. 떨어지면 끝없이 추락할 것 같아.	I'd better watch my step. If I fall, I'll fall forever.
+저 멀리 서쪽 하늘에 검은 성이 보여. 저기가 마왕의 성일까?	A black castle far off in the western sky. Is that the Demon King's castle?
+바람의 다리	Wind Bridge
+상승 기류	Updraft
+아래에서 바람이 세차게 솟구쳐. 저 바람을 타면 높은 곳까지 올라갈 수 있겠어.	Wind is surging up from below. If I ride it, I can get up high.
+부서진 회랑	Broken Hall
+구름 정원	Cloud Garden
+천둥 탑	Thunder Tower
+하늘 정거장	Sky Station
+여기까지 올라온 인간은 오랜만이군.	It's been a long time since a human climbed this high.
+이 위는 그리폰님의 둥지. 바람을 이기지 못하는 자는 지나갈 수 없다!	Above lies Lord Griffin's nest. None who cannot defeat the wind shall pass!
+바람이든 뭐든, 길은 비켜 줘야겠어.	Wind or whatever, you're going to have to step aside.
+하늘 정거장을 지키는 바람 기사가 창공에서 내려섰다!	The Wind Knight guarding the Sky Station descends from the heavens!
+바람이 잦아들었어. 이제 상승 기류를 타고 위로 올라갈 수 있겠어.	The wind has died down. Now I can ride the updraft up.
+바람이 하늘 위로 곧게 솟구치고 있어. 저 위에 뭔가 있는 것 같아.	The wind is shooting straight up into the sky. There must be something up there.
+폭풍의 문턱	Storm Threshold
+번개 신전	Thunder Temple
+번개 신전... 왼쪽 철문은 횃불을 모두 밝혀야 열리는 것 같아.	Thunder Temple... Looks like the left gate opens only when every torch is lit.
+하늘 폭포	Sky Falls
+구름 사이로 아래가 보여. 여기서 떨어지면... 아까 지나온 구름 정원일까?	I can see below through the clouds. If I fall here... would I land in the Cloud Garden?
+천공의 서고	Sky Library
+폭풍의 회랑	Storm Hall
+그리폰의 둥지	Griffin's Nest
+저게... 폭풍을 몰고 다닌다는 그리폰.	That's... the griffin that brings the storms.
+끼아아아아악——!	KIIAAAAAAH——!
+날갯바람이 엄청나... 떨어지지 않게 조심하자.	The wind from its wings is huge... I have to be careful not to fall.
+폭풍을 몰고 다니는 그리폰이 날아올랐다!	The griffin that rides the storm takes flight!
+그리폰이 쓰러지자 서쪽 철문이 열렸어.	With the griffin down, the west gate opened.
+철문 너머로 검은 성이 보여... 마왕의 성이야.	A black castle beyond the gate... The Demon King's castle.
+마왕성 정문	Demon Castle Gate
+여기가 마왕의 성... 공기가 무겁고 차가워.	So this is the Demon King's castle... The air is heavy and cold.
+안쪽은 캄캄해 보여. 횃불을 찾아 밝히면서 가야겠어.	It looks pitch dark inside. I'll light torches as I go.
+할아버지, 지켜봐 주세요.	Grandpa, watch over me.
+어둠의 복도	Dark Hallway
+순간이동 홀	Teleport Hall
+벽으로 막혀 있어... 저 소용돌이치는 문으로 건너갈 수 있을까?	A wall blocks the way... Can I cross through that swirling door?
+해골 지하실	Skull Crypt
+피의 연못	Blood Pool
+마검의 무덤	Tomb of the Demon Blade
+멈춰라. 이 무덤에 잠든 마검은 마왕님의 것이다.	Halt. The demon blade sleeping in this tomb belongs to the Demon King.
+내 방패를 정면으로 뚫은 자는 아무도 없었다.	No one has ever broken my shield head-on.
+정면이 안 되면... 다른 길을 찾으면 되지.	If head-on doesn't work... I'll just find another way.
+마검의 무덤을 지키는 마왕 근위대장이 방패를 들었다!	The Demon Guard Captain guarding the tomb raises his shield!
+정면으론 방패에 막혀... 막힌 뒤의 반격만 조심하면 됐어. 이제 마검을 가져갈 수 있겠어.	Head-on, the shield blocks me... I just had to watch for the counter after a block. Now I can take the demon blade.
+무덤 위에서 검은 기운이 일렁여... 저기 검이 잠들어 있는 것 같아.	Dark energy is rippling above the tomb... The sword must be sleeping there.
+무너진 탑	Fallen Tower
+지하 감옥	Dungeon
+오른쪽 철문이 닫혀 있어. 상자를 밀어서 누름판에 올려야겠어.	The right gate is closed. I need to push a crate onto the plate.
+그림자 회랑	Shadow Hall
+저주받은 예배당	Cursed Chapel
+붉은 벽이 길을 막고 있어. 스위치를 치면 잠깐 사라지는 걸까?	A red wall blocks the way. Will it vanish for a moment if I hit the switch?
+심연의 다리	Abyss Bridge
+옥좌 앞 대기실	Throne Antechamber
+이 문 너머에서 엄청난 기운이 느껴져. 마왕이 기다리고 있어.	I feel an overwhelming power past this door. The Demon King is waiting.
+석상에서 기록해 두고, 준비가 되면 들어가자.	I'll save at the statue and go in when I'm ready.
+마왕의 옥좌	Demon King's Throne
+...왔구나, {name}. 그 검, 그 눈빛. 네 할아버지를 꼭 닮았어.	...So you've come, {name}. That sword, those eyes. You look just like your grandfather.
+그 늙은이도 끝내 나를 막지 못했다. 너라고 다를 것 같으냐?	Even that old man couldn't stop me in the end. Think you'll be any different?
+할아버지가 못다 한 일, 내가 끝낼 거야!	What Grandpa couldn't finish, I'll finish!
+좋다. 와라!	Very well. Come!
+마왕이 옥좌에서 일어섰다!	The Demon King rises from his throne!
+...해냈다. 마왕이 쓰러졌어.	...I did it. The Demon King has fallen.
+장하구나, {name}. 내가 끝내 이루지 못한 일을 네가 해냈어.	Well done, {name}. You did what I never could.
+이제 세상에 다시 빛이 들 게다. 어서 집으로 돌아가거라. 어머니가 기다리신다.	Light will return to the world now. Hurry home. Your mother is waiting.
+응. 엄마한테 다 이야기해 줄 거예요. 할아버지 이야기도요.	Yeah. I'll tell Mom everything. Your story too, Grandpa.
+- 소드 레릭 끝 -   {name}의 모험, 끝까지 해 줘서 고마워요! (남은 보물을 계속 찾을 수 있어요)	- SWORD RELIC The End -   Thank you for seeing {name}'s adventure through! (You can keep hunting for remaining treasure)
+덩굴 오르막	Vine Climb
+마을 뒷산으로 이어지는 덩굴이야. 어릴 때 엄마가 올라가지 말라던 곳이지...	The vines lead to the hill behind the village. Mom told me never to climb here as a kid...
+바람개비 언덕	Pinwheel Hill
+들딸기 숲길	Berry Path
+여우 굴 입구	Fox Den Entrance
+철문이 굴 입구를 막고 있어. 저 상자를 누름판까지 밀면 열릴 것 같은데...	An iron gate blocks the den. If I push that crate onto the plate, it might open...
+언덕 위 옛 제단	Old Hilltop Altar
+오래된 제단이야... 언덕의 바람이 모두 여기서 시작되는 것 같아.	An ancient altar... It feels like all the hill's winds start here.
+높은 가지	High Branch
+둥지 위로 가지가 더 이어져 있었네. 바람이 세서 조심해야겠어.	The branches continue above the nest. The wind is strong, I'd better be careful.
+거미줄 가지	Web Branch
+꿀벌 집	Beehive
+바람 부는 우듬지	Windy Canopy
+하늘 닿는 둥치	Sky-High Trunk
+모래 폭풍 길	Sandstorm Road
+신전 지붕 너머로 모래바람 부는 길이 있었어.	There was a sandstorm road past the temple roof.
+부서진 오벨리스크	Broken Obelisk
+사막 망루	Desert Watchtower
+전갈 굴	Scorpion Den
+잊힌 보물 창고	Forgotten Vault
+용암 하수로	Lava Sewer
+광산 바닥 아래로 용암이 흐르는 수로가 있어...	There's a channel of lava flowing under the mine floor...
+불씨 광장	Ember Plaza
+타오르는 계단	Burning Stairs
+화산 분화구	Volcano Crater
+불꽃 보물실	Flame Vault
+깊은 수직굴	Deep Shaft
+동굴 바닥 아래로 더 깊은 굴이 있었어. 공기가 차가워...	There was a deeper shaft below the cave floor. The air is cold...
+박쥐 서식지	Bat Roost
+수정 광맥	Crystal Vein
+검은 호수	Black Lake
+고대 화석실	Ancient Fossil Room
+무너진 망루	Ruined Watchtower
+성벽 너머에 기사단이 쓰던 구역이 남아 있었어.	Past the rampart, the order's old quarters still remain.
+병영	Barracks
+무기고	Arsenal
+기사단 감옥	Order Prison
+기사단장의 방	Commander's Room
+얼음 다리	Ice Bridge
+철문 너머로 얼음 다리가 이어져 있어. 아래는... 보지 말자.	An ice bridge stretches past the iron gate. Below... let's not look.
+서리 동굴 입구	Frost Cave Gate
+얼어붙은 폭포	Frozen Falls
+눈보라 회랑	Blizzard Hall
+빙하의 심장	Heart of the Glacier
+구름 사다리	Cloud Ladder
+하늘 폭포 위에도 구름 계단이 이어져 있었어!	Cloud stairs continue above the Sky Falls too!
+돌풍 다리	Gale Bridge
+번개 탑	Lightning Tower
+하늘 정원	Sky Garden
+별빛 제단	Starlight Altar
+저주받은 서고	Cursed Library
+무너진 탑 옆에 서고가 숨어 있었어. 책장마다 저주의 기운이...	A library was hidden beside the fallen tower. A curse hangs over every shelf...
+피의 회랑	Blood Hall
+고문실	Torture Chamber
+어둠의 우물	Well of Darkness
+마왕의 보물고	Demon King's Vault
+${h}시간 ${m}분	${h}h ${m}m
+${m}분	${m}m
+처음 들판	Starting Field
+레벨	Level
+플레이 시간	Play time
+저장 위치	Saved at
+마리	
+쓰러진 횟수	Deaths
+번	
+모은 장비	Gear collected
+아이콘 일부를 못 그림	Some icons failed to draw
+모험 수첩	Adventure Journal
+들고 있는 검	Sword in hand
+탐험한 지도, ${vis}곳	Explored map, ${vis} rooms
+코드가 비어 있어요.	The code is empty.
+소드 레릭 세이브 코드가 아니에요. 처음부터 끝까지 빠짐없이 복사했는지 확인해 주세요.	This isn't a Sword Relic save code. Make sure you copied all of it, start to end.
+소드 레릭 세이브 코드가 아니에요.	This isn't a Sword Relic save code.
+세이브 내용이 망가져 있어요.	The save data is damaged.
+코드를 복사했어요. 옮길 곳에서 붙여 넣어 주세요.	Code copied. Paste it where you want to move your save.
+자동 복사가 막혀 있어요. 아래 칸의 코드를 직접 복사해 주세요.	Automatic copy is blocked. Please copy the code in the box below.
+세이브 파일을 저장했어요.	Save file downloaded.
+파일이 너무 커요. 세이브 파일이 맞는지 확인해 주세요.	The file is too large. Check that it's a save file.
+저장 공간에 쓰지 못했어요. 브라우저의 사이트 데이터 설정을 확인해 주세요.	Couldn't write to storage. Check your browser's site data settings.
+불러오기 전 세이브로 되돌릴까요? 지금 세이브는 사라져요.	Restore the save from before the import? Your current save will be lost.
+불러오기 전 세이브로 되돌렸어요.	Restored the save from before the import.
+~'/play/index.html':'/play/'	'/en/play/index.html':'/en/play/'
+~'/save/index.html':'/save/'	'/en/save/index.html':'/en/save/'
+~<h2>아직 모험 기록이 없어요</h2><p class="muted">게임을 시작하면 여기에 지금까지의 모험이 적혀요. 다른 기기에서 하던 세이브는 	<h2>No adventure yet</h2><p class="muted">Once you start the game, your adventure so far will be written here. To bring a save from another device, use 
+~">세이브 옮기기</a>로 가져올 수 있어요.</p><a class="play" href="${PLAY}">▶ 모험 시작하기</a>	">Move Save</a>.</p><a class="play" href="${PLAY}">▶ Start the adventure</a>
+~<p>지금 ${esc(roomName((s.save&&s.save.room)||s.room))} 근처 · 들고 있는 검 	<p>Now near ${esc(roomName((s.save&&s.save.room)||s.room))} · Sword: 
+~▶ 이어서 모험하기</a><button class="btn" id="shot" type="button">기록 이미지 저장</button>	▶ Continue the adventure</a><button class="btn" id="shot" type="button">Save record image</button>
+~<h2>탐험한 지도</h2><p class="muted" style="margin-bottom:12px">가 본 곳만 보여요. 노란 테두리가 마지막으로 저장한 곳이에요.</p>	<h2>Explored Map</h2><p class="muted" style="margin-bottom:12px">Only places you've been are shown. The yellow outline is where you last saved.</p>
+~<h2>쓰러뜨린 보스</h2>	<h2>Bosses Defeated</h2>
+~<p class="muted">아직 쓰러뜨린 보스가 없어요.</p>	<p class="muted">No bosses defeated yet.</p>
+~<h2>모은 장비</h2><div id="gear"></div><p class="muted" style="margin-top:14px">어딘가에 아직 찾지 못한 장비가 숨어 있을지도…</p>	<h2>Gear Collected</h2><div id="gear"></div><p class="muted" style="margin-top:14px">There may still be gear hidden somewhere…</p>
+~이 기기에는 아직 세이브가 없어요. 다른 곳의 세이브를 불러오거나 <a href="${PLAY}">새로 시작</a>해 보세요.	There's no save on this device yet. Import a save from elsewhere or <a href="${PLAY}">start a new game</a>.
+~불러왔어요! <a href="${PLAY}">게임에서 이어 하기 ▶</a>	Imported! <a href="${PLAY}">Continue in the game ▶</a>
+쓰러뜨린 보스	Bosses defeated

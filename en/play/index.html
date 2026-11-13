@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<!-- 홈 화면에 추가하면 주소창 없이 전체 화면 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sword Relic">
+<meta name="theme-color" content="#000000">
+<title>Play Sword Relic - Free Browser Game</title>
+<meta name="description" content="Play Sword Relic, a free pixel metroidvania, right in your browser. Leave home in search of the legendary sword: 9 regions, 149 rooms, 10 bosses, puzzles, traps and a unique skill for every weapon.">
+<meta name="keywords" content="Sword Relic, browser game, web game, pixel game, metroidvania, action RPG, platformer, free game, no download">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://swordrelic.com/en/play/">
+<link rel="alternate" hreflang="ko" href="https://swordrelic.com/play/">
+<link rel="alternate" hreflang="en" href="https://swordrelic.com/en/play/">
+<link rel="alternate" hreflang="x-default" href="https://swordrelic.com/en/play/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sword Relic">
+<meta property="og:locale" content="en_US">
+<meta property="og:url" content="https://swordrelic.com/en/play/">
+<meta property="og:title" content="Sword Relic - Free Pixel Metroidvania Browser Game">
+<meta property="og:description" content="An adventure in search of the legendary sword">
+<meta property="og:image" content="https://swordrelic.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Sword Relic: the red-armored hero swings a sword at a slime in the meadow">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sword Relic - Free Pixel Metroidvania Browser Game">
+<meta name="twitter:description" content="An adventure in search of the legendary sword">
+<meta name="twitter:image" content="https://swordrelic.com/og.png">
+<script src="/move.js"></script>
+<script>try{if(window.Capacitor)document.documentElement.classList.add('app');if(location.protocol==='app:'||/[?&]app=pc/.test(location.search))document.documentElement.classList.add('app','app-pc')}catch(e){}</script>
+<script>try{var q=new URLSearchParams(location.search).get('dev');if(q!==null)localStorage.setItem('sr_dev',q==='0'?'':'1');if(localStorage.getItem('sr_dev'))document.documentElement.classList.add('dev')}catch(e){}</script>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=block">
+<link rel="preload" href="/fonts/Galmuri11-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/src/nav.css">
+</head>
+<body>
+<nav class="topnav" aria-label="Site menu">
+  <a class="logo" href="/en/">SWORD RELIC</a>
+  <div class="links">
+    <a href="/en/guide/">Guide</a><a href="/en/download/">Download</a><a href="/en/save/">Move Save</a><a href="/en/journal/">Journal</a>
+    <a class="lang" href="/play/" hreflang="ko" lang="ko" onclick="try{localStorage.setItem('sr_lang','ko')}catch(e){}">한국어</a>
+    <a class="go" href="/en/play/">▶ Play</a>
+  </div>
+</nav>
+<div class="wrap">
+  <header>
+    <div class="eyebrow devonly">STAGE 12</div>
+    <h1><a href="/en/" class="home">SWORD RELIC</a></h1>
+    <p class="sub lead">A pixel metroidvania about leaving home in search of the legendary sword. Play right in your browser, nothing to install.</p>
+  </header>
+
+  <div id="stage">
+    <div id="game"></div>
+    <button id="appset" type="button" aria-label="Settings (Esc)" title="Settings (Esc)">⚙</button>
+    <button id="start" type="button"><span><b class="go">▶ Click to start</b><i class="keys"><kbd>Z</kbd>Attack <kbd>X</kbd>Jump <kbd>C</kbd>Skill</i></span></button>
+  </div>
+
+  <div class="gear" role="group" aria-label="Test tools">
+    <span class="gear-label">Test</span>
+    <button id="testgear" class="gbtn" type="button">Get all gear</button>
+    <button id="mute" class="gbtn" type="button">Settings</button>
+    <button id="fs" class="gbtn pconly" type="button">Full screen</button>
+    <button id="newgame" class="gbtn danger" type="button">New game</button>
+  </div>
+
+  <div class="pad" aria-label="Touch controls">
+    <div class="stickzone" id="stickzone"><div class="stick" id="stick" role="group" aria-label="Move stick"><div class="knob"></div></div></div>
+    <div class="sys">
+      <div class="slots">
+        <button class="pbtn slot" data-k="q0" aria-label="Quick slot 1"><i>1</i><img alt=""><b></b></button>
+        <button class="pbtn slot" data-k="q1" aria-label="Quick slot 2"><i>2</i><img alt=""><b></b></button>
+        <button class="pbtn slot" data-k="q2" aria-label="Quick slot 3"><i>3</i><img alt=""><b></b></button>
+        <button class="pbtn slot" data-k="q3" aria-label="Quick slot 4"><i>4</i><img alt=""><b></b></button>
+      </div>
+      <div class="tools">
+        <button class="pbtn slot tool" data-k="menu" aria-label="Gear"><img id="ic-equip" alt=""><span>Gear</span></button>
+        <button class="pbtn slot tool" data-k="map" aria-label="Map"><img id="ic-map" alt=""><span>Map</span></button>
+        <button class="pbtn slot tool" id="padmute" type="button" aria-label="Settings"><img id="ic-snd" alt=""><span>Setup</span></button>
+      </div>
+    </div>
+    <div class="act">
+      <button class="pbtn s" data-k="skill" aria-label="Skill"><img id="ic-skill" alt=""><em>C</em></button>
+      <button class="pbtn a" data-k="attack" aria-label="Attack"><img id="ic-atk" alt=""><em>Z</em></button>
+      <button class="pbtn j" data-k="jump" aria-label="Jump"><img id="ic-jump" alt=""><em>X</em></button>
+    </div>
+    <p class="turn">Turn sideways for a bigger screen</p>
+  </div>
+</div>
+
+<dialog id="setdlg" class="setdlg" aria-labelledby="set-title">
+  <h2 id="set-title">Settings</h2>
+  <label class="srow"><span>Mute</span><input type="checkbox" id="set-mute"></label>
+  <label class="srow"><span>Music</span><input type="range" id="set-m" min="0" max="100" step="5"><output id="set-m-v"></output></label>
+  <label class="srow"><span>Sound FX</span><input type="range" id="set-f" min="0" max="100" step="5"><output id="set-f-v"></output></label>
+  <div class="srow"><span>Difficulty</span><div class="seg" id="set-dmg" role="radiogroup" aria-label="Difficulty">
+    <button type="button" role="radio" data-v="0.5">Easy</button><button type="button" role="radio" data-v="1">Normal</button><button type="button" role="radio" data-v="1.5">Hard</button></div></div>
+  <div class="srow"><span>Screen shake</span><div class="seg" id="set-shake" role="radiogroup" aria-label="Screen shake">
+    <button type="button" role="radio" data-v="0">Off</button><button type="button" role="radio" data-v="0.5">Low</button><button type="button" role="radio" data-v="1">Normal</button></div></div>
+  <div class="srow"><span>Language · 언어</span><div class="seg"><button type="button" lang="ko" onclick="try{localStorage.setItem('sr_lang','ko')}catch(e){}location.href='../../play/index.html'">한국어</button><button type="button" aria-checked="true">English</button></div></div>
+  <div class="srow mobonly"><span>Button size</span><div class="seg" id="set-bs" role="radiogroup" aria-label="Button size">
+    <button type="button" role="radio" data-v="0.85">Small</button><button type="button" role="radio" data-v="1">Normal</button><button type="button" role="radio" data-v="1.15">Large</button></div></div>
+  <div class="srow apponly"><span>Screen</span><div class="seg"><button type="button" id="set-fs">Full screen</button><button type="button" id="set-quit">Quit game</button></div></div>
+  <div class="pconly" id="set-keys"><h3>Key bindings <small>Click a box, then press a key (Esc cancels)</small></h3><div class="kgrid"></div><button type="button" class="kreset" id="set-kreset">Reset to default</button></div>
+  <div class="sfoot"><a class="gbtn" id="set-save" href="../save/index.html">Move Save</a><button type="button" class="gbtn sclose" id="set-close">Close</button></div>
+</dialog>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

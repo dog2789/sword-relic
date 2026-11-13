@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "dev:en": "vite --mode en",
+    "build": "vite build && vite build --mode en",
     "preview": "vite preview",
     "build:single": "node tools/build-single.mjs",
-    "app:pc": "vite build && npm --prefix desktop start",
-    "app:android": "vite build && cap sync android && cap open android",
-    "app:exe": "vite build && node tools/exe.mjs",
-    "app:apk": "vite build && cap sync android && android\\build-apk.cmd"
+    "app:pc": "npm run build && npm --prefix desktop start",
+    "app:android": "npm run build && cap sync android && cap open android",
+    "app:exe": "npm run build && node tools/exe.mjs",
+    "app:apk": "npm run build && cap sync android && android\\build-apk.cmd"
   },
   "dependencies": {
     "galmuri": "^2.40.3",

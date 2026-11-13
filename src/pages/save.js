@@ -38,7 +38,7 @@ if(typeof document!=='undefined'&&$('sum')){
   const msg=(id,t,ok)=>{const m=$(id);m.textContent=t;m.className='msg '+(ok?'ok':'err')};
   let pending=null;
   const draw=()=>{const s=readSave(ls.get('sr_save2'));
-    $('sum').innerHTML=s?summary(s):'<p class="muted">이 기기에는 아직 세이브가 없어요. 다른 곳의 세이브를 불러오거나 <a href="${PLAY}">새로 시작</a>해 보세요.</p>';
+    $('sum').innerHTML=s?summary(s):`<p class="muted">이 기기에는 아직 세이브가 없어요. 다른 곳의 세이브를 불러오거나 <a href="${PLAY}">새로 시작</a>해 보세요.</p>`;
     $('copy').disabled=$('file').disabled=!s;$('undo').hidden=!readSave(ls.get('sr_save2_old'))};
   draw();
   $('copy').onclick=async()=>{const c=toCode(exportPack());

@@ -15,6 +15,9 @@
 <meta name="keywords" content="소드 레릭, SWORD RELIC, 웹게임, 브라우저 게임, 픽셀 게임, 도트 게임, 메트로베니아, 액션 RPG, 플랫포머, 무료 게임">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="canonical" href="https://swordrelic.com/play/">
+<link rel="alternate" hreflang="ko" href="https://swordrelic.com/play/">
+<link rel="alternate" hreflang="en" href="https://swordrelic.com/en/play/">
+<link rel="alternate" hreflang="x-default" href="https://swordrelic.com/en/play/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="소드 레릭">
 <meta property="og:locale" content="ko_KR">
@@ -50,6 +53,7 @@
   <a class="logo" href="/">SWORD RELIC</a>
   <div class="links">
     <a href="/guide/">가이드</a><a href="/download/">다운로드</a><a href="/save/">세이브 옮기기</a><a href="/journal/">모험 수첩</a>
+    <a class="lang" href="/en/play/" hreflang="en" lang="en" onclick="try{localStorage.setItem('sr_lang','en')}catch(e){}">EN</a>
     <a class="go" href="/play/">▶ 플레이</a>
   </div>
 </nav>
@@ -186,6 +190,7 @@
     <button type="button" role="radio" data-v="0.5">쉬움</button><button type="button" role="radio" data-v="1">보통</button><button type="button" role="radio" data-v="1.5">어려움</button></div></div>
   <div class="srow"><span>화면 흔들림</span><div class="seg" id="set-shake" role="radiogroup" aria-label="화면 흔들림">
     <button type="button" role="radio" data-v="0">끔</button><button type="button" role="radio" data-v="0.5">약하게</button><button type="button" role="radio" data-v="1">보통</button></div></div>
+  <div class="srow"><span>언어 · Language</span><div class="seg"><button type="button" aria-checked="true">한국어</button><button type="button" lang="en" onclick="try{localStorage.setItem('sr_lang','en')}catch(e){}location.href='../en/play/index.html'">English</button></div></div>
   <div class="srow mobonly"><span>버튼 크기</span><div class="seg" id="set-bs" role="radiogroup" aria-label="버튼 크기">
     <button type="button" role="radio" data-v="0.85">작게</button><button type="button" role="radio" data-v="1">보통</button><button type="button" role="radio" data-v="1.15">크게</button></div></div>
   <div class="srow apponly"><span>화면</span><div class="seg"><button type="button" id="set-fs">전체 화면</button><button type="button" id="set-quit">게임 종료</button></div></div>

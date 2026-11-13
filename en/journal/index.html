@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05030b">
+<title>Adventure Journal - Sword Relic</title>
+<meta name="description" content="Your Sword Relic adventure so far: play time, explored map, gear collected and bosses defeated">
+<link rel="canonical" href="https://swordrelic.com/en/journal/">
+<link rel="alternate" hreflang="ko" href="https://swordrelic.com/journal/">
+<link rel="alternate" hreflang="en" href="https://swordrelic.com/en/journal/">
+<link rel="alternate" hreflang="x-default" href="https://swordrelic.com/en/journal/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sword Relic">
+<meta property="og:locale" content="en_US">
+<meta property="og:url" content="https://swordrelic.com/en/journal/">
+<meta property="og:title" content="Adventure Journal - Sword Relic">
+<meta property="og:description" content="Your Sword Relic adventure so far: play time, explored map, gear collected and bosses defeated">
+<meta property="og:image" content="https://swordrelic.com/og.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=block">
+<link rel="preload" href="/fonts/Galmuri11-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/src/site.css">
+<!-- Google AdSense: web only (not inside the apps), never on the game page /play/ -->
+<script>if(!window.Capacitor&&location.protocol!=='app:'){var s=document.createElement('script');s.async=true;s.crossOrigin='anonymous';s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8021140742740790';document.head.appendChild(s)}</script>
+</head>
+<body>
+<nav class="topnav" aria-label="Site menu">
+  <a class="logo" href="/en/">SWORD RELIC</a>
+  <div class="links">
+    <a href="/en/guide/">Guide</a><a href="/en/download/">Download</a><a href="/en/save/">Move Save</a><a href="/en/journal/" aria-current="page">Journal</a>
+    <a class="lang" href="/journal/" hreflang="ko" lang="ko" onclick="try{localStorage.setItem('sr_lang','ko')}catch(e){}">한국어</a>
+    <a class="go" href="/en/play/">▶ Play</a>
+  </div>
+</nav>
+<main>
+<header class="phead">
+  <h1>Adventure Journal</h1>
+  <p>Shows your adventure so far from the progress saved on this device. Places you haven't been yet stay secret.</p>
+</header>
+<div id="j"></div>
+</main>
+<footer>
+  <p><a href="/en/guide/">Guide</a><a href="/en/download/">Download</a><a href="/en/save/">Move Save</a><a href="/en/journal/">Journal</a></p>
+  <p><a href="/en/about/">About &amp; Contact</a><a href="/en/privacy/">Privacy Policy</a></p>
+  <p>© 2026 SWORD RELIC</p>
+</footer>
+<script type="module" src="/src/pages/journal.js"></script>
+</body>
+</html>

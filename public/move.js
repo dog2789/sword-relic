@@ -15,3 +15,12 @@ else if(location.hash.indexOf('#move=')===0){var m=JSON.parse(decodeURIComponent
       if(k==='sr_save2'&&localStorage.getItem(k))localStorage.setItem('sr_save2_old',localStorage.getItem(k));   // 덮어쓰기 전 예전 세이브 백업
       localStorage.setItem(k,m[k])}}
   history.replaceState(null,'',location.pathname+location.search)}}catch(e){}
+/* 언어 (소개·게임 페이지): 메뉴·설정에서 고른 언어(sr_lang)가 이 페이지와 다르면 그 언어판으로 (영어판은 /en/ 아래).
+   고른 적 없으면 그대로 두고, 한국어가 아닌 브라우저엔 맨 위에 영어판 안내 한 줄 (검색 로봇이 한국어 페이지를 영어로 넘기지 않게 자동 이동은 안 함) */
+try{var L=localStorage.getItem('sr_lang'),P=location.pathname,E=/^\/en\//.test(P);
+if(L&&(L==='en')!==E)location.replace((E?P.replace(/^\/en\//,'/'):'/en'+P)+location.search+location.hash);
+else if(!L&&!E&&!/^ko/i.test(navigator.language||'ko'))addEventListener('DOMContentLoaded',function(){var b=document.createElement('div');
+  b.lang='en';b.style.cssText='position:fixed;left:0;right:0;top:0;z-index:9999;padding:8px 36px 8px 10px;background:#2a2046;color:#fff;font:14px sans-serif;border-bottom:2px solid #e8c04a';
+  b.innerHTML='<a href="/en'+P+'" style="color:#e8c04a">Play Sword Relic in English →</a><button aria-label="Close" style="position:absolute;right:6px;top:6px;background:none;border:0;color:#fff;font-size:16px">✕</button>';
+  b.firstChild.onclick=function(){try{localStorage.setItem('sr_lang','en')}catch(e){}};
+  b.lastChild.onclick=function(){try{localStorage.setItem('sr_lang','ko')}catch(e){}b.remove()};document.body.appendChild(b)})}catch(e){}

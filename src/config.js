@@ -10,9 +10,10 @@ export const VP={left:false,right:false,up:false,down:false,jump:false,attack:fa
 /* PC에서 키 설정을 바꿨으면 안내 글자의 Z·X·C·I·M과 "↑ 키"·"←→ 이동" 같은 화살표를 바꾼 키 이름으로 */
 const LET={Z:'atk',X:'jump',C:'skill',I:'menu',M:'map'},ARW={'←':'left','→':'right','↑':'up','↓':'down'};
 const pcKeys=s=>{const b=getBinds(),nm=(a,d)=>b[a]?keyName(b[a]):d;
-  return s.replace(/(^|[^A-Za-z])([ZXCIM])(?![A-Za-z])/g,(m,p,L)=>p+nm(LET[L],L))
-    .replace(/[←→↑↓]+(?=\s?(키|로|대화|이동|고르기|바꾸기))/g,r=>[...r].map(c=>nm(ARW[c],c)).join(''))};
-export const keyText=s=>MOBILE?s.replace(/↑ 키/g,'공격(Z) 버튼').replace(/↓ 키/g,'스틱 ↓').replace(/숫자 (\d) 키/g,'$1번 칸').replace(/I 키/g,'장비 버튼'):pcKeys(s);
+  // 영어판: 대명사 "I"(I found…)는 키로 안 바꿈 — 뒤에 소문자 단어가 오면 건너뜀 (key·to 는 키 안내)
+  return s.replace(/(^|[^A-Za-z])([ZXCIM])(?![A-Za-z'])(?!\s(?!key|to\b)[a-z])/g,(m,p,L)=>p+nm(LET[L],L))
+    .replace(/[←→↑↓]+(?=\s?(키|로|대화|이동|고르기|바꾸기|key|Move|Talk|Select|Change))/g,r=>[...r].map(c=>nm(ARW[c],c)).join(''))};
+export const keyText=s=>MOBILE?s.replace(/↑ (?:키|key)/g,'공격(Z) 버튼').replace(/↓ (?:키|key)/g,'스틱 ↓').replace(/(?:숫자 |the )(\d) (?:키|key)/g,'$1번 칸').replace(/I (?:키|key)/g,'장비 버튼'):pcKeys(s);
 export const MOBILE=typeof matchMedia!=='undefined'&&(matchMedia('(pointer:coarse)').matches||/[?&]mobile/.test(location.search));
 /* 폰 가로 화면: 게임 폭을 화면 비율에 맞춰 넓힘 (320~400, 가장 좁은 방이 416px라 그 안). 세로·PC는 320 */
 export const wideW=()=>MOBILE&&innerWidth>innerHeight?Math.min(400,Math.max(320,Math.round(H*innerWidth/innerHeight/2)*2)):320;

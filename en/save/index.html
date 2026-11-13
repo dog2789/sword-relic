@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05030b">
+<title>Move Save - Sword Relic</title>
+<meta name="description" content="Export your Sword Relic progress as a code or file, and import it on another device or app">
+<link rel="canonical" href="https://swordrelic.com/en/save/">
+<link rel="alternate" hreflang="ko" href="https://swordrelic.com/save/">
+<link rel="alternate" hreflang="en" href="https://swordrelic.com/en/save/">
+<link rel="alternate" hreflang="x-default" href="https://swordrelic.com/en/save/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sword Relic">
+<meta property="og:locale" content="en_US">
+<meta property="og:url" content="https://swordrelic.com/en/save/">
+<meta property="og:title" content="Move Save - Sword Relic">
+<meta property="og:description" content="Export your Sword Relic progress as a code or file, and import it on another device or app">
+<meta property="og:image" content="https://swordrelic.com/og.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=block">
+<link rel="preload" href="/fonts/Galmuri11-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/src/site.css">
+<!-- Google AdSense: web only (not inside the apps), never on the game page /play/ -->
+<script>if(!window.Capacitor&&location.protocol!=='app:'){var s=document.createElement('script');s.async=true;s.crossOrigin='anonymous';s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8021140742740790';document.head.appendChild(s)}</script>
+</head>
+<body>
+<nav class="topnav" aria-label="Site menu">
+  <a class="logo" href="/en/">SWORD RELIC</a>
+  <div class="links">
+    <a href="/en/guide/">Guide</a><a href="/en/download/">Download</a><a href="/en/save/" aria-current="page">Move Save</a><a href="/en/journal/">Journal</a>
+    <a class="lang" href="/save/" hreflang="ko" lang="ko" onclick="try{localStorage.setItem('sr_lang','ko')}catch(e){}">한국어</a>
+    <a class="go" href="/en/play/">▶ Play</a>
+  </div>
+</nav>
+<main>
+<header class="phead">
+  <h1>Move Save</h1>
+  <p>Export your progress as a code or a file and import it in another browser, the PC app or the phone app. Handy as a backup too.</p>
+</header>
+
+<section class="panel" aria-labelledby="sv-now">
+  <h2 id="sv-now">This device's save</h2>
+  <div id="sum"></div>
+  <div class="btns">
+    <button class="btn gold" id="copy" type="button">Copy code</button>
+    <button class="btn" id="file" type="button">Save as file</button>
+    <button class="btn danger" id="undo" type="button" hidden>Restore the save from before the import</button>
+  </div>
+  <p class="msg" id="msg1" role="status"></p>
+</section>
+
+<section class="panel" aria-labelledby="sv-in">
+  <h2 id="sv-in">Import a save</h2>
+  <p class="muted">Paste a copied code, or choose a saved file.</p>
+  <textarea id="code" placeholder="SR1:..." aria-label="Save code" spellcheck="false"></textarea>
+  <div class="btns">
+    <button class="btn" id="check" type="button">Check code</button>
+    <label class="btn" for="pick">Choose file</label><input id="pick" type="file" accept=".json,.txt,application/json,text/plain" hidden>
+  </div>
+  <div id="preview" hidden>
+    <h3>Save to import</h3>
+    <div id="sum2"></div>
+    <p class="warn">Importing overwrites the save on this device. Your current save is kept aside so you can restore it once.</p>
+    <div class="btns"><button class="btn gold" id="apply" type="button">Overwrite with this save</button><button class="btn" id="cancel" type="button">Cancel</button></div>
+  </div>
+  <p class="msg" id="msg2" role="status"></p>
+</section>
+
+<section class="panel" aria-labelledby="sv-how">
+  <h2 id="sv-how">How to move it</h2>
+  <ol class="steps">
+    <li>Where you were playing (e.g. the web), open this page and click <b>Copy code</b>.</li>
+    <li>Send the code to yourself, by email or a chat app.</li>
+    <li>Where you want to play (e.g. the phone app), open <b>Settings → Move Save</b> in the game, paste it and <b>overwrite</b>.</li>
+  </ol>
+</section>
+</main>
+<footer>
+  <p><a href="/en/guide/">Guide</a><a href="/en/download/">Download</a><a href="/en/save/">Move Save</a><a href="/en/journal/">Journal</a></p>
+  <p><a href="/en/about/">About &amp; Contact</a><a href="/en/privacy/">Privacy Policy</a></p>
+  <p>© 2026 SWORD RELIC</p>
+</footer>
+<script type="module" src="/src/pages/save.js"></script>
+</body>
+</html>
