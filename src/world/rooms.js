@@ -539,7 +539,10 @@ export const ROOMS={
     mobs:[{t:'mslime',tx:17,ty:11},{t:'sala',tx:9,ty:11},{t:'sala',tx:38,ty:11},{t:'bomber',tx:22,ty:11}],
     deco:{}},
   l6:{name:'용암 승강장',theme:'lava',cols:36,grid:[-6,3],exits:{right:'l5',left:'l7'},seed:359,
-    build(p){p.block(0,0,35,1);p.ground(0,35,13);p.clear(5,12,30,12);p.lava(5,12,30,12);p.ground(0,4,12);p.ground(31,35,12);p.block(15,8,17,8)},
+    build(p){p.block(0,0,35,1);p.ground(0,35,13);p.clear(5,12,30,12);p.lava(5,12,30,12);p.ground(0,4,12);p.ground(31,35,12);p.block(15,8,17,8);
+      p.block(12,10,13,12);p.block(17,11,18,12);p.block(29,10,30,12);   // 용암에서 솟은 기둥 (간헐천 9·20·27열은 비움)
+      p.block(2,2,3,3);p.block(20,2,21,3);p.block(31,2,33,3);   // 천장 잔해
+      p.block(1,8,2,8);p.block(32,7,34,7)},   // 양쪽 승강장 턱
     movers:[{tx:6,ty:6,w:2,axis:'y',range:5,speed:38},{tx:10,ty:4,w:3,axis:'x',range:5,speed:42},{tx:23,ty:5,w:2,axis:'y',range:6,speed:42}],
     geysers:[{tx:9,ty:12,period:3},{tx:20,ty:12,period:3,offset:1.5},{tx:27,ty:12,period:3}],
     chests:[{id:'ch_l6',tx:16,ty:7,gold:240}],
@@ -664,7 +667,10 @@ export const ROOMS={
     deco:{}},
   l9:{name:'마그마 웅덩이',theme:'lava',cols:40,grid:[-3,2],exits:{left:'l3',down:{to:'l10',tx:30}},seed:461,
     build(p){p.block(0,0,39,1);p.ground(0,39,12);p.block(39,2,39,11);p.clear(6,12,14,13);p.lava(6,12,14,13);p.clear(18,12,25,13);p.lava(18,12,25,13);
-      p.clear(30,12,30,13);p.ladder(30,12,13);p.block(33,7,36,7)},
+      p.clear(30,12,30,13);p.ladder(30,12,13);p.block(33,7,36,7);
+      p.block(3,2,4,3);p.block(12,2,13,4);p.block(19,2,20,2);p.block(24,2,25,3);   // 종유석 (간헐천 16·27열은 비움)
+      p.block(9,12,10,13);   // 첫 웅덩이 가운데 바위 섬
+      p.block(2,7,4,7);p.block(13,6,15,6);p.block(21,6,23,6);p.block(36,10,38,11)},   // 위쪽 턱, 보물 발판으로 오르는 계단
     fallers:[{tx:7,ty:10,w:2},{tx:11,ty:9,w:2}],
     movers:[{tx:18,ty:10,w:2,axis:'x',range:5,speed:40}],
     geysers:[{tx:16,ty:12,period:2.8},{tx:27,ty:12,period:2.8,offset:1.4}],
@@ -713,7 +719,9 @@ export const ROOMS={
     mobs:[{t:'harpy',tx:22,ty:3}],deco:{},
     event:{id:'ev_sky',delay:500,lines:[{n:'나',t:'여기가... 구름 위? 탑 꼭대기 봉인 너머에 이런 곳이 있었다니.'},{n:'나',t:'발밑을 조심해야겠어. 떨어지면 끝없이 추락할 것 같아.'},{n:'나',t:'저 멀리 서쪽 하늘에 검은 성이 보여. 저기가 마왕의 성일까?'}]}},
   s2:{name:'바람의 다리',theme:'sky',cols:44,grid:[7,-3],exits:{left:'s1',right:'s3'},seed:503,
-    build(p){p.ground(0,7,12);p.ground(14,19,12);p.ground(26,31,10);p.ground(38,43,12);p.block(16,7,18,7)},
+    build(p){p.ground(0,7,12);p.ground(14,19,12);p.ground(26,31,10);p.ground(38,43,12);p.block(16,7,18,7);
+      p.block(2,8,4,8);p.block(5,4,7,4);p.block(10,6,12,6);p.block(22,6,24,6);p.block(27,5,30,5);p.block(36,6,38,6);p.block(40,8,42,8);   // 부서진 다리 조각
+      p.block(35,12,36,13)},   // 구름 아래 바위 섬
     clouds:[{tx:9,ty:11,w:3},{tx:21,ty:10,w:3},{tx:33,ty:9,w:3}],
     wind:{dir:-1,force:40,period:5,on:2},
     crystal:{id:'c_s2',tx:17,ty:6},
@@ -778,7 +786,8 @@ export const ROOMS={
     chests:[{id:'ch_s11',tx:24,ty:4,item:'sky_armor'},{id:'ch_s11b',tx:4,ty:11,gold:420}],
     mobs:[{t:'haunt',tx:16,ty:10},{t:'wisp',tx:30,ty:4},{t:'harpy',tx:5,ty:5}],deco:{}},
   s12:{name:'폭풍의 회랑',theme:'sky',cols:44,grid:[8,-4],exits:{right:'s11',left:'s13'},seed:557,
-    build(p){p.ground(0,8,12);p.ground(13,20,11);p.ground(25,31,12);p.ground(36,43,12);p.block(26,7,28,7)},
+    build(p){p.ground(0,8,12);p.ground(13,20,11);p.ground(25,31,12);p.ground(36,43,12);p.block(26,7,28,7);
+      p.block(1,7,3,7);p.block(10,6,12,6);p.block(14,7,16,7);p.block(18,4,20,4);p.block(22,6,24,6);p.block(33,6,35,6);p.block(36,8,37,8);p.block(42,6,43,6)},   // 회랑 잔해 (석상 40열 위는 비움)
     clouds:[{tx:9,ty:10,w:3},{tx:21,ty:10,w:3},{tx:32,ty:10,w:3}],
     wind:{dir:1,force:55,period:5,on:2.5},
     save:{tx:40},
@@ -800,7 +809,10 @@ export const ROOMS={
     mobs:[{t:'eyebat',tx:10,ty:5}],deco:{},
     event:{id:'ev_demon',delay:500,lines:[{n:'나',t:'여기가 마왕의 성... 공기가 무겁고 차가워.'},{n:'나',t:'안쪽은 캄캄해 보여. 횃불을 찾아 밝히면서 가야겠어.'},{n:'나',t:'할아버지, 지켜봐 주세요.'}]}},
   m2:{name:'어둠의 복도',theme:'demon',cols:44,grid:[5,-4],exits:{right:'m1',left:'m3'},seed:603,dark:true,
-    build(p){p.block(0,0,43,1);p.ground(0,43,12);p.block(18,8,21,8)},
+    build(p){p.block(0,0,43,1);p.ground(0,43,12);p.block(18,8,21,8);
+      p.block(7,2,7,4);p.block(14,2,15,3);p.block(24,2,25,4);p.block(31,2,31,5);p.block(41,2,42,3);   // 천장에서 내려온 기둥
+      p.block(3,10,4,11);p.block(16,10,16,11);p.block(40,10,41,11);   // 바닥 받침돌
+      p.block(9,7,12,7);p.block(27,8,29,8);p.block(34,6,37,6)},   // 저주 가시 위로 건너는 회랑 조각
     pspikes:[{tx0:10,tx1:14,ty:11,period:2.4},{tx0:26,tx1:30,ty:11,period:2.4,offset:1.2}],
     torches:[{tx:6,ty:11},{tx:21,ty:7},{tx:36,ty:11}],
     chests:[{id:'ch_m2',tx:19,ty:7,gold:420}],

@@ -102,14 +102,15 @@ export class PlayScene extends Phaser.Scene{
     this.upInfo=ex.up&&ROOMS[ex.up.to]?{map:buildRoomMap(ex.up.to),tx:(ROOMS[ex.up.to].exits.down||{tx:ex.up.tx}).tx,cols:ROOMS[ex.up.to].cols}:null;
 
     this.spawnObjects(entry);this.spawnExtras();this.spawnGimmicks();this.pogo=false;
-    (R.slimes||[]).forEach(s=>this.spawnEnemy({x:s.tx*T+8,y:s.ty*T}));
-    // 옆 입구 6칸 안의 몬스터는 방 안쪽 빈칸으로 밀어 둠 (들어오자마자 벽에 몰려 맞지 않게)
-    (R.mobs||[]).forEach(d=>{let m=d;
+    // 옆 입구 6칸 안의 몬스터·슬라임은 방 안쪽 빈칸으로 밀어 둠 (들어오자마자 벽에 몰려 맞지 않게)
+    const inward=d=>{
       if((entry==='left'||entry==='right')&&Math.abs(d.tx*T+8-sx)<6*T&&Math.abs(d.ty*T+8-sy)<64){const dir=entry==='left'?1:-1;
-        for(let tx=Math.round(sx/T)+dir*6;tx>1&&tx<this.cols-2;tx+=dir)if(this.map[d.ty]&&this.map[d.ty][tx]==='.'){m={...d,tx};break}}
-      spawnMob(this,m)});
+        for(let tx=Math.round(sx/T)+dir*6;tx>1&&tx<this.cols-2;tx+=dir)if(this.map[d.ty]&&this.map[d.ty][tx]==='.')return{...d,tx}}
+      return d};
+    (R.slimes||[]).forEach(d=>{const s=inward(d);this.spawnEnemy({x:s.tx*T+8,y:s.ty*T})});
+    (R.mobs||[]).forEach(d=>spawnMob(this,inward(d)));
     // 위/아래 방에서 사다리를 타고 넘어오면 계속 매달린 채로 시작 (아래에서 올라오면 자동으로 조금 올라감)
-    if(climb){this.startClimb();this.autoUp=entry==='bottom'}
+    if(climb){this.startClimb();this.autoUp=entry==='bottom';this.autoUpY=p.y-3*T}   // 자동으로는 3칸만 오름 (끝까지 올라가 몬스터에게 맞던 문제)
     else if(entry==='bottom')p.setVelocityY(-360);   // 사다리 없는 굴뚝으로 올라오면 위로 튀어 오름
 
     const cam=this.cameras.main;cam.setBounds(0,0,this.lw,LH+HUD);cam.startFollow(p,true,0.12,0.12);cam.setDeadzone(40,28);cam.roundPixels=true;
@@ -565,7 +566,7 @@ export class PlayScene extends Phaser.Scene{
   updateClimb(dt,{held,press},now){
     const p=this.player,b=p.body,move=(held.right?1:0)-(held.left?1:0);
     const cx=Math.floor(p.x/T)*T+8;p.x+=(cx-p.x)*Math.min(1,dt*14);
-    if(held.down||held.left||held.right)this.autoUp=false;
+    if(held.down||held.left||held.right||p.y<=this.autoUpY)this.autoUp=false;
     const vy=((held.down?1:0)-((held.up||this.autoUp)?1:0))*CLIMB_SPEED;p.setVelocity(0,vy);
     if(move)this.facing=move;
     // 사다리에서는 뒷모습. 오르내리는 만큼 팔다리를 번갈아 움직임

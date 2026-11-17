@@ -178,7 +178,10 @@ export const ROOMS2={
     mobs:[{t:'snowman',tx:19,ty:11},{t:'iwisp',tx:28,ty:3},{t:'iwisp',tx:11,ty:3},{t:'haunt',tx:28,ty:11}],
     icicles:[{tx:16,ty:2},{tx:27,ty:2},{tx:35,ty:2}],deco:{}},
   i18:{name:'빙하의 심장',theme:'ice',cols:34,grid:[10,3],exits:{right:'i17'},seed:831,
-    build(p){p.block(0,0,33,1);p.ground(0,33,12);p.block(0,2,0,11);p.block(9,2,9,8);p.block(18,8,22,8)},
+    build(p){p.block(0,0,33,1);p.ground(0,33,12);p.block(0,2,0,11);p.block(9,2,9,8);p.block(18,8,22,8);
+      p.block(12,2,12,5);p.block(12,6,14,6);p.block(25,2,26,4);p.block(30,2,30,5);   // 얼음 기둥
+      p.block(11,10,12,11);p.block(24,6,26,6);p.block(27,8,29,8);   // 얼음 턱
+      p.block(2,5,4,5);p.block(5,9,7,9)},   // 보물방 안: 결정 받침
     gates:[{id:'g_i18',tx:9,ty:9,h:3}],
     torches:[{tx:14,ty:11,gate:'g_i18'},{tx:20,ty:7,gate:'g_i18'},{tx:27,ty:11,gate:'g_i18'}],
     chests:[{id:'ch_i18',tx:4,ty:11,gold:420}],crystal:{id:'c_i18',tx:6,ty:8},
