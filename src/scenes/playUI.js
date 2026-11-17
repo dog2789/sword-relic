@@ -103,9 +103,9 @@ export const PlayUI={
   pauseWorld(){this.physics.world.pause();this.anims.pauseAll()},
   resumeWorld(){this.physics.world.resume();this.anims.resumeAll()},
   overlayOpen(){return !!(this.menu||this.dlg||this.mapv||this.warpm||this.listm)},
-  /* 오버레이 조작: 열린 순간 이미 눌려 있던 키는 무시하고, 새로 누른 키만 반응 */
+  /* 오버레이 조작 (모든 창 같음: Z 확인, X·ESC 뒤로, C 그 창의 따로 쓰는 기능): 열린 순간 이미 눌려 있던 키는 무시하고, 새로 누른 키만 반응 */
   navHeld(){const v=VP;return{up:isDown('ArrowUp','KeyW')||v.up,down:isDown('ArrowDown','KeyS')||v.down,left:isDown('ArrowLeft','KeyA')||v.left,right:isDown('ArrowRight','KeyD')||v.right,
-    ok:isDown('KeyZ','KeyX','Enter','Space','KeyJ','KeyK')||v.attack||v.jump,back:isDown('Escape','KeyM','KeyI')||v.menu||v.map||v.back,x:isDown('KeyX')||v.jump}},
+    ok:isDown('KeyZ','Enter','KeyJ')||v.attack,back:isDown('Escape','KeyX','Space','KeyK','KeyM','KeyI')||v.jump||v.menu||v.map||v.back,c:isDown('KeyC','KeyL')||v.skill}},
   navPress(){const h=this.navHeld(),p=this.prevNav||h,r={};for(const k in h)r[k]=h[k]&&!p[k];this.prevNav=h;return r},
   navReset(){this.prevNav=this.navHeld()},
   /* 폰: 창 오른쪽 위에 누를 수 있는 닫기 버튼 (키보드 ESC·I·M 대신) */
@@ -141,7 +141,7 @@ export const PlayUI={
   updateDialog(dt){
     const D=this.dlg,n=this.navPress();
     if(this.ed('dlgesc',isDown('Escape')||VP.back)){this.closeDialog();return}
-    if(n.ok||n.up)this.advanceDialog();if(!this.dlg)return;
+    if(n.ok||n.back||n.up)this.advanceDialog();if(!this.dlg)return;
     const full=this.dlgLine(D).t;D.shown=Math.min(full.length,D.shown+dt*38);
     D.body.setText(full.slice(0,Math.floor(D.shown)));D.arrow.setVisible(D.shown>=full.length);
   },
@@ -200,7 +200,7 @@ export const PlayUI={
     t(302,MOBILE?30:13,'탐험률 '+this.explorePct()+'%',{color:'#8fe3ff'}).setOrigin(1,0);
     t(18,30,'방 '+ids.filter(i=>STATE.visited[i]).length+'/'+ids.length+'    보물 '+tr.got+'/'+tr.all+'    워프 '+wpOn.length+'/'+wp.length,{color:'#cfc8e4'});
     t(18,134,'현재 위치: '+this.R.name,{color:'#ffe27a'});
-    if(STATE.items.feather_ret>0)t(302,MOBILE?42:30,(MOBILE?'점프 버튼':keyText('X'))+' 귀환의 깃털 ('+STATE.items.feather_ret+')',{color:'#cfc8e4'}).setOrigin(1,0);
+    if(STATE.items.feather_ret>0)t(302,MOBILE?42:30,(MOBILE?'스킬 버튼':keyText('C'))+' 귀환의 깃털 ('+STATE.items.feather_ret+')',{color:'#cfc8e4'}).setOrigin(1,0);
     // 폰: 닫기는 오른쪽 위 (아래쪽은 공격·점프 버튼에 가려짐)
     if(MOBILE)this.addCloseBtn(304,11,M.objs,()=>this.closeMap());else t(302,134,'M 닫기',{color:'#8f86ab'}).setOrigin(1,0);
     const lg=[['cur','현재'],['save','세이브'],['warp','워프'],['chest','보물'],['boss','보스']];
@@ -247,8 +247,8 @@ export const PlayUI={
     const M=this.mapv,g=M.g;g.clear();this.paintMap(g,time,null);
     M.legend.forEach(([k],i)=>{if(k==='cur')g.fillStyle(0xffe27a,1).fillRect(22+i*56,151,5,5);else this.mapMark(g,k,23+i*56,152)});
   },
-  updateMap(time){const n=this.navPress();if(n.x&&this.useFeather())return;if(n.back||n.ok){this.closeMap();return}this.drawMap(time)},
-  /* 귀환의 깃털: 지도에서 점프 키로 마지막 세이브 석상(없으면 고향 마을)으로 */
+  updateMap(time){const n=this.navPress();if(n.c&&this.useFeather())return;if(n.back||n.ok){this.closeMap();return}this.drawMap(time)},
+  /* 귀환의 깃털: 지도에서 C(스킬 키)로 마지막 세이브 석상(없으면 고향 마을)으로 */
   useFeather(){
     if(!(STATE.items.feather_ret>0)){this.toast('귀환의 깃털이 없어요 (잡화점에서 팔아요)',1600);return false}
     if(this.bossLock){this.toast('보스와 싸우는 중엔 쓸 수 없어요',1600);return false}

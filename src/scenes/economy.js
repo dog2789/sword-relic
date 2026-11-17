@@ -67,7 +67,7 @@ export const Economy={
     const L=this.listm,n=this.navPress(),k=L.items.length||1;
     if(n.up){L.sel=(L.sel+k-1)%k;this.drawList()}
     if(n.down){L.sel=(L.sel+1)%k;this.drawList()}
-    if(n.x||n.back)this.closeList();else if(n.ok)this.listPick();
+    if(n.back)this.closeList();else if(n.ok)this.listPick();
   },
   closeList(){const L=this.listm;if(!L)return;L.objs.forEach(o=>o.destroy());this.listm=null;this.resumeWorld();this.prev=this.heldNow()},
 

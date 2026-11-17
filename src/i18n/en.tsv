@@ -130,7 +130,7 @@ HP와 MP를 모두 회복	Fully restores HP and MP
 힘의 약	Power Tonic
 30초 동안 공격력 +30% (방을 옮겨도 이어짐)	+30% attack for 30 seconds (lasts across rooms)
 귀환의 깃털	Return Feather
-지도(M)를 열고 X: 마지막 세이브 석상으로 돌아감 (보스전 중엔 못 씀)	Open the map (M) and press X: return to the last save statue (not during boss fights)
+지도(M)를 열고 C: 마지막 세이브 석상으로 돌아감 (보스전 중엔 못 씀)	Open the map (M) and press C: return to the last save statue (not during boss fights)
 철 기사 세트	Iron Knight Set
 공격 +3, 방어 +2, 최대 HP +20	ATK +3, DEF +2, Max HP +20
 흑철 세트	Black Iron Set
@@ -407,6 +407,7 @@ Z를 누르면 이곳으로 순간이동해요	Press Z to teleport here
     워프 	    Warps
 현재 위치: 	Location:
 점프 버튼	Jump button
+스킬 버튼	Skill button
  귀환의 깃털 (	 Return Feather (
 M 닫기	M Close
 현재	You

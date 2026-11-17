@@ -380,8 +380,11 @@ export class PlayScene extends Phaser.Scene{
   maxAirJumps(){return Math.min(1,(STATE.abilities.djump?1:0)+this.bonus.airJumps)}
   updatePogo(dt){
     const p=this.player,b=p.body;if(b.velocity.y<240)p.setVelocityY(Math.min(380,b.velocity.y+900*dt));this.fxPogo(dt);
+    // 튀어 오르는 동안(위로 가는 중)은 안 찍음: 히트스톱 중엔 몸이 그대로라 큰 보스를 매 프레임 찍던 문제
+    if(b.velocity.y<0)return;
     const hb=new Phaser.Geom.Rectangle(p.x-6,b.bottom-4,12,16);let bounce=false;
-    this.enemies.getChildren().slice().forEach(e=>{if(!e.active||this.pogoHit.has(e))return;const eb=e.body;
+    // 땅속에 숨은 지렁이·두더지·전갈왕(body 꺼짐)은 찍히지도 튕기지도 않음
+    this.enemies.getChildren().slice().forEach(e=>{if(!e.active||!e.body||!e.body.enable||this.pogoHit.has(e))return;const eb=e.body;
       if(Phaser.Geom.Intersects.RectangleToRectangle(hb,new Phaser.Geom.Rectangle(eb.x,eb.y,eb.width,eb.height))){this.pogoHit.add(e);bounce=true;
         this.hitEnemy(e,Math.round(this.atkVal()*1.25*(0.9+Math.random()*0.2)),false,this.facing,false)}});
     this.chests.forEach(c=>{if(!c.open&&Phaser.Geom.Intersects.RectangleToRectangle(hb,new Phaser.Geom.Rectangle(c.x-7,c.y-11,14,11))){this.openChest(c);bounce=true}});
@@ -554,7 +557,7 @@ export class PlayScene extends Phaser.Scene{
     this.drawHud(dt,time);
   }
 
-  startClimb(){const p=this.player;this.climbing=true;p.body.setAllowGravity(false);p.setVelocity(0,0);this.atk.active=false;if(this.slash){this.slash.destroy();this.slash=null}}
+  startClimb(){const p=this.player;this.climbing=true;this.pogo=false;p.body.setAllowGravity(false);p.setVelocity(0,0);this.atk.active=false;if(this.slash){this.slash.destroy();this.slash=null}}
   stopClimb(){this.climbing=false;this.autoUp=false;this.player.body.setAllowGravity(true)}
   updateClimb(dt,{held,press},now){
     const p=this.player,b=p.body,move=(held.right?1:0)-(held.left?1:0);
@@ -565,6 +568,8 @@ export class PlayScene extends Phaser.Scene{
     // 사다리에서는 뒷모습. 오르내리는 만큼 팔다리를 번갈아 움직임
     p.anims.stop();p.setTexture(Math.floor(p.y/7)%2?'hero_climb1':'hero_climb0');p.setFlipX(false);
     if(press.jump){this.stopClimb();p.setVelocity(move*SPEED,-JUMP*0.75);sfx('jump');p.setFlipX(this.facing<0);return}
+    // 사다리에서 ↓+Z: 손을 놓고 하단 찌르기
+    if(press.atk&&held.down){this.stopClimb();p.setVelocity(0,60);this.pogo=true;this.pogoHit=new Set();p.setFlipX(this.facing<0);return}
     // 방 아래쪽 출구로 이어진 사다리는 화면 끝까지 매달린 채로 내려감
     const dn=this.R.exits.down,toBelow=dn&&b.bottom>=LH-2&&Math.abs(p.x-(dn.tx*T+8))<8;
     const onLad=this.isClimb(p.x,p.y)||this.isClimb(p.x,b.bottom-1)||toBelow;

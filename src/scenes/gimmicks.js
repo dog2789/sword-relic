@@ -215,8 +215,11 @@ export const Gimmicks={
       else{this.breath=Math.min(1,this.breath+dt*1.2);this.drownT=0;this.breathMsg=0}}
     // 숨 방울: 숨이 줄었을 때만 머리 위에 표시 (5칸)
     if(this.breathG){const g=this.breathG;g.clear();
-      if(this.hasWater&&this.breath<1&&!p.dead){const n=Math.ceil(this.breath*5),x0=p.x-12,y0=p.y-22,low=this.breath<0.3&&Math.floor(this.time.now/150)%2;
-        for(let i=0;i<5;i++){const on=i<n;g.fillStyle(0x0f0b1e,0.7).fillCircle(x0+i*6,y0,3);g.fillStyle(on?(low?0xff8a95:0xcff4ff):0x3a4a6a,1).fillCircle(x0+i*6,y0,2);if(on)g.fillStyle(0xffffff,1).fillRect(x0+i*6-1,y0-1,1,1)}}}
+      if(this.hasWater&&this.breath<1&&!p.dead){const n=Math.ceil(this.breath*5),x0=Math.round(p.x)-14,y0=Math.round(p.y)-24,low=this.breath<0.3&&Math.floor(this.time.now/150)%2;
+        // 5×5 도트 물방울 (원 그리기는 고해상도에서 매끈하게 나와서 사각형으로 찍음)
+        for(let i=0;i<5;i++){const on=i<n,x=x0+i*6;g.fillStyle(0x0f0b1e,0.8).fillRect(x+1,y0,3,5).fillRect(x,y0+1,5,3);
+          g.fillStyle(on?(low?0xff8a95:0x7fd4ff):0x3a4a6a,1).fillRect(x+1,y0+1,3,3);
+          if(on)g.fillStyle(low?0xffd8de:0xeafcff,1).fillRect(x+1,y0+1,1,1)}}}
   },
   openBossGates(id){this.gates.forEach(g=>{if(g.def.boss===id){g.perm=true;STATE.opened[g.def.id]=true;this.setGate(g,true)}})},
   /* 용암·유사·분출구 (매 프레임) */

@@ -37,8 +37,8 @@ export function densify(m,R,id){
   for(const k in R)if(!SKIP.has(k)){
     // 몬스터·슬라임은 나오는 칸 둘레만 (떨어지거나 날아다님)
     if(k==='mobs'||k==='slimes')(R[k]||[]).forEach(o=>mark({...o,small:true}));else mark(R[k],COL.has(k))}
-  // 사다리·덩굴·물·용암·모래 근처 열도 비움 (오르내리는 길, 함정)
-  for(let x=0;x<cols;x++)for(let y=0;y<ROWS;y++)if('HV~LS'.includes(m[y][x]))banX(x-1,x+1);
+  // 사다리·덩굴·물 근처 열은 비움 (오르내리는 길). 용암·모래 구덩이 위 공중은 덩어리를 놓음 (넓은 구덩이 방이 텅 비어 보여서)
+  for(let x=0;x<cols;x++)for(let y=0;y<ROWS;y++)if('HV~'.includes(m[y][x]))banX(x-1,x+1);
   const empty=(x,y)=>x>=0&&x<cols&&y>=0&&y<ROWS&&m[y][x]==='.';
   const boxFree=(x0,x1,y0,y1)=>{for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){if(x<0||x>=cols||ban[x]||banC.has(x+','+y)||!empty(x,y))return false}return true};
   const stand=c=>c==='#'||c==='-'||c==='='||c==='A'||c==='B';
@@ -64,7 +64,7 @@ export function densify(m,R,id){
     }
   }
   // 2) 층계 발판: 어느 층에서든 2~3칸씩 지그재그로 위로 (점프 높이 3칸 안). 한쪽 발판은 위 1줄만, 바위 턱은 위아래 1줄씩 비어 있으면 됨
-  let placed=0;const maxN=Math.round(cols/3);
+  let placed=0;const maxN=Math.round(cols/2);
   const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
   const fits=(x0,w,ty,ch)=>ty>=4&&(ch==='#'?boxFree(x0-1,x0+w,ty-1,ty+1):boxFree(x0-1,x0+w,ty-1,ty));
   for(let x=7;x<cols-8&&placed<maxN;x++){
@@ -82,15 +82,15 @@ export function densify(m,R,id){
         cur=ty;cx=x0;dir=-dir;done=true}
       if(!done)break;
     }
-    if(n)x+=ri(3,5);
+    if(n)x+=ri(2,4);
   }
   // 4) 큰 빈 공간: 사방 2칸이 비어 있는 곳에 작은 바위 덩어리나 발판 (3칸 격자로 훑음)
-  for(let pass=0;pass<2;pass++)for(let y=4;y<ROWS-3;y+=ri(2,3))for(let x=7;x<cols-9;x+=ri(3,4)){
+  for(let pass=0;pass<3;pass++)for(let y=4;y<ROWS-3;y+=2)for(let x=7;x<cols-9;x+=ri(2,3)){
     const w=ri(2,4),h=rnd()<0.4?2:1,ch=rnd()<Math.max(solidP,0.85)?'#':plat;
-    if(boxFree(x-1,x+w,y-2,y+h+1)&&rnd()<0.7)for(let i=0;i<h;i++){const s0=i&&w>2&&rnd()<0.5?1:0;put(x+s0,x+w-1-(i&&!s0&&w>2?1:0),y+i,ch==='#'||i===0?ch:'#')}}
+    if(boxFree(x-1,x+w,y-2,y+h+1)&&rnd()<0.85)for(let i=0;i<h;i++){const s0=i&&w>2&&rnd()<0.5?1:0;put(x+s0,x+w-1-(i&&!s0&&w>2?1:0),y+i,ch==='#'||i===0?ch:'#')}}
   // 3) 천장 돌출: 천장(맨 윗줄이 막힘)이 있고 위 출구가 없는 방
   if(!ex.up)for(let x=7;x<cols-8;x+=ri(4,7)){
-    if(m[0][x]!=='#'||rnd()<0.4)continue;
+    if(m[0][x]!=='#'||rnd()<0.25)continue;
     let y=0;while(y<ROWS&&m[y][x]==='#')y++;
     const w=ri(1,3),h=ri(1,2);
     if(y+h+3<ROWS&&boxFree(x,x+w-1,y,y+h+2))for(let i=0;i<h;i++)put(x,x+w-1,y+i,'#');

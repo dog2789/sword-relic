@@ -140,7 +140,7 @@ export const CONSUMABLES={
   ether:{name:'마나 물약',desc:'MP 20 회복',mp:20,col:['#5a9aff','#2a4aa0']},
   elixir:{name:'엘릭서',desc:'HP와 MP를 모두 회복',hp:9999,mp:9999,col:['#ffe27a','#c08a1a']},
   power:{name:'힘의 약',desc:'30초 동안 공격력 +30% (방을 옮겨도 이어짐)',power:30,col:['#ff8a2a','#a0300a']},
-  feather_ret:{name:'귀환의 깃털',desc:'지도(M)를 열고 X: 마지막 세이브 석상으로 돌아감 (보스전 중엔 못 씀)',ret:true,shape:'feather',col:['#ffffff','#9ab0c8']}
+  feather_ret:{name:'귀환의 깃털',desc:'지도(M)를 열고 C: 마지막 세이브 석상으로 돌아감 (보스전 중엔 못 씀)',ret:true,shape:'feather',col:['#ffffff','#9ab0c8']}
 };
 
 export const SETS={

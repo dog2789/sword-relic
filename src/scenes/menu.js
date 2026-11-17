@@ -1,5 +1,5 @@
 /* 장비창(I): [장비] 칸마다 모든 장비를 도감처럼 나열 / [상태] 능력치, 시간, 열쇠, 능력
-   C 탭 바꾸기, ←→↑↓ 고르기, Z 장착·해제, I/ESC 닫기 */
+   C 탭 바꾸기, ←→↑↓ 고르기, Z 장착·해제, X/I/ESC 닫기 */
 import Phaser from 'phaser';
 import {W,H,VP,MOBILE,keyText} from '../config.js';
 import {ITEMS,SETS,SLOTS,SLOT_NAMES,KEYS,setProgress,statLine,weaponName} from '../data/items.js';
@@ -108,9 +108,9 @@ export const MenuMixin={
   },
   closeMenu(){const M=this.menu;if(!M)return;[...M.objs,...M.dyn].forEach(o=>o.destroy());this.menu=null;this.resumeWorld();this.prev=this.heldNow()},
   updateMenu(){
-    const M=this.menu,n=this.navPress(),c=this.ed('mtab',isDown('KeyC','KeyL')||VP.skill);
+    const M=this.menu,n=this.navPress(),c=n.c;
     if(c){if(MOBILE&&M.tab===0){this.menuRow((M.r+1)%SLOTS.length);this.drawMenu()}else{M.tab=MOBILE?0:(M.tab+1)%2;this.buildTab()}return}
-    if(n.back||this.ed('mesc',isDown('Escape')||VP.back)){this.closeMenu();return}
+    if(n.back){this.closeMenu();return}
     if(M.tab!==0)return;
     const NR=SLOTS.length,len=r=>Math.max(1,M.cells[r].length);
     if(n.up){this.menuRow((M.r+NR-1)%NR);this.drawMenu()}
