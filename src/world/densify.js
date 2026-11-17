@@ -19,11 +19,11 @@ export function densify(m,R,id){
   const cols=m[0].length,rnd=rngOf((R.seed||1)+(DENSE_SEED[id]||0)*7919),ri=(a,b)=>a+Math.floor(rnd()*(b-a+1));
   const [plat,solidP]=MAT[R.theme]||MAT.meadow;
   // 못 건드리는 열
-  const ban=Array(cols).fill(false),banX=(a,b)=>{for(let x=Math.max(0,a);x<=Math.min(cols-1,b);x++)ban[x]=true};
+  const ban=Array(cols).fill(false),banX=(a,b)=>{for(let x=Math.max(0,Math.floor(a));x<=Math.min(cols-1,Math.ceil(b));x++)ban[x]=true};   // 좌표가 15.5 같은 소수여도 양옆 칸까지
   banX(0,5);banX(cols-6,cols-1);
   const ex=R.exits||{};for(const k of ['up','down'])if(ex[k])banX(ex[k].tx-3,ex[k].tx+3);
   // 칸 단위로 막는 곳 (좌표가 정해진 몬스터·장치 둘레)
-  const banC=new Set(),banM=new Set();let tgt=banC;const banBox=(x0,x1,y0,y1)=>{for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)tgt.add(x+','+y)};
+  const banC=new Set(),banM=new Set();let tgt=banC;const banBox=(x0,x1,y0,y1)=>{for(let y=y0;y<=y1;y++)for(let x=Math.floor(x0);x<=Math.ceil(x1);x++)tgt.add(x+','+y)};
   // 바닥에 맞춰 놓이는 것(석상·워프·NPC·좌표 없는 상자)과 위아래로 움직이는 것(상승 기류·점프 버섯·고드름)은 열 전체
   const MOVK=new Set(['movers','fallers','clouds']);
   const COL=new Set(['save','warp','npc','npcs','crystal','start','updrafts','mushrooms','icicles']);
