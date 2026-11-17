@@ -4,7 +4,7 @@ import {chromium} from 'playwright-core';
 const OUT='C:/wooj/sword-relic/sword-relic/public/shots/',only=process.argv[2];
 const SETS={blood:['blood_sword','blood_helm','blood_armor','blood_boots'],moon:['moon_sword','moon_helm','moon_armor','moon_boots']};
 const LIST=[['meadow','r3','left',0.35,'blood'],['village','v1','start',0.34,'moon'],['treetop','t2','left',0.45,'blood'],['cave','c7','left',0.3,'moon'],
-  ['castle','k6','left',0.3,'blood'],['ice','i13','left',0.45,'moon'],['desert','d4','start',0.25,'blood'],['lava','l5','right',0.3,'moon',11],['sky','s3','left',0.15,'blood']];
+  ['castle','k6','left',0.3,'blood'],['ice','i13','left',0.58,'moon'],['desert','d4','start',0.25,'blood'],['lava','l5','right',0.3,'moon',11],['sky','s3','left',0.15,'blood']];
 const b=await chromium.launch({channel:'msedge'});const pg=await (await b.newContext({serviceWorkers:'block',viewport:{width:1400,height:1000},deviceScaleFactor:2})).newPage();
 const errs=[];pg.on('pageerror',e=>errs.push(e.message));
 await pg.goto('http://localhost:4220/play/');await pg.waitForTimeout(3500);
