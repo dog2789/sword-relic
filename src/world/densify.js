@@ -23,8 +23,9 @@ export function densify(m,R,id){
   banX(0,5);banX(cols-6,cols-1);
   const ex=R.exits||{};for(const k of ['up','down'])if(ex[k])banX(ex[k].tx-3,ex[k].tx+3);
   // 칸 단위로 막는 곳 (좌표가 정해진 몬스터·장치 둘레)
-  const banC=new Set(),banBox=(x0,x1,y0,y1)=>{for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)banC.add(x+','+y)};
+  const banC=new Set(),banM=new Set();let tgt=banC;const banBox=(x0,x1,y0,y1)=>{for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)tgt.add(x+','+y)};
   // 바닥에 맞춰 놓이는 것(석상·워프·NPC·좌표 없는 상자)과 위아래로 움직이는 것(상승 기류·점프 버섯·고드름)은 열 전체
+  const MOVK=new Set(['movers','fallers','clouds']);
   const COL=new Set(['save','warp','npc','npcs','crystal','start','updrafts','mushrooms','icicles']);
   const mark=(o,col)=>{if(!o||typeof o!=='object')return;
     if(Array.isArray(o)){o.forEach(v=>mark(v,col));return}
@@ -36,11 +37,13 @@ export function densify(m,R,id){
     banBox(o.tx-2,o.tx+w+rx+1,o.ty-3,o.ty+(o.h||1)+ry+1)};
   for(const k in R)if(!SKIP.has(k)){
     // 몬스터·슬라임은 나오는 칸 둘레만 (떨어지거나 날아다님)
-    if(k==='mobs'||k==='slimes')(R[k]||[]).forEach(o=>mark({...o,small:true}));else mark(R[k],COL.has(k))}
+    if(k==='mobs'||k==='slimes')(R[k]||[]).forEach(o=>mark({...o,small:true}));
+    else if(MOVK.has(k)){tgt=banM;mark(R[k],false);tgt=banC}   // 움직이는·무너지는 발판 둘레는 따로 (구덩이 섬은 실제 지나는 칸만 피함)
+    else mark(R[k],COL.has(k))}
   // 사다리·덩굴·물 근처 열은 비움 (오르내리는 길). 용암·모래 구덩이 위 공중은 덩어리를 놓음 (넓은 구덩이 방이 텅 비어 보여서)
   for(let x=0;x<cols;x++)for(let y=0;y<ROWS;y++)if('HV~'.includes(m[y][x]))banX(x-1,x+1);
   const empty=(x,y)=>x>=0&&x<cols&&y>=0&&y<ROWS&&m[y][x]==='.';
-  const boxFree=(x0,x1,y0,y1)=>{for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){if(x<0||x>=cols||ban[x]||banC.has(x+','+y)||!empty(x,y))return false}return true};
+  const boxFree=(x0,x1,y0,y1)=>{for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){if(x<0||x>=cols||ban[x]||banC.has(x+','+y)||banM.has(x+','+y)||!empty(x,y))return false}return true};
   const stand=c=>c==='#'||c==='-'||c==='='||c==='A'||c==='B';
   // 그 열에서 가장 아래쪽 서 있을 수 있는 면 (그 위가 빈칸)
   const floorRow=x=>{for(let y=ROWS-1;y>0;y--)if(stand(m[y][x])&&m[y-1][x]==='.')return y;return ROWS};
@@ -84,16 +87,39 @@ export function densify(m,R,id){
     }
     if(n)x+=ri(2,4);
   }
+  // 발판이 실제로 지나는 칸. 공중 덩어리는 발판 위로 3칸(타고 지나갈 머리 공간), 발판 아래로 1칸 띄움 (발판은 아래에서 위로 통과함)
+  const path=new Set();
+  for(const d of R.movers||[])for(let i=0;i<d.w+(d.axis==='x'?d.range:0);i++)for(let j=0;j<=(d.axis==='y'?d.range:0);j++)path.add((d.tx+i)+','+(d.ty+j));
+  for(const d of [...(R.fallers||[]),...(R.clouds||[])])for(let i=0;i<d.w;i++)path.add((d.tx+i)+','+d.ty);
+  const nearPath=(x,y)=>{for(let j=-1;j<=3;j++)if(path.has(x+','+(y+j)))return true;return false};
+  const airFree=(x0,x1,y0,y1)=>{for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){if(x<0||x>=cols||ban[x]||banC.has(x+','+y)||!empty(x,y)||nearPath(x,y))return false}return true};
   // 4) 큰 빈 공간: 사방 2칸이 비어 있는 곳에 작은 바위 덩어리나 발판 (3칸 격자로 훑음)
   for(let pass=0;pass<3;pass++)for(let y=4;y<ROWS-3;y+=2)for(let x=7;x<cols-9;x+=ri(2,3)){
     const w=ri(2,4),h=rnd()<0.4?2:1,ch=rnd()<Math.max(solidP,0.85)?'#':plat;
-    if(boxFree(x-1,x+w,y-2,y+h+1)&&rnd()<0.85)for(let i=0;i<h;i++){const s0=i&&w>2&&rnd()<0.5?1:0;put(x+s0,x+w-1-(i&&!s0&&w>2?1:0),y+i,ch==='#'||i===0?ch:'#')}}
+    if(airFree(x-1,x+w,y-2,y+h+1)&&rnd()<0.85)for(let i=0;i<h;i++){const s0=i&&w>2&&rnd()<0.5?1:0;put(x+s0,x+w-1-(i&&!s0&&w>2?1:0),y+i,ch==='#'||i===0?ch:'#')}}
   // 3) 천장 돌출: 천장(맨 윗줄이 막힘)이 있고 위 출구가 없는 방
   if(!ex.up)for(let x=7;x<cols-8;x+=ri(4,7)){
     if(m[0][x]!=='#'||rnd()<0.25)continue;
     let y=0;while(y<ROWS&&m[y][x]==='#')y++;
     const w=ri(1,3),h=ri(1,2);
     if(y+h+3<ROWS&&boxFree(x,x+w-1,y,y+h+2))for(let i=0;i<h;i++)put(x,x+w-1,y+i,'#');
+  }
+  // 5) 구덩이 섬: 용암·모래·가시 구덩이 바닥에 2~3칸 디딤 바위 (발판 방이 텅 비어 보여서). 발판이 지나는 칸과는 위로 2칸(주인공 키) 띄움
+  const haz=c=>c==='L'||c==='S'||c==='^';
+  const pitTop=x=>{for(let y=4;y<ROWS;y++)if(haz(m[y][x])&&m[y-1][x]==='.')return y;return -1};
+  for(let a=0;a<cols;){
+    const hy=pitTop(a);if(hy<0){a++;continue}
+    let b=a;while(b+1<cols&&pitTop(b+1)===hy)b++;
+    for(let x=a+2+ri(0,2);b-a+1>=6&&x+1<=b-2;x+=ri(5,7)){
+      const w=Math.min(ri(2,3),b-2-x+1),top=hy-ri(0,1);
+      let ok=true;
+      for(let c=x;c<x+w&&ok;c++){if(ban[c]){ok=false;break}
+        for(let y=top;y<hy;y++)if(!empty(c,y)||banC.has(c+','+y)||path.has(c+','+y))ok=false;
+        for(let y=top-2;y<top;y++)if(y<0||!empty(c,y)||path.has(c+','+y))ok=false}
+      if(!ok)continue;
+      for(let c=x;c<x+w;c++)for(let y=top;y<ROWS;y++){if(y>=hy&&!haz(m[y][c]))break;m[y][c]='#'}
+    }
+    a=b+1;
   }
   return m;
 }
