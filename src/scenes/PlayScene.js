@@ -34,7 +34,7 @@ export class PlayScene extends Phaser.Scene{
     if(W!==wideW()){setW(wideW());const sc=calcScale();RS.S=sc.S;this.scale.resize(W*sc.S,H*sc.S);this.scale.setZoom(sc.css/sc.S)}
     buildTextures(this);buildFonts(this);buildFxTextures(this);this.fxEms={};
     // 이전 방의 참조 정리
-    Object.assign(this,{chillT:0,slash:null,sword:null,chests:[],statue:null,crystal:null,tInfo:null,menu:null,pickups:[],walls:[],fallers:[],mushrooms:[],climbing:false,bounceT:0,safe:null,autoUp:false,warpObj:null,npcObjs:[],bubble:null,listm:null,dlg:null,mapv:null,warpm:null,quickUI:[],quakes:[],eshots:[],geysers:[],inSand:false,wallT:0,wallLock:0,wallDir:0});
+    Object.assign(this,{chillT:0,slash:null,sword:null,chests:[],statue:null,crystal:null,tInfo:null,menu:null,pickups:[],walls:[],fallers:[],mushrooms:[],climbing:false,bossLock:false,bounceT:0,safe:null,autoUp:false,warpObj:null,npcObjs:[],bubble:null,listm:null,dlg:null,mapv:null,warpm:null,quickUI:[],quakes:[],eshots:[],geysers:[],inSand:false,wallT:0,wallLock:0,wallDir:0});
     const id=data.room&&ROOMS[data.room]?data.room:(ROOMS[STATE.room]?STATE.room:'r1');
     this.entryData={room:id,entry:data.entry||'start',dx:data.dx};
     STATE.room=id;STATE.visited[id]=true;saveGame();   // 자동 저장 (폰은 브라우저가 쉽게 닫혀서)

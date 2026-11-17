@@ -43,7 +43,10 @@ export function hasSave(){
 export function loadGame(){
   try{
     const v=JSON.parse(localStorage.getItem(KEY)||'null');
-    if(v&&v.stats){const f=fresh();for(const k in STATE)delete STATE[k];Object.assign(STATE,f,v);if(!STATE.bosses)STATE.bosses={};if(!STATE.quick[2])STATE.quick[2]='elixir';if(!STATE.quick[3])STATE.quick[3]='power';for(const k of ['wlv','keys'])if(!STATE[k])STATE[k]={};if(STATE.gold==null)STATE.gold=0;if(STATE.time==null)STATE.time=0;return true}
+    if(v&&v.stats){const f=fresh();for(const k in STATE)delete STATE[k];Object.assign(STATE,f,v);if(!STATE.bosses)STATE.bosses={};if(!STATE.quick[2])STATE.quick[2]='elixir';if(!STATE.quick[3])STATE.quick[3]='power';for(const k of ['wlv','keys'])if(!STATE[k])STATE[k]={};if(STATE.gold==null)STATE.gold=0;if(STATE.time==null)STATE.time=0;
+      // 보스 방을 옮김 (동굴 c4→c8, 얼음 i3→i13): 보스 드롭을 이미 받았으면 새 방에서 또 나오지 않게
+      const col=STATE.collected||{};for(const [a,b] of [['c4','c8'],['i3','i13']])if(col['drop_'+a])col['drop_'+b]=true;
+      return true}
   }catch(_){}
   return false;
 }

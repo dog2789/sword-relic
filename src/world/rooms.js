@@ -173,11 +173,10 @@ export const ROOMS={
     slimes:[{tx:31,ty:10}],
     mobs:[{t:'mole',tx:34,ty:3},{t:'spider',tx:20,ty:5},{t:'snail',tx:24,ty:8},{t:'bat',tx:40,ty:5}],
     deco:{}},
-  c4:{name:'박쥐 군주의 둥지',theme:'cave',cols:30,grid:[4,1],exits:{left:'c3',right:'c6'},seed:127,
+  c4:{name:'무너진 갱도',theme:'cave',cols:30,grid:[4,1],exits:{left:'c3',right:'c6'},seed:127,
     build(p){p.block(0,0,29,1);p.ground(0,29,12);p.block(0,2,0,8);p.block(29,2,29,8);
       p.plat(4,7,8);p.plat(22,25,8);p.plat(12,17,5)},
-    boss:{id:'batlord',tx:15,ty:3,drop:'bat_cape',title:'BAT LORD',intro:'땅속 깊은 곳의 박쥐 군주가 날개를 펼쳤다!'},
-    slimes:[],
+    slimes:[{tx:20,ty:10}],mobs:[{t:'mole',tx:10,ty:11},{t:'snail',tx:18,ty:10},{t:'spider',tx:24,ty:3}],
     deco:{}},
 
   /* ----- 고성 깊은 곳 (폭포 회랑 오른쪽) ----- */
@@ -247,11 +246,9 @@ export const ROOMS={
     slimes:[{tx:8,ty:10}],
     mobs:[{t:'iwisp',tx:22,ty:3},{t:'snail',tx:34,ty:10},{t:'bat',tx:30,ty:3}],
     deco:{}},
-  i3:{name:'얼어붙은 왕좌',theme:'ice',cols:30,grid:[6,2],exits:{left:'i2',right:'i4'},seed:163,
+  i3:{name:'빙결의 정원',theme:'ice',cols:30,grid:[6,2],exits:{left:'i2',right:'i4'},seed:163,
     build(p){p.block(0,0,29,1);p.ground(0,29,12);p.block(0,2,0,8);p.block(29,2,29,8);p.block(5,8,8,8);p.block(21,8,24,8)},
-    boss:{id:'turtle',tx:18,ty:9,drop:'frost_blade',title:'FROST TURTLE',intro:'얼음 속에 잠들어 있던 서리 거북이 깨어났다!',
-      after:[{n:'나',t:'이 냉기... 아직 더 깊은 곳이 있는 것 같아.'},{n:'나',t:'전설의 검이 가까워지고 있어. 조금만 더 가 보자.'}]},
-    slimes:[],
+    slimes:[{tx:12,ty:10},{tx:22,ty:10}],mobs:[{t:'snowman',tx:16,ty:11}],
     deco:{}},
 
   /* ===== 초원 확장 ===== */
@@ -308,13 +305,13 @@ export const ROOMS={
     chests:[{id:'ch_c7',tx:17,ty:7,gold:100}],
     mobs:[{t:'spider',tx:16,ty:3},{t:'bat',tx:26,ty:3}],
     deco:{}},
-  c8:{name:'무너진 갱도',theme:'cave',cols:40,grid:[7,1],exits:{left:'c7',up:{to:'k4',tx:36}},seed:197,
+  // 동굴 보스: 고성(k4)으로 올라가는 사다리 앞
+  c8:{name:'박쥐 군주의 둥지',theme:'cave',cols:40,grid:[7,1],exits:{left:'c7',up:{to:'k4',tx:36}},seed:197,
     build(p){p.block(0,0,39,1);p.ground(0,39,12);p.block(0,2,0,8);p.block(39,2,39,11);p.clear(36,0,36,1);p.ladder(36,0,11);
-      p.block(14,2,14,8);p.block(20,6,30,6);p.plat(16,18,9)},
-    breaks:[{id:'w_c8a',tx:14,ty:9,h:3}],
-    turrets:[{tx:38,ty:5,dir:'l',rate:3}],
-    chests:[{id:'ch_c8',tx:25,ty:5,gold:130}],
-    slimes:[{tx:30,ty:10}],mobs:[{t:'mole',tx:13,ty:11},{t:'snail',tx:18,ty:10},{t:'spider',tx:22,ty:3}],
+      p.plat(5,8,8);p.plat(14,19,5);p.plat(24,27,8)},
+    boss:{id:'batlord',tx:20,ty:3,drop:'bat_cape',title:'BAT LORD',intro:'땅속 깊은 곳의 박쥐 군주가 날개를 펼쳤다!'},
+    chests:[{id:'ch_c8',tx:31,ty:11,gold:130}],
+    slimes:[],
     deco:{}},
   c9:{name:'버섯 동굴',theme:'cave',cols:40,grid:[2,2],exits:{right:'c5'},seed:199,
     build(p){p.block(0,0,39,1);p.ground(0,39,13);p.ground(0,21,11);p.block(22,4,23,12);p.water(24,6,39,12);
@@ -621,12 +618,15 @@ export const ROOMS={
     chests:[{id:'ch_i12',tx:26,ty:2,item:'moon_sword'}],
     mobs:[{t:'snowman',tx:10,ty:12},{t:'bat',tx:24,ty:5}],
     deco:{}},
-  i13:{name:'빙결의 정원',theme:'ice',cols:34,grid:[10,2],exits:{left:'i12',right:'i14'},seed:433,
+  // 얼음 보스: 지역 끝 (곁가지 i14~ 앞)
+  i13:{name:'얼어붙은 왕좌',theme:'ice',cols:34,grid:[10,2],exits:{left:'i12',right:'i14'},seed:433,
     build(p){p.block(0,0,33,1);p.ground(0,33,12);p.ground(0,5,4);p.block(33,2,33,8);p.block(30,2,30,8);p.block(7,8,9,8)},
     gates:[{id:'g_i13',tx:30,ty:9,h:3}],torches:[{tx:12,ty:11,gate:'g_i13'},{tx:8,ty:7,gate:'g_i13'},{tx:20,ty:11,gate:'g_i13'},{tx:27,ty:11,gate:'g_i13'}],
     crystal:{id:'c_i13',tx:31,ty:9},
     chests:[{id:'ch_i13',tx:32,ty:11,item:'moon_helm'}],
-    slimes:[{tx:15,ty:10},{tx:24,ty:10}],mobs:[{t:'snowman',tx:18,ty:11}],
+    boss:{id:'turtle',tx:18,ty:9,drop:'frost_blade',title:'FROST TURTLE',intro:'얼음 속에 잠들어 있던 서리 거북이 깨어났다!',
+      after:[{n:'나',t:'이 냉기... 아직 더 깊은 곳이 있는 것 같아.'},{n:'나',t:'전설의 검이 가까워지고 있어. 조금만 더 가 보자.'}]},
+    slimes:[],
     deco:{}},
   d9:{name:'모래 동굴',theme:'desert',cols:40,grid:[-4,1],exits:{up:{to:'d1',tx:20}},seed:441,
     build(p){p.block(0,0,39,1);p.clear(20,0,20,1);p.ladder(20,0,11);p.ground(0,39,12);p.block(0,2,0,11);p.block(39,2,39,11);
