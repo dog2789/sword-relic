@@ -169,6 +169,10 @@ function analyze(id){
     for(const g of gates)if(!g.open)miss.push('철문 '+g.id);
     for(const p of (R.plates||[]))if(!near(p.tx,p.ty))miss.push('누름판@'+p.tx);
     for(const c of (R.crates||[]))if(!near(c.tx,c.ty))miss.push('나무상자@'+c.tx);
+    // 벽 속에 묻힌 물건 / 상자를 누름판까지 미는 길(같은 줄)이 막혔는지
+    if(R.crystal&&m[R.crystal.ty][Math.floor(R.crystal.tx)]==='#')miss.push('수정이 벽 속 '+R.crystal.id);
+    for(const p of (R.plates||[])){const c=(R.crates||[]).filter(c=>c.ty===p.ty).sort((a,b)=>Math.abs(a.tx-p.tx)-Math.abs(b.tx-p.tx))[0];if(!c)continue;
+      const d=Math.sign(p.tx-c.tx);for(let x=c.tx+d;x!==p.tx+d;x+=d)if(m[c.ty][x]==='#'){miss.push('상자 미는 길 막힘@'+x);break}}
     results[e]={exits:[...exits],miss};
   }
   return{ents,results};

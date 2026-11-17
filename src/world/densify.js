@@ -40,6 +40,8 @@ export function densify(m,R,id){
     if(k==='mobs'||k==='slimes')(R[k]||[]).forEach(o=>mark({...o,small:true}));
     else if(MOVK.has(k)){tgt=banM;mark(R[k],false);tgt=banC}   // 움직이는·무너지는 발판 둘레는 따로 (구덩이 섬은 실제 지나는 칸만 피함)
     else mark(R[k],COL.has(k))}
+  // 나무 상자를 누름판까지 미는 길은 비움 (r9: 길 한가운데 바위 기둥이 서서 퍼즐이 막혔었음)
+  for(const c of R.crates||[])for(const p of R.plates||[])banBox(Math.min(c.tx,p.tx)-1,Math.max(c.tx,p.tx)+1,Math.min(c.ty,p.ty)-2,Math.max(c.ty,p.ty));
   // 사다리·덩굴·물 근처 열은 비움 (오르내리는 길). 용암·모래 구덩이 위 공중은 덩어리를 놓음 (넓은 구덩이 방이 텅 비어 보여서)
   for(let x=0;x<cols;x++)for(let y=0;y<ROWS;y++)if('HV~'.includes(m[y][x]))banX(x-1,x+1);
   const empty=(x,y)=>x>=0&&x<cols&&y>=0&&y<ROWS&&m[y][x]==='.';
