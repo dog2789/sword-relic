@@ -9,6 +9,7 @@ import {sfx} from '../sfx.js';
 import {dmgTaken} from '../opts.js';
 import {cv,px} from '../gfx/pixel.js';
 import {surfaceY} from '../world/rooms.js';
+import {MOBS} from './monsters.js';
 
 export const Gimmicks={
   spawnGimmicks(){
@@ -172,6 +173,11 @@ export const Gimmicks={
       // 한 번 열리면 계속 열려 있음 (방을 나갔다 오면 상자가 제자리로 돌아가서 갇히지 않게)
       if(open&&!ps.some(pl=>pl.def.latch===false)){g.perm=true;STATE.opened[g.def.id]=true}
       this.setGate(g,open)});
+    // 닫힌 철문에 닿으면 여는 방법 안내 (보스 문은 어느 보스인지)
+    if(this.doorMsgT<=0)this.gates.forEach(g=>{if(g.open)return;const gx=g.def.tx*T+8,top=g.def.ty*T,bot=(g.def.ty+(g.def.h||3))*T;
+      if(Math.abs(p.x-gx)>15||pb.bottom<=top+2||pb.top>=bot-2)return;
+      const msg=g.def.boss?'보스를 쓰러뜨리면 열리는 문이에요: '+((MOBS[g.def.boss]||{}).nm||''):this.torches.some(t=>t.gate===g.def.id)?'횃불을 모두 켜면 열릴 것 같아요 (공격으로 켜요)':this.plates.some(pl=>pl.def.gate===g.def.id)?'누름판에 나무 상자를 올리면 열릴 것 같아요':null;
+      if(msg){this.toast(msg,2200);this.doorMsgT=3}});
     // 철문 안쪽(누름판·횃불 반대편)에서 다가가면 빗장을 풀고 열 수 있음
     this.gates.forEach(g=>{if(g.perm||g.def.boss||g.def.lock)return;   // lock: 횃불을 다 켜야만 열림 (보물방)
       const xs=[...this.plates.filter(pl=>pl.def.gate===g.def.id).map(pl=>pl.x),...this.torches.filter(t=>t.gate===g.def.id).map(t=>t.x)];if(!xs.length)return;
