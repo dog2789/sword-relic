@@ -353,6 +353,9 @@ export class PlayScene extends Phaser.Scene{
     const p=this.player,ex=this.R.exits;if(this.leaving||p.dead)return;
     // 위 방 바닥이 막힌 자리로 뛰어오르면 천장에 부딪힌 것처럼 (사다리·덩굴 자리나 뚫린 곳으로만 올라감)
     if(ex.up&&!this.climbing&&p.body.top<6&&p.body.velocity.y<0&&this.upBlocked(p.x)){p.setVelocityY(0);if(p.body.top<0)p.y-=p.body.top;return}
+    // 보스전 중엔 위 출구(사다리)도 막힘
+    if(ex.up&&this.bossLock&&p.body.top<6&&p.body.velocity.y<0){p.setVelocityY(0);if(p.body.top<0)p.y-=p.body.top;
+      if(this.doorMsgT<=0){this.toast('보스를 쓰러뜨리기 전엔 나갈 수 없어요',1800);this.doorMsgT=3}return}
     if(ex.left&&p.x<-2)this.goRoom(ex.left,'right');
     else if(ex.right&&p.x>this.lw+2)this.goRoom(ex.right,'left');
     else if(ex.up&&p.y<-4)this.goRoom(ex.up.to,'bottom',Math.round(p.x-(ex.up.tx*T+8)));

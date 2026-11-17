@@ -730,3 +730,4 @@ ${m}분	${m}m
 보스를 쓰러뜨리면 열리는 문이에요: 	This gate opens when you defeat the boss: 
 횃불을 모두 켜면 열릴 것 같아요 (공격으로 켜요)	Light all the torches to open it (hit them)
 누름판에 나무 상자를 올리면 열릴 것 같아요	Put wooden crates on the pressure plates to open it
+보스를 쓰러뜨리기 전엔 나갈 수 없어요	You can't leave until the boss is defeated
