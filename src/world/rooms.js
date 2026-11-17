@@ -863,7 +863,11 @@ export const ROOMS={
     mobs:[{t:'mimic',tx:18,ty:11},{t:'skull',tx:32,ty:10},{t:'eyebat',tx:10,ty:4},{t:'eyebat',tx:30,ty:4}],deco:{},
     event:{id:'ev_m10',delay:400,lines:[{n:'나',t:'붉은 벽이 길을 막고 있어. 스위치를 치면 잠깐 사라지는 걸까?'}]}},
   m11:{name:'심연의 다리',theme:'demon',cols:44,grid:[3,-3],exits:{left:'m10',right:'m12'},seed:631,
-    build(p){p.block(0,0,43,1);p.ground(0,43,13);p.lava(5,12,38,12);p.ground(0,4,12);p.ground(39,43,12)},
+    build(p){p.block(0,0,43,1);p.ground(0,43,13);p.lava(5,12,38,12);p.ground(0,4,12);p.ground(39,43,12);
+      p.block(3,11,4,11);p.block(39,11,40,11);   // 다리 양끝 교각 턱
+      p.block(14,11,14,12);p.block(24,11,24,12);p.block(34,11,34,12);   // 용암에서 솟은 부서진 기둥 (발판 사이 쉴 곳)
+      p.block(8,2,10,3);p.block(19,2,20,4);p.block(29,2,31,3);p.block(37,2,38,2);   // 천장에서 늘어진 잔해
+      p.block(13,5,16,5);p.block(23,6,26,6);p.block(33,5,35,5)},   // 위쪽 회랑 조각 (눈알 박쥐가 맴도는 곳)
     fallers:[{tx:6,ty:10,w:2},{tx:11,ty:9,w:2},{tx:16,ty:10,w:2},{tx:21,ty:9,w:2},{tx:26,ty:10,w:2},{tx:31,ty:9,w:2},{tx:35,ty:10,w:2}],
     chests:[{id:'ch_m11',tx:41,ty:11,gold:520}],
     mobs:[{t:'eyebat',tx:12,ty:4},{t:'eyebat',tx:24,ty:3},{t:'eyebat',tx:34,ty:4}],deco:{}},

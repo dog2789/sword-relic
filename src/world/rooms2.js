@@ -186,9 +186,13 @@ export const ROOMS2={
 
   /* ── 하늘: 구름 위 ── */
   s14:{name:'구름 사다리',theme:'sky',cols:36,grid:[10,-5],exits:{down:{to:'s10',tx:30},left:'s15'},seed:841,
-    build(p){p.ground(0,8,12);p.ground(26,35,12);p.clear(30,12,30,13);p.ladder(30,12,13);p.block(35,0,35,11)},
+    build(p){p.ground(0,8,12);p.ground(26,35,12);p.clear(30,12,30,13);p.ladder(30,12,13);p.block(35,0,35,11);
+      p.block(6,9,8,11);p.block(4,5,7,5);p.block(26,9,27,11);p.block(32,8,34,8);   // 양쪽 섬 가장자리 턱·위 발판
+      p.block(13,12,14,13);p.block(21,11,22,13);   // 구름 사이 아래에서 솟은 바위 섬
+      p.block(10,6,12,6);p.block(17,4,19,4);p.block(24,6,26,6);p.block(29,5,30,5)},   // 위쪽 샛길: 바위 조각을 건너 보물로
     clouds:[{tx:11,ty:10,w:2},{tx:15,ty:8,w:2},{tx:19,ty:10,w:2},{tx:23,ty:9,w:2}],
-    mobs:[{t:'harpy',tx:16,ty:4},{t:'tcloud',tx:10,ty:3}],deco:{},
+    chests:[{id:'ch_s14',tx:18,ty:3,gold:420}],
+    mobs:[{t:'harpy',tx:14,ty:3},{t:'tcloud',tx:9,ty:2}],deco:{},
     event:ev('ev_s14','하늘 폭포 위에도 구름 계단이 이어져 있었어!')},
   s15:{name:'돌풍 다리',theme:'sky',cols:40,grid:[9,-5],exits:{right:'s14',left:'s16'},seed:843,
     build(p){p.ground(0,6,12);p.ground(34,39,12);p.block(10,9,13,9);p.block(18,7,21,7);p.block(26,9,29,9)},
