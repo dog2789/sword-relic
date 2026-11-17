@@ -299,7 +299,8 @@ export const ROOMS={
     chests:[{id:'ch_c6',tx:5,ty:7,gold:90}],
     mobs:[{t:'mole',tx:13,ty:9},{t:'spider',tx:20,ty:5},{t:'snail',tx:26,ty:10},{t:'bat',tx:40,ty:4}],
     deco:{}},
-  c7:{name:'광산 승강기',theme:'cave',cols:34,grid:[6,1],exits:{left:'c6',right:'c8'},seed:193,
+  c7:{name:'광산 승강기',save:{tx:31},   // 박쥐 군주(c8) 바로 앞 석상
+   theme:'cave',cols:34,grid:[6,1],exits:{left:'c6',right:'c8'},seed:193,
     build(p){p.block(0,0,33,1);p.block(0,2,0,8);p.block(33,2,33,8);p.ground(0,33,13);p.spikes(6,27,12);p.ground(0,5,12);p.ground(28,33,12);p.block(16,8,18,8)},
     movers:[{tx:7,ty:5,w:2,axis:'y',range:5,speed:35},{tx:11,ty:4,w:3,axis:'x',range:6,speed:40},{tx:23,ty:6,w:2,axis:'y',range:5,speed:40}],
     chests:[{id:'ch_c7',tx:17,ty:7,gold:100}],
@@ -616,6 +617,7 @@ export const ROOMS={
     build(p){p.block(0,0,29,0);p.block(0,0,0,12);p.ground(0,29,13);p.clear(20,13,20,13);p.ladder(20,10,13);p.block(29,6,29,12);
       p.block(22,8,26,8);p.block(14,6,18,6);p.block(6,4,10,4);p.block(20,3,28,3)},
     icicles:[{tx:16,ty:1},{tx:24,ty:1}],
+    save:{tx:4},   // 서리 거북(i13) 바로 앞 석상
     turrets:[{tx:1,ty:7,dir:'r',rate:2.6}],
     crystal:{id:'c_i12',tx:8,ty:2},
     chests:[{id:'ch_i12',tx:26,ty:2,item:'moon_sword'}],
